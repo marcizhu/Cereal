@@ -1,0 +1,15 @@
+*/obsolete/
+*.exp
+*.sdf
+*.ilk
+*.pdb
+*.iobj
+*.ipdb
+*.vsp
+*.psess
+*.opendb
+*.bat
+*.tlog
+*.log
+*.obj
+*.idb
