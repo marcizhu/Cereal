@@ -5,8 +5,6 @@
 #include <vector>
 #include <stdio.h>
 
-#include "..\Cereal\Cereal.h"
-
 void gotoxy(int x, int y)
 {
 	CONSOLE_SCREEN_BUFFER_INFO SBInfo;
