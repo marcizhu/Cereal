@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Writer.h"
+#include "Reader.h"
 #include "Container.h"
 #include "..\Cereal.h"
 
@@ -16,6 +17,7 @@ namespace Cereal {
 		//constructor for each field type
 		inline Field(std::string name, byte value) { setData(name, DataType::DATA_CHAR /* | MOD_UNSIGNED*/, value); }
 		inline Field(std::string name, bool value) { setData(name, DataType::DATA_BOOL, value); }
+		inline Field(std::string name, char value) { setData(name, DataType::DATA_CHAR, value); }
 		inline Field(std::string name, short value) { setData(name, DataType::DATA_SHORT, value); }
 		inline Field(std::string name, int value) { setData(name, DataType::DATA_INT, value); }
 		inline Field(std::string name, float value) { setData(name, DataType::DATA_FLOAT, value); }
@@ -38,20 +40,21 @@ namespace Cereal {
 		}
 
 		inline static Field read(byte* dest, int pointer) {
-			assert(Writer::readBytes<byte>(dest, pointer++) == ObjectType::TYPE_FIELD);
-			std::string name = Writer::readBytes<std::string>(dest, pointer);
+			byte type = Reader::readBytes<byte>(dest, pointer++);
+			assert(type == ObjectType::TYPE_FIELD);
+			std::string name = Reader::readBytes<std::string>(dest, pointer);
 			pointer += 2 + name.length() - 1; // sizeof Short ( length) + length of string - 1 (null termination character)
 			
 
-			byte dataType = Writer::readBytes<byte>(dest, pointer++);
+			byte dataType = Reader::readBytes<byte>(dest, pointer++);
 			switch (dataType) {
-			case DataType::DATA_BOOL: return Field(name, Writer::readBytes<bool>(dest, pointer));
-			case DataType::DATA_CHAR: return Field(name, Writer::readBytes<byte>(dest, pointer));
-			case DataType::DATA_SHORT: return Field(name, Writer::readBytes<short>(dest, pointer));
-			case DataType::DATA_INT: return Field(name, Writer::readBytes<int>(dest, pointer));
-			case DataType::DATA_LONG_LONG: return Field(name, Writer::readBytes<long long>(dest, pointer));
-			case DataType::DATA_FLOAT: return Field(name, Writer::readBytes<float>(dest, pointer));
-			case DataType::DATA_DOUBLE: return Field(name, Writer::readBytes<double>(dest, pointer));
+			case DataType::DATA_BOOL: return Field(name, Reader::readBytes<bool>(dest, pointer));
+			case DataType::DATA_CHAR: return Field(name, Reader::readBytes<byte>(dest, pointer));
+			case DataType::DATA_SHORT: return Field(name, Reader::readBytes<short>(dest, pointer));
+			case DataType::DATA_INT: return Field(name, Reader::readBytes<int>(dest, pointer));
+			case DataType::DATA_LONG_LONG: return Field(name, Reader::readBytes<long long>(dest, pointer));
+			case DataType::DATA_FLOAT: return Field(name, Reader::readBytes<float>(dest, pointer));
+			case DataType::DATA_DOUBLE: return Field(name, Reader::readBytes<double>(dest, pointer));
 			}
 
 			assert(false);
@@ -60,7 +63,7 @@ namespace Cereal {
 		
 		template<class T>
 		inline T getValue() {
-			return Writer::readBytes<T>(data, 0);
+			return Reader::readBytes<T>(data, 0);
 		}
 
 	protected:
@@ -74,7 +77,7 @@ namespace Cereal {
 			dataType = type;
 
 			//Setting the data
-			data = new byte[sizeOf(type)];
+			data = new byte[sizeof(T)];
 			Writer::writeBytes(data, 0, value);
 		}
 

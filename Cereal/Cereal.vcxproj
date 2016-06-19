@@ -142,6 +142,7 @@
     <ClInclude Include="Cereal\src\Container.h" />
     <ClInclude Include="Cereal\src\Field.h" />
     <ClInclude Include="Cereal\src\Writer.h" />
+    <ClInclude Include="Cereal\src\Reader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

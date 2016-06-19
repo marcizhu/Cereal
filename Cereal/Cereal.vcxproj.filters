@@ -27,5 +27,8 @@
     <ClInclude Include="Cereal\src\Container.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cereal\src\Reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
