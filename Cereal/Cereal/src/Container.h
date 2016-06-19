@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Writer.h"
+#include "Reader.h"
 
 namespace Cereal {
 
@@ -22,8 +23,8 @@ namespace Cereal {
 
 		void readContainer(byte* dest, int pointer)
 		{
-			this->type = Writer::readBytes<byte>(dest, pointer);
-			this->name = Writer::readBytes<std::string>(dest, pointer);
+			this->type = Reader::readBytes<byte>(dest, pointer);
+			this->name = Reader::readBytes<std::string>(dest, pointer);
 		}
 
 	};

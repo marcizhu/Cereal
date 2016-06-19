@@ -138,9 +138,7 @@
     <ClInclude Include="Cereal\src\Container.h" />
     <ClInclude Include="Cereal\src\Field.h" />
     <ClInclude Include="Cereal\src\Writer.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Cereal\src\Field.cpp" />
+    <ClInclude Include="Cereal\src\Reader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

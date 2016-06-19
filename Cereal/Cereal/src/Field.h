@@ -16,6 +16,7 @@ namespace Cereal {
 		//constructor for each field type
 		inline Field(std::string name, byte value) { setData(name, DataType::DATA_CHAR /* | MOD_UNSIGNED*/, value); }
 		inline Field(std::string name, bool value) { setData(name, DataType::DATA_BOOL, value); }
+		inline Field(std::string name, char value) { setData(name, DataType::DATA_CHAR, value); }
 		inline Field(std::string name, short value) { setData(name, DataType::DATA_SHORT, value); }
 		inline Field(std::string name, int value) { setData(name, DataType::DATA_INT, value); }
 		inline Field(std::string name, float value) { setData(name, DataType::DATA_FLOAT, value); }
@@ -48,7 +49,7 @@ namespace Cereal {
 			dataType = type;
 
 			//Setting the data
-			data = new byte[sizeOf(type)];
+			data = new byte[sizeof(T)];
 			Writer::writeBytes(data, 0, value);
 		}
 
