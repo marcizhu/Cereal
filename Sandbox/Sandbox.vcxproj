@@ -71,8 +71,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\marci\Documents\Visual Studio 2015\Projects\Cereal\Cereal;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\Debug\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Cereal\Cereal;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\bin\Cereal\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin</OutDir>
+    <IntDir>$(SolutionDir)bin</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

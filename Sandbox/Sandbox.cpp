@@ -5,6 +5,8 @@
 #include <vector>
 #include <stdio.h>
 
+#include <Cereal.h>
+
 void gotoxy(int x, int y)
 {
 	CONSOLE_SCREEN_BUFFER_INFO SBInfo;
@@ -53,6 +55,19 @@ void dump(const void* object, unsigned int size, int color = 0x03)
 
 int main()
 {
+	byte* dest = new byte[200];
+	memset(dest, 0, 200);
+	
+	int value = 1234;
+
+	cereal::Field field("Test", value);
+
+	field.writeBytes(dest, 0);
+
+	for (int i = 0; i < 200; i++) {
+		printf("0x%x ", dest[i]);
+	}
+
 	while (1) { _asm nop }
 
     return 0;

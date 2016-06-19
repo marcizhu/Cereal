@@ -13,3 +13,6 @@
 *.log
 *.obj
 *.idb
+bin
+Debug
+Release

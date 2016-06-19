@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <assert.h>
 
 namespace cereal {
 
@@ -65,6 +66,17 @@ namespace cereal {
 			auto asBytes = toBytes(value);
 			for (byte c : asBytes) {
 				dest[pointer++] = c;
+			}
+			return pointer;
+		}
+		static int writeBytes(byte* dest, int pointer, std::string string) {
+			const unsigned int size = (short)string.length();
+
+			assert(size <= 65535);
+
+			pointer = writeBytes(dest, pointer, (short)size);
+			for (unsigned short i = 0; i < (short)size; i++) {
+				pointer = writeBytes(dest, pointer, string[i]);
 			}
 			return pointer;
 		}
