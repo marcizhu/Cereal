@@ -59,7 +59,7 @@ int main()
 	byte* dest = new byte[256];
 	memset(dest, 0, 256);
 
-	Cereal::Field field("Test", 0x12345678);
+	Cereal::Field field("Test", std::string("Testing field strings"));
 
 	field.write(dest, 0);
 
@@ -67,7 +67,7 @@ int main()
 
 	Cereal::Field field2 = Cereal::Field::read(dest, 0);
 
-	printf("Field value: 0x%x ", field2.getValue<int>());
+	printf("Field value: %s ", field2.getValue<std::string>().c_str());
 
 	delete[] dest;
 
