@@ -2,52 +2,53 @@
 
 #include "Writer.h"
 #include "Container.h"
+#include "..\Cereal.h"
 
-namespace cereal {
+namespace Cereal {
 
-	class Field {
+	class Field : public Container
+	{
 	private:
-		Container container;
-		byte dataType;
+		DataType dataType = DataType::DATA_UNKNOWN;
 		byte* data = nullptr;
 
 	public:
 		//constructor for each field type
-		inline Field(std::string name, byte value) { setData(name, value, SERIALIZATION_BYTE); }
+		inline Field(std::string name, byte value) { setData(name, DataType::DATA_CHAR /* | MOD_UNSIGNED*/, value); }
+		inline Field(std::string name, bool value) { setData(name, DataType::DATA_BOOL, value); }
+		inline Field(std::string name, short value) { setData(name, DataType::DATA_SHORT, value); }
+		inline Field(std::string name, int value) { setData(name, DataType::DATA_INT, value); }
+		inline Field(std::string name, float value) { setData(name, DataType::DATA_FLOAT, value); }
+		inline Field(std::string name, long long value) { setData(name, DataType::DATA_LONG_LONG, value); }
+		inline Field(std::string name, double value) { setData(name, DataType::DATA_DOUBLE, value); }
 
-		inline Field(std::string name, bool value) { setData(name, value, SERIALIZATION_BOOL); }
+		~Field() { if(data) delete[] data; }
 
-		inline Field(std::string name, short value) { setData(name, value, SERIALIZATION_SHORT); }
+		inline int write(byte* dest, int pointer)
+		{
+			pointer = this->writeContainer(dest, pointer);
+			pointer = Writer::writeBytes<byte>(dest, pointer, this->dataType); //write data type
 
-		inline Field(std::string name, int value) { setData(name, value, SERIALIZATION_INT); }
-
-		inline Field(std::string name, float value) { setData(name, value, SERIALIZATION_FLOAT); }
-
-		inline Field(std::string name, long long value) { setData(name, value, SERIALIZATION_LONG); }
-
-		inline Field(std::string name, double value) { setData(name, value, SERIALIZATION_DOUBLE); }
-
-
-		inline int writeBytes(byte* dest, int pointer) {
-			pointer = container.writeBytes(dest, pointer);
-			pointer = Writer::writeBytes(dest, pointer, dataType);
-			for (int i = 0; i < Container::sizeOf(dataType); i++) {
-				pointer = Writer::writeBytes(dest, pointer, data[i]);
+			for (int i = 0; i < sizeOf(dataType); i++)
+			{
+				pointer = Writer::writeBytes<byte>(dest, pointer, data[i]);
 			}
+
 			return pointer;
 		}
 
 	protected:
 		template<class T>
-		void setData(std::string name, T value, byte type) {
+		void setData(std::string name, DataType type, T value)
+		{
 			//Initialization of container
-			container.type = SERIALIZATION_FIELD;
-			container.name = name;
+			this->type = ObjectType::TYPE_FIELD;
+			this->name = name;
 
 			dataType = type;
 
 			//Setting the data
-			data = new byte[Container::sizeOf(type)];
+			data = new byte[sizeOf(type)];
 			Writer::writeBytes(data, 0, value);
 		}
 

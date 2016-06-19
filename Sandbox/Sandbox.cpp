@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include <Cereal.h>
+#include <src\Field.h>
 
 void gotoxy(int x, int y)
 {
@@ -55,18 +56,16 @@ void dump(const void* object, unsigned int size, int color = 0x03)
 
 int main()
 {
-	byte* dest = new byte[200];
-	memset(dest, 0, 200);
-	
-	int value = 1234;
+	byte* dest = new byte[256];
+	memset(dest, 0, 256);
 
-	cereal::Field field("Test", value);
+	Cereal::Field field("Test", 0x12345678);
 
-	field.writeBytes(dest, 0);
+	field.write(dest, 0);
 
-	for (int i = 0; i < 200; i++) {
-		printf("0x%x ", dest[i]);
-	}
+	dump(dest, 256);
+
+	delete[] dest;
 
 	while (1) { _asm nop }
 

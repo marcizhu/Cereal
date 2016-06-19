@@ -1,98 +1,135 @@
 #pragma once
 
-#include <array>
 #include <assert.h>
 
-namespace cereal {
+namespace Cereal {
 
-	typedef unsigned char byte;
-
-	class Writer {
-		
-
+	class Writer
+	{
 	public:
 		template<typename T>
-		static T readBytes(byte* src, int pointer) {
+		static T readBytes(byte* src, int pointer)
+		{
 			T value = src[pointer] << (sizeof(T) * 8 - 8);
-			for (int i = 0; i < (int) sizeof(T); i++) {
+
+			for (int i = 0; i < sizeof(T); i++)
+			{
 				value |= (src[pointer + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
 			}
+
 			return value;
 		}
 
 		template<>
-		static float readBytes<float>(byte* src, int pointer) {
+		static float readBytes<float>(byte* src, int pointer)
+		{
 			unsigned int value = src[pointer] << (sizeof(int) * 8 - 8);
-			for (int i = 0; i < (int) sizeof(float); i++) {
+
+			for (int i = 0; i < (int) sizeof(float); i++)
+			{
 				value |= (src[pointer + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
 			}
+
 			float result;
+
 			memcpy_s(&result, 4, &value, 4);
+
 			return result;
 		}
 
 		template<>
-		static bool readBytes<bool>(byte* src, int pointer) {
+		static bool readBytes<bool>(byte* src, int pointer)
+		{
 			bool result;
+
 			result = src[pointer];
+
 			return result != 0;
 		}
 
 		template<>
-		static double readBytes<double>(byte* src, int pointer) {
+		static double readBytes<double>(byte* src, int pointer)
+		{
 			unsigned long long value = src[pointer] << (sizeof(int) * 8 - 8);
-			for (int i = pointer; i < (int)pointer + (int) sizeof(float); i++) {
+
+			for (int i = pointer; i < (int)pointer + (int) sizeof(float); i++)
+			{
 				value |= (src[pointer + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
 			}
+
 			double result;
 			memcpy_s(&result, 4, &value, 4);
+
 			return result;
 		}
 
 		template<>
-		static std::string readBytes<std::string>(byte* src, int pointer) {
-			char* value;
+		static std::string readBytes<std::string>(byte* src, int pointer)
+		{
+			std::string value = "";
 			short size = readBytes<short>(src, pointer);
-			value = new char[size + 1];
-			for (int i = pointer + 2; i < pointer + size + 2; i++) {
-				value[i - pointer - 2] = readBytes<char>(src, i);
+
+			for (int i = pointer + 2; i < pointer + size + 2; i++)
+			{
+				value += readBytes<char>(src, i);
 			}
-			value[size] = 0; // null termination char, to be removed when i make my own class
+
+			value += '\0';
+
 			return std::string(value);
 		}
 
 		template<typename T>
-		static int writeBytes(byte* dest, int pointer, const T& value) {
-			auto asBytes = toBytes(value);
-			for (byte c : asBytes) {
-				dest[pointer++] = c;
+		static unsigned int writeBytes(byte* dest, int pointer, T value)
+		{
+			for (unsigned int i = 0; i < sizeof(T); i++)
+			{
+				dest[pointer++] = (value >> ((sizeof(T) - 1) * 8 - i * 8)) & 0xFF;
 			}
+
 			return pointer;
 		}
-		static int writeBytes(byte* dest, int pointer, std::string string) {
+
+		template<>
+		static unsigned int writeBytes<std::string>(byte* dest, int pointer, std::string string)
+		{
 			const unsigned int size = (short)string.length();
 
 			assert(size <= 65535);
 
 			pointer = writeBytes(dest, pointer, (short)size);
-			for (unsigned short i = 0; i < (short)size; i++) {
+
+			for (unsigned short i = 0; i < (short)size; i++)
+			{
 				pointer = writeBytes(dest, pointer, string[i]);
 			}
+
 			return pointer;
 		}
 
-	protected:
-		template<typename T>
-		static std::array<byte, sizeof(T)> toBytes(const T& object) {
-			std::array<byte, sizeof(T)> bytes;
+		template<>
+		static unsigned int writeBytes<float>(byte* dest, int pointer, float data)
+		{
+			unsigned int x;
 
-			const byte* begin = reinterpret_cast<const byte*>(std::addressof(object));
-			const byte* end = begin + sizeof(T);
-			std::reverse_copy(begin, end, std::begin(bytes));
+			memcpy_s(&x, sizeof(unsigned int), &data, sizeof(float));
 
-			return bytes;
+			writeBytes<unsigned int>(dest, pointer, x);
+
+			return true;
 		}
 
+		template<>
+		static unsigned int writeBytes<double>(byte* dest, int pointer, double data)
+		{
+			unsigned long long x;
+
+			*(unsigned long long*)&x = data;
+
+			writeBytes<unsigned long long>(dest, pointer, x);
+
+			return true;
+		}
 
 	};
 
