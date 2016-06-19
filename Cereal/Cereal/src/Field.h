@@ -37,6 +37,32 @@ namespace Cereal {
 			return pointer;
 		}
 
+		inline static Field read(byte* dest, int pointer) {
+			assert(Writer::readBytes<byte>(dest, pointer++) == ObjectType::TYPE_FIELD);
+			std::string name = Writer::readBytes<std::string>(dest, pointer);
+			pointer += 2 + name.length() - 1; // sizeof Short ( length) + length of string - 1 (null termination character)
+			
+
+			byte dataType = Writer::readBytes<byte>(dest, pointer++);
+			switch (dataType) {
+			case DataType::DATA_BOOL: return Field(name, Writer::readBytes<bool>(dest, pointer));
+			case DataType::DATA_CHAR: return Field(name, Writer::readBytes<byte>(dest, pointer));
+			case DataType::DATA_SHORT: return Field(name, Writer::readBytes<short>(dest, pointer));
+			case DataType::DATA_INT: return Field(name, Writer::readBytes<int>(dest, pointer));
+			case DataType::DATA_LONG_LONG: return Field(name, Writer::readBytes<long long>(dest, pointer));
+			case DataType::DATA_FLOAT: return Field(name, Writer::readBytes<float>(dest, pointer));
+			case DataType::DATA_DOUBLE: return Field(name, Writer::readBytes<double>(dest, pointer));
+			}
+
+			assert(false);
+			return Field("", -1);
+		}
+		
+		template<class T>
+		inline T getValue() {
+			return Writer::readBytes<T>(data, 0);
+		}
+
 	protected:
 		template<class T>
 		void setData(std::string name, DataType type, T value)

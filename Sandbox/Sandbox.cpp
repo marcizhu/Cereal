@@ -65,6 +65,10 @@ int main()
 
 	dump(dest, 256);
 
+	Cereal::Field field2 = Cereal::Field::read(dest, 0);
+
+	printf("Field value: 0x%x ", field2.getValue<int>());
+
 	delete[] dest;
 
 	while (1) { _asm nop }

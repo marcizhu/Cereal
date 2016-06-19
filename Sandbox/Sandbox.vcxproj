@@ -81,6 +81,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin</OutDir>
+    <IntDir>$(SolutionDir)bin</IntDir>
+    <IncludePath>$(SolutionDir)Cereal\Cereal;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\bin\Cereal\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
