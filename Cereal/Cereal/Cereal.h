@@ -1,7 +1,5 @@
 #pragma once
 
-#define VERSION		Cereal::Version::VERSION_LATEST
-
 namespace Cereal {
 
 	typedef unsigned char byte;
@@ -13,12 +11,6 @@ namespace Cereal {
 		VERSION_LATEST	= VERSION_1_0,
 		VERSION_INVALID = 0xFFFF
 	};
-
-	/*enum ObjectType
-	{
-		TYPE_UNKNOWN	= 0,
-
-	};*/
 
 	enum DataType
 	{

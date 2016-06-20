@@ -87,32 +87,27 @@ namespace Cereal {
 			return Array("", (byte*)nullptr, 0);
 		}
 
-		template<class T>
-		inline T* getArray() {
-			/*T* array = new T[count]; // FIXME: Memory leak!
-			short size = sizeOf(dataType);
-			int pointer = 0;
-			for (int i = 0; i < count; i++) {
-				array[i] = Reader::readBytes<T>(data, pointer);
-				pointer += size;
-			}
-			return array;*/
+		inline short getCount() { return count; }
 
-			return (T*)data;
-		}
+		template<class T>
+		inline T* getArray() { return (T*)data; }
 
 		template<>
-		inline std::string* getArray<std::string>() {
+		inline std::string* getArray<std::string>()
+		{
 			std::string* array = new std::string[count]; // FIXME: Memory leak!
+
 			int pointer = 0;
-			for (int i = 0; i < count; i++) {
+
+			for (int i = 0; i < count; i++)
+			{
 				array[i] = Reader::readBytes<std::string>(data, pointer);
 				pointer += 2 + array[i].length();
 			}
+
 			return array;
 		}
 
-		inline short getCount() { return count; }
 	};
 
 
