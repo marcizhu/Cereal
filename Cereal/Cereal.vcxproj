@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Cereal\src\Array.h" />
     <ClInclude Include="Cereal\Cereal.h" />
     <ClInclude Include="Cereal\src\Container.h" />
     <ClInclude Include="Cereal\src\Field.h" />

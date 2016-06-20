@@ -2,10 +2,6 @@
 
 #define VERSION		Cereal::Version::VERSION_LATEST
 
-//#include "src/Writer.h"
-//#include "src/Container.h"
-//#include "src/Field.h"
-
 namespace Cereal {
 
 	typedef unsigned char byte;
@@ -24,7 +20,6 @@ namespace Cereal {
 		TYPE_FIELD		= 1,
 		TYPE_ARRAY		= 2,
 		TYPE_OBJECT		= 3
-		//TYPE_DATABASE	= 4 -> databases don't have a type, right? We don't need this one
 	};
 
 	enum DataType
