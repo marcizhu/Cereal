@@ -6,7 +6,8 @@
 #include <stdio.h>
 
 #include <Cereal.h>
-#include <src\Field.h>
+#include <src/Field.h>
+#include <src/Array.h>
 
 void gotoxy(int x, int y)
 {
@@ -59,15 +60,19 @@ int main()
 	byte* dest = new byte[256];
 	memset(dest, 0, 256);
 
-	Cereal::Field field("Test", std::string("Testing field strings"));
+	std::string* names = new std::string[3]{
+		"Test1", "Test2", "I'm awesome!"
+	};
 
-	field.write(dest, 0);
+	int* data = new int[4]{
+		1,2,3,4
+	};
+
+	Cereal::Array array("Test", names, 3);
+
+	array.write(dest, 0);
 
 	dump(dest, 256);
-
-	Cereal::Field field2 = Cereal::Field::read(dest, 0);
-
-	printf("Field value: %s ", field2.getValue<std::string>().c_str());
 
 	delete[] dest;
 

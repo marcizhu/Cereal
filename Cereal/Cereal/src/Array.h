@@ -1,25 +1,29 @@
 #pragma once
 
+#include "Writer.h"
 #include "Container.h"
+#include "../Cereal.h"
+
 
 namespace Cereal {
 
-	class Array : public Container
-	{
+	class Array : public Container {
 	private:
 		DataType dataType = DataType::DATA_UNKNOWN;
 		byte* data = nullptr;
+		short count;
+		int dataSize = 0; //used for string array only!
 
 	public:
-		inline Array(std::string name, byte* value, int count) { setData(name, DataType::DATA_CHAR, value); }
-		inline Array(std::string name, bool* value, int count) { setData(name, DataType::DATA_BOOL, value); }
-		inline Array(std::string name, char* value, int count) { setData(name, DataType::DATA_CHAR, value); }
-		inline Array(std::string name, short* value, int count) { setData(name, DataType::DATA_SHORT, value); }
-		inline Array(std::string name, int* value, int count) { setData(name, DataType::DATA_INT, value); }
-		inline Array(std::string name, float* value, int count) { setData(name, DataType::DATA_FLOAT, value); }
-		inline Array(std::string name, long long* value, int count) { setData(name, DataType::DATA_LONG_LONG, value); }
-		inline Array(std::string name, double* value, int count) { setData(name, DataType::DATA_DOUBLE, value); }
-		inline Array(std::string name, std::string* value, int count) { setData(name, DataType::DATA_STRING, value); }
+		inline Array(std::string name, byte* value, int count) { setData(name, DataType::DATA_CHAR, value, count); }
+		inline Array(std::string name, bool* value, int count) { setData(name, DataType::DATA_BOOL, value, count); }
+		inline Array(std::string name, char* value, int count) { setData(name, DataType::DATA_CHAR, value, count); }
+		inline Array(std::string name, short* value, int count) { setData(name, DataType::DATA_SHORT, value, count); }
+		inline Array(std::string name, int* value, int count) { setData(name, DataType::DATA_INT, value, count); }
+		inline Array(std::string name, float* value, int count) { setData(name, DataType::DATA_FLOAT, value, count); }
+		inline Array(std::string name, long long* value, int count) { setData(name, DataType::DATA_LONG_LONG, value, count); }
+		inline Array(std::string name, double* value, int count) { setData(name, DataType::DATA_DOUBLE, value, count); }
+		inline Array(std::string name, std::string* value, int count) { setData(name, DataType::DATA_STRING, value, count); }
 
 		~Array() { if (data) delete[] data; }
 
@@ -27,28 +31,27 @@ namespace Cereal {
 		{
 			pointer = this->writeContainer(dest, pointer);
 			pointer = Writer::writeBytes<byte>(dest, pointer, this->dataType); //write data type
+			pointer = Writer::writeBytes<short>(dest, pointer, this->count);
 
-			if (dataType != DataType::DATA_STRING)
-			{
-				for (int i = 0; i < sizeOf(dataType); i++)
-				{
-					pointer = Writer::writeBytes<byte>(dest, pointer, data[i]);
-				}
+			
+
+			int size;
+
+			if (sizeOf(dataType) != 0) 
+				size = sizeof(dataType) * count; 
+			else {
+				pointer = Writer::writeBytes(dest, pointer, dataSize);
+				size = dataSize;
 			}
-			else
-			{
-				short len = Reader::readBytes<short>(data, 0) + 2;
 
-				for (int i = 0; i < len; i++)
-				{
-					pointer = Writer::writeBytes<byte>(dest, pointer, data[i]);
-				}
+			for (int i = 0; i < size; i++) {
+				pointer = Writer::writeBytes<byte>(dest, pointer, data[i]);
 			}
 
 			return pointer;
 		}
 
-		static Field read(byte* dest, int pointer)
+		/*static Array read(byte* dest, int pointer)
 		{
 			byte type = Reader::readBytes<byte>(dest, pointer++);
 
@@ -75,46 +78,80 @@ namespace Cereal {
 			assert(false);
 
 			return Field("", -1);
-		}
+		}*/
 
 		template<class T>
-		inline T getValue() { return Reader::readBytes<T>(data, 0); }
-
-	protected:
-		template<class T>
-		void setData(std::string name, DataType type, T value)
-		{
-			//Initialization of container
-			this->type = ObjectType::TYPE_FIELD;
-			this->name = name;
-
-			dataType = type;
-
-			//Setting the data
-			data = new byte[sizeof(T)];
-			Writer::writeBytes(data, 0, value);
+		inline T* getArray() {
+			T* array = new T[count];
+			short size = sizeOf(dataType);
+			int pointer = 0;
+			for (int i = 0; i < count; i++) {
+				array[i] = Reader::readBytes<T>(data, pointer);
+				pointer += size;
+			}
+			return array;
 		}
 
 		template<>
-		void setData<std::string>(std::string name, DataType type, std::string value)
+		inline std::string* getArray() {
+			std::string* array = new std::string[count];
+			int pointer = 0;
+			for (int i = 0; i < count; i++) {
+				array[i] = Reader::readBytes<std::string>(data, pointer);
+				pointer += 2 + array[i].length();
+			}
+			return array;
+		}
+
+		inline short getCount() { return count; }
+
+	protected:
+		template<class T>
+		void setData(std::string name, DataType type, T* value, short count)
 		{
 			//Initialization of container
-			this->type = ObjectType::TYPE_FIELD;
+			this->type = ObjectType::TYPE_ARRAY;
 			this->name = name;
+			this->count = count;
 
 			dataType = type;
 
 			//Setting the data
-			data = new byte[value.length() + 2];
-			int ptr = Writer::writeBytes<short>(data, 0, value.length());
-
-			for (unsigned int i = 0; i < value.length(); i++)
-			{
-				ptr = Writer::writeBytes<char>(data, ptr, value[i]);
+			data = new byte[sizeof(T) * count];
+			int pointer = 0;
+			for (short i = 0; i < count; i++) {
+				pointer = Writer::writeBytes(data, pointer, value[i]);
 			}
 		}
 
+		template<>
+		void setData<std::string>(std::string name, DataType type, std::string* value, short count)
+		{
+			//Initialization of container
+			this->type = ObjectType::TYPE_ARRAY;
+			this->name = name;
+			this->count = count;
+
+			dataType = type;
+
+			//Setting the data
+			int dataSize = 0;
+			for (short i = 0; i < count; i++) {
+				dataSize += 2;
+				dataSize += value[i].length() - 1;
+			}
+
+			this->dataSize = dataSize;
+
+			data = new byte[dataSize];
+			int pointer = 0;
+			for (short i = 0; i < count; i++) {
+				pointer = Writer::writeBytes(data, pointer, value[i]);
+			}
+
+		}
+
 	};
-	};
+
 
 }
