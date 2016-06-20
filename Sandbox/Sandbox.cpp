@@ -60,19 +60,24 @@ int main()
 	byte* dest = new byte[256];
 	memset(dest, 0, 256);
 
-	std::string* names = new std::string[3]{
-		"Test1", "Test2", "I'm awesome!"
-	};
-
 	int* data = new int[4]{
-		1,2,3,4
+		1, 2, 3, 4
 	};
 
-	Cereal::Array array("Test", names, 3);
+	Cereal::Array array("Test", data, 4);
 
 	array.write(dest, 0);
 
 	dump(dest, 256);
+
+	Cereal::Array array2 = Cereal::Array::read(dest, 0);
+
+	int* ret = array2.getArray<int>();
+
+	for (int i = 0; i < 4; i++)
+	{
+		printf("%i\n", ret[i]);
+	}
 
 	delete[] dest;
 

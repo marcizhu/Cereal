@@ -14,13 +14,11 @@ namespace Cereal {
 		VERSION_INVALID = 0xFFFF
 	};
 
-	enum ObjectType
+	/*enum ObjectType
 	{
 		TYPE_UNKNOWN	= 0,
-		TYPE_FIELD		= 1,
-		TYPE_ARRAY		= 2,
-		TYPE_OBJECT		= 3
-	};
+
+	};*/
 
 	enum DataType
 	{
@@ -33,6 +31,11 @@ namespace Cereal {
 		DATA_FLOAT		= 6,
 		DATA_DOUBLE		= 7,
 		DATA_STRING		= 8,
+
+		DATA_FIELD		= 9,
+		DATA_ARRAY		= 10,
+		DATA_OBJECT		= 11,
+
 		MOD_UNSIGNED	= (1 << 4) // unsigned modifier
 	};
 

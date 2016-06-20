@@ -13,6 +13,39 @@ namespace Cereal {
 		DataType dataType = DataType::DATA_UNKNOWN;
 		byte* data = nullptr;
 
+		template<class T>
+		void setData(std::string name, DataType type, T value)
+		{
+			//Initialization of container
+			this->type = DataType::DATA_FIELD;
+			this->name = name;
+
+			dataType = type;
+
+			//Setting the data
+			data = new byte[sizeof(T)];
+			Writer::writeBytes<T>(data, 0, value);
+		}
+
+		template<>
+		void setData<std::string>(std::string name, DataType type, std::string value)
+		{
+			//Initialization of container
+			this->type = DataType::DATA_FIELD;
+			this->name = name;
+
+			dataType = type;
+
+			//Setting the data
+			data = new byte[value.length() + 2];
+			int ptr = Writer::writeBytes<short>(data, 0, value.length());
+
+			for (unsigned int i = 0; i < value.length(); i++)
+			{
+				ptr = Writer::writeBytes<char>(data, ptr, value[i]);
+			}
+		}
+
 	public:
 		//constructor for each field type
 		inline Field(std::string name, byte value) { setData(name, DataType::DATA_CHAR /* | MOD_UNSIGNED*/, value); }
@@ -55,7 +88,7 @@ namespace Cereal {
 		static Field read(byte* dest, int pointer) {
 			byte type = Reader::readBytes<byte>(dest, pointer++);
 
-			assert(type == ObjectType::TYPE_FIELD);
+			assert(type == DataType::DATA_FIELD);
 
 			std::string name = Reader::readBytes<std::string>(dest, pointer);
 
@@ -79,75 +112,8 @@ namespace Cereal {
 			return Field("", -1);
 		}
 
-		/*void read(byte* dest, int pointer)
-		{
-			this->type = Reader::readBytes<byte>(dest, pointer++);
-
-			assert(type == ObjectType::TYPE_FIELD);
-
-			this->name = Reader::readBytes<std::string>(dest, pointer);
-
-			pointer += sizeof(short) + name.length() - 1;
-
-			this->dataType = Reader::readBytes<byte>(dest, pointer++);
-
-			switch (dataType)
-			{
-			case DataType::DATA_BOOL: return Field(name, Reader::readBytes<bool>(dest, pointer));
-			case DataType::DATA_CHAR: return Field(name, Reader::readBytes<byte>(dest, pointer));
-			case DataType::DATA_SHORT: return Field(name, Reader::readBytes<short>(dest, pointer));
-			case DataType::DATA_INT: return Field(name, Reader::readBytes<int>(dest, pointer));
-			case DataType::DATA_LONG_LONG: return Field(name, Reader::readBytes<long long>(dest, pointer));
-			case DataType::DATA_FLOAT: return Field(name, Reader::readBytes<float>(dest, pointer));
-			case DataType::DATA_DOUBLE: return Field(name, Reader::readBytes<double>(dest, pointer));
-			}
-
-			if (data) delete[] data;
-
-			data = new byte[sizeOf(dataType)];
-
-			Writer::writeBytes(data, 0, Reader::readBytes(dest, pointer));
-
-			assert(false);
-		}*/
-
 		template<class T>
 		inline T getValue() { return Reader::readBytes<T>(data, 0); }
-
-	protected:
-		template<class T>
-		void setData(std::string name, DataType type, T value)
-		{
-			//Initialization of container
-			this->type = ObjectType::TYPE_FIELD;
-			this->name = name;
-
-			dataType = type;
-
-			//Setting the data
-			data = new byte[sizeof(T)];
-			Writer::writeBytes(data, 0, value);
-		}
-
-		template<>
-		void setData<std::string>(std::string name, DataType type, std::string value)
-		{
-			//Initialization of container
-			this->type = ObjectType::TYPE_FIELD;
-			this->name = name;
-
-			dataType = type;
-
-			//Setting the data
-			data = new byte[value.length() + 2];
-			int ptr = Writer::writeBytes<short>(data, 0, value.length());
-
-			for (unsigned int i = 0; i < value.length(); i++)
-			{
-				ptr = Writer::writeBytes<char>(data, ptr, value[i]);
-			}
-		}
-
 	};
 
 }

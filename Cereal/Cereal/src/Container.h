@@ -15,8 +15,8 @@ namespace Cereal {
 
 		int writeContainer(byte* dest, int pointer)
 		{
-			pointer = Writer::writeBytes(dest, pointer, type);
-			pointer = Writer::writeBytes(dest, pointer, name);
+			pointer = Writer::writeBytes<byte>(dest, pointer, type);
+			pointer = Writer::writeBytes<std::string>(dest, pointer, name);
 
 			return pointer;
 		}
