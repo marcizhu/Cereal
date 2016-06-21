@@ -58,6 +58,10 @@ namespace Cereal {
 			for (short i = 0; i < count; i++) {
 				pointer = Writer::writeBytes(data, pointer, value[i]);
 			}
+
+			for (int i = 0;i < dataSize; i++) {
+				printf("%d\n", data[i]);
+			}
 		}
 
 	public:
@@ -99,7 +103,7 @@ namespace Cereal {
 
 			std::string name = Reader::readBytes<std::string>(dest, pointer);
 
-			pointer += sizeof(short) + name.length() - 1; // sizeof Short (length) + length of string - 1 (the buffer starts at 0)
+			pointer += sizeof(short) + name.length(); // sizeof Short (length) + length of string - 1 (the buffer starts at 0)
 
 			byte dataType = Reader::readBytes<byte>(dest, pointer++);
 			short itemCount = Reader::readBytes<short>(dest, pointer);
@@ -137,10 +141,10 @@ namespace Cereal {
 		template<class T>
 		inline T* getArray() { return (T*)data; }
 
-		template<>
-		inline std::string* getArray<std::string>()
+		
+		inline void getArray(std::string* array)
 		{
-			std::string* array = new std::string[count]; // FIXME: Memory leak!
+			array = new std::string[count]; // FIXME: Memory leak!
 
 			int pointer = 0;
 
@@ -149,8 +153,6 @@ namespace Cereal {
 				array[i] = Reader::readBytes<std::string>(data, pointer);
 				pointer += 2 + array[i].length();
 			}
-
-			return array;
 		}
 
 	};

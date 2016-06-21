@@ -74,9 +74,17 @@ int main()
 	Cereal::Array array2 = Cereal::Array::read(dest, 0);
 
 	byte* dest2 = new byte[256];
-
+	memset(dest2, 0, 256);
 	array2.write(dest2, 0);
 	dump(dest2, 256);
+
+	std::string* string= new std::string[3];
+	array.getArray(string);
+
+	for (int i = 0; i < 3; i++) {
+		printf("%s\n", string[i]);
+	}
+
 
 	delete[] dest;
 	delete[] dest2;
