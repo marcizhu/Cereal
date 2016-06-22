@@ -9,7 +9,7 @@ namespace Cereal {
 
 	struct Container
 	{
-	protected:
+	public:
 		byte type;
 		std::string name;
 
