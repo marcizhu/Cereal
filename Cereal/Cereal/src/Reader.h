@@ -64,13 +64,16 @@ namespace Cereal {
 		template<>
 		static std::string readBytes<std::string>(byte* src, int pointer)
 		{
-			char* value;
+			std::string value = "";
 			short size = readBytes<short>(src, pointer);
-			value = new char[size];
-			for (int i = pointer + 2; i < pointer + size+ 2; i++) {
-				value[i - pointer - 2] = readBytes<char>(src, i);
+
+			for (int i = pointer + 2; i < pointer + size + 2; i++)
+			{
+				value += readBytes<char>(src, i);
 			}
-			value[size] = 0;
+
+			value += '\0';
+
 			return std::string(value);
 		}
 	};

@@ -40,7 +40,7 @@
       <Filter>Header Files\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\src\Object.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Containers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

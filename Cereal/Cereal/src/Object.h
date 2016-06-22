@@ -15,11 +15,8 @@ namespace Cereal {
 	class Object : public Container
 	{
 	private:
-		
-		std::vector<Array> arrays;
-		unsigned short arrayCount = 0;
-		std::vector<Field> fields;
-		unsigned short fieldCount = 0;
+		std::vector<const Array*> arrays;
+		std::vector<const Field*> fields;
 
 	public:
 		//constructor for each field type
@@ -30,43 +27,36 @@ namespace Cereal {
 
 		~Object() { }
 
-		inline void write(byte* dest, int pointer) {
+		inline void write(byte* dest, int pointer)
+		{
 			pointer = this->writeContainer(dest, pointer);
-			for (unsigned short i = 0; i < fieldCount; i++) {
-				pointer = fields[i].write(dest, pointer);
-			}
 
-			for (unsigned short i = 0; i < arrayCount; i++) {
-				pointer = arrays[i].write(dest, pointer);
-			}
+			for (const Field* field : fields)
+				pointer = field->write(dest, pointer);
+
+			for (const Array* array : arrays)
+				pointer = array->write(dest, pointer);
 		}
 
-		inline void addField(const Field& field) {
-			fields[fieldCount++] = field;
-		}
-		
-		inline void addArray(const Array& array) {
-			arrays[arrayCount++] = array;
-		}
+		inline void addField(const Field* field) { fields.push_back(field); }
+		inline void addArray(const Array* array) { arrays.push_back(array); }
 
-		inline Field findField(std::string name) {
-			for (unsigned short i = 0; i < fieldCount; i++) {
-				if (fields[i].name == name) {
-					return fields[i];
-				}
-			}
+		inline const Field* findField(std::string name)
+		{
+			for (const Field* field : fields)
+				if (field->name == name) return field;
+
 			assert(false);
-			return Field("", nullptr);
+			return nullptr;
 		}
 
-		inline Array findArray(std::string name) {
-			for (unsigned short i = 0; i < arrayCount; i++) {
-				if (arrays[i].name == name) {
-					return arrays[i];
-				}
-			}
+		inline const Array* findArray(std::string name)
+		{
+			for (const Array* array : arrays)
+				if (array->name == name) return array;
+
 			assert(false);
-			return Array("", (int*) nullptr, 1);
+			return nullptr;
 		}
 
 	};

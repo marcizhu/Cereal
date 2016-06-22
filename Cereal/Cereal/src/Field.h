@@ -60,7 +60,7 @@ namespace Cereal {
 
 		~Field() { if(data) delete[] data; }
 
-		inline int write(byte* dest, int pointer)
+		inline int write(byte* dest, int pointer) const
 		{
 			pointer = this->writeContainer(dest, pointer);
 			pointer = Writer::writeBytes<byte>(dest, pointer, this->dataType); //write data type
