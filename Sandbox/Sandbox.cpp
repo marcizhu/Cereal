@@ -81,9 +81,15 @@ int main()
 	memset(dest2, 0, 256);
 
 	object2->write(dest2, 0);
-	int ret = object2->findField("Field name")->getValue<int>();
-
 	dump(dest2, 256);
+
+	int* ret = object->findArray("Array name")->getArray<int>();
+
+	for (int i = 0; i < 4; i++)
+	{
+		printf("%i    ", ret[i]);
+	}
+
 
 	delete[] dest;
 	delete[] dest2;

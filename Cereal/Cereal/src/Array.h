@@ -90,7 +90,21 @@ namespace Cereal {
 		byte getContainerType() const { return type; }
 
 		template<class T>
-		inline T* getArray() const { return (T*)data; }
+		inline T* getArray() const
+		{
+			T* ret = new T[count];
+
+			unsigned int pointer = 0;
+
+			for (int i = 0; i < count; i++)
+			{
+				ret[i] = Reader::readBytes<T>(data, pointer);
+
+				pointer += sizeof(T);
+			}
+
+			return ret;
+		}
 
 		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(short) + count * sizeOf(dataType); }
 	};
