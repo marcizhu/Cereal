@@ -59,6 +59,30 @@ namespace Cereal {
 			return nullptr;
 		}
 
+		inline static Object read(byte* dest, int pointer) {
+			byte type = Reader::readBytes<byte>(dest, pointer++);
+			assert(type == DataType::DATA_OBJECT);
+
+			std::string name = Reader::readBytes<std::string>(dest, pointer);
+			pointer += 2 + name.length();
+			Object object(name);
+
+			//Reading fields
+			while (Reader::readBytes<byte>(dest, pointer) == DataType::DATA_FIELD) {
+				Field field = Field::read(dest, pointer);
+				object.addField(&field);
+				pointer += 1 + 2 + field.name.length() + 1 + sizeOf(field.getType());
+			}
+
+			while (Reader::readBytes<byte>(dest, pointer) == DataType::DATA_ARRAY) {
+				Array array = Array::read(dest, pointer);
+				object.addArray(&array);
+				pointer += 1 + 2 + array.name.length() + 1 + 2 + sizeOf(array.getType()) * array.getCount();
+			}
+
+			return object;
+		}
+
 	};
 
 }

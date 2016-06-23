@@ -64,7 +64,7 @@ namespace Cereal {
 
 			std::string name = Reader::readBytes<std::string>(dest, pointer);
 
-			pointer += sizeof(short) + name.length() - 1; // sizeof Short (length) + length of string - 1 (the buffer starts at 0)
+			pointer += sizeof(short) + name.length(); // sizeof Short (length) + length of string - 1 (the buffer starts at 0)
 
 			byte dataType = Reader::readBytes<byte>(dest, pointer++);
 			short itemCount = Reader::readBytes<short>(dest, pointer);
@@ -107,6 +107,8 @@ namespace Cereal {
 
 			return array;
 		}
+
+		inline DataType getType() { return dataType; }
 
 	};
 

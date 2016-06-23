@@ -8,6 +8,7 @@
 #include <Cereal.h>
 #include <src/Field.h>
 #include <src/Array.h>
+#include <src/Object.h>
 
 void gotoxy(int x, int y)
 {
@@ -58,28 +59,38 @@ void dump(const void* object, unsigned int size, int color = 0x03)
 int main()
 {
 	byte* dest = new byte[256];
+	byte* dest2 = new byte[256];
 	memset(dest, 0, 256);
 
 	int* data = new int[4]{
 		1, 2, 3, 4
 	};
 
-	Cereal::Array array("Test", data, 4);
+	Cereal::Array* array = new Cereal::Array("Test", data, 4);
+	Cereal::Field* field = new Cereal::Field("Test2", 0x1234);
+	Cereal::Object* object = new Cereal::Object("Test3");
 
-	array.write(dest, 0);
+	object->addArray(array);
+	object->addField(field);
+
+	object->write(dest, 0);
 
 	dump(dest, 256);
 
-	Cereal::Array array2 = Cereal::Array::read(dest, 0);
 
-	int* ret = array2.getArray<int>();
+	Cereal::Object object2 = Cereal::Object::read(dest, 0);
 
-	for (int i = 0; i < 4; i++)
-	{
-		printf("%i\n", ret[i]);
-	}
+	memset(dest2, 0, 256);
+
+	object2.write(dest2, 0);
+
+	dump(dest2, 256);
 
 	delete[] dest;
+
+	delete array;
+	delete field;
+	delete object;
 
 	while (1) { _asm nop }
 

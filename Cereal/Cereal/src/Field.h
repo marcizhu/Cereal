@@ -92,7 +92,7 @@ namespace Cereal {
 
 			std::string name = Reader::readBytes<std::string>(dest, pointer);
 
-			pointer += sizeof(short) + name.length() - 1; // sizeof Short ( length) + length of string - 1 (null termination character)
+			pointer += sizeof(short) + name.length(); // sizeof Short ( length) + length of string - 1 (null termination character)
 
 			byte dataType = Reader::readBytes<byte>(dest, pointer++);
 
@@ -114,6 +114,8 @@ namespace Cereal {
 
 		template<class T>
 		inline T getValue() { return Reader::readBytes<T>(data, 0); }
+
+		inline DataType getType() { return dataType; }
 	};
 
 }
