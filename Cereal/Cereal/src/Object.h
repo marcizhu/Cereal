@@ -75,11 +75,11 @@ namespace Cereal {
 
 			this->name = Reader::readBytes<std::string>(dest, pointer);
 
-			pointer += sizeof(short) + name.length();
+			pointer += sizeof(unsigned short) + name.length();
 
 			unsigned short fieldCount = Reader::readBytes<unsigned short>(dest, pointer);
 
-			pointer += sizeof(short);
+			pointer += sizeof(unsigned short);
 
 			for (int i = 0; i < fieldCount; i++)
 			{
@@ -88,12 +88,12 @@ namespace Cereal {
 				field->read(dest, pointer);
 				this->addField(field);
 
-				pointer += 1 + 2 + field->getName().length() + 1 + sizeOf(field->getType());
+				pointer += field->getSize();
 			}
 
 			unsigned short arrayCount = Reader::readBytes<unsigned short>(dest, pointer);
 
-			pointer += sizeof(short);
+			pointer += sizeof(unsigned short);
 
 			for (int i = 0; i < arrayCount; i++)
 			{
@@ -102,7 +102,7 @@ namespace Cereal {
 				array->read(dest, pointer);
 				this->addArray(array);
 
-				pointer += 1 + 2 + array->getName().length() + 1 + 2 + sizeOf(array->getType()) * array->getCount();
+				pointer += array->getSize();
 			}
 		}
 

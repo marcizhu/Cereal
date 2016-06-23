@@ -21,15 +21,15 @@ namespace Cereal {
 		template<>
 		static unsigned int writeBytes<std::string>(byte* dest, int pointer, std::string string)
 		{
-			const unsigned int size = (short)string.length();
+			const unsigned short size = (unsigned short)string.length();
 
 			assert(size <= 65535);
 
-			pointer = writeBytes(dest, pointer, (short)size);
+			pointer = writeBytes<unsigned short>(dest, pointer, size);
 
-			for (unsigned short i = 0; i < (short)size; i++)
+			for (unsigned short i = 0; i < size; i++)
 			{
-				pointer = writeBytes(dest, pointer, string[i]);
+				pointer = writeBytes<char>(dest, pointer, string[i]);
 			}
 
 			return pointer;

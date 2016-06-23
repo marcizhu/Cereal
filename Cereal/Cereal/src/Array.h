@@ -91,6 +91,8 @@ namespace Cereal {
 
 		template<class T>
 		inline T* getArray() const { return (T*)data; }
+
+		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(short) + count * sizeOf(dataType); }
 	};
 
 

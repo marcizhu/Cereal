@@ -25,12 +25,16 @@ namespace Cereal {
 
 			dataType = type;
 
+			if (data) delete[] data;
+
 			//Setting the data
 			data = new byte[sizeof(T)];
 			Writer::writeBytes<T>(data, 0, value);
 		}
 
-		template<>
+		// This code is unnecessary
+
+		/*template<>
 		void setData<std::string>(std::string name, DataType type, std::string value)
 		{
 			//Initialization of container
@@ -41,13 +45,13 @@ namespace Cereal {
 
 			//Setting the data
 			data = new byte[value.length() + 2];
-			int ptr = Writer::writeBytes<short>(data, 0, value.length());
+			int ptr = Writer::writeBytes<unsigned short>(data, 0, value.length());
 
 			for (unsigned int i = 0; i < value.length(); i++)
 			{
 				ptr = Writer::writeBytes<char>(data, ptr, value[i]);
 			}
-		}
+		}*/
 
 	public:
 		//constructor for each field type
@@ -122,6 +126,8 @@ namespace Cereal {
 		byte getContainerType() const { return type; }
 		const std::string& getName() const { return name; }
 		inline DataType getType() const { return dataType; }
+
+		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeOf(dataType); }
 	};
 
 }
