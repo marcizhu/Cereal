@@ -10,7 +10,7 @@ namespace Cereal {
 	class Array
 	{
 	private:
-		byte type;
+		DataType type;
 		std::string name;
 		DataType dataType;
 		unsigned short count; // item count
@@ -37,15 +37,15 @@ namespace Cereal {
 		}
 
 	public:
-		inline Array() : dataType(DataType::DATA_UNKNOWN), data(nullptr), count(0) { name = "", type = DataType::DATA_ARRAY; }
-		inline Array(std::string name, byte* value, int count) { setData<byte>(name, DataType::DATA_CHAR, value, count); }
-		inline Array(std::string name, bool* value, int count) { setData<bool>(name, DataType::DATA_BOOL, value, count); }
-		inline Array(std::string name, char* value, int count) { setData<char>(name, DataType::DATA_CHAR, value, count); }
-		inline Array(std::string name, short* value, int count) { setData<short>(name, DataType::DATA_SHORT, value, count); }
-		inline Array(std::string name, int* value, int count) { setData<int>(name, DataType::DATA_INT, value, count); }
-		inline Array(std::string name, float* value, int count) { setData<float>(name, DataType::DATA_FLOAT, value, count); }
-		inline Array(std::string name, long long* value, int count) { setData<long long>(name, DataType::DATA_LONG_LONG, value, count); }
-		inline Array(std::string name, double* value, int count) { setData<double>(name, DataType::DATA_DOUBLE, value, count); }
+		Array() : dataType(DataType::DATA_UNKNOWN), data(nullptr), count(0) { name = "", type = DataType::DATA_ARRAY; }
+		Array(std::string name, byte* value, int count) { setData<byte>(name, DataType::DATA_CHAR, value, count); }
+		Array(std::string name, bool* value, int count) { setData<bool>(name, DataType::DATA_BOOL, value, count); }
+		Array(std::string name, char* value, int count) { setData<char>(name, DataType::DATA_CHAR, value, count); }
+		Array(std::string name, short* value, int count) { setData<short>(name, DataType::DATA_SHORT, value, count); }
+		Array(std::string name, int* value, int count) { setData<int>(name, DataType::DATA_INT, value, count); }
+		Array(std::string name, float* value, int count) { setData<float>(name, DataType::DATA_FLOAT, value, count); }
+		Array(std::string name, long long* value, int count) { setData<long long>(name, DataType::DATA_LONG_LONG, value, count); }
+		Array(std::string name, double* value, int count) { setData<double>(name, DataType::DATA_DOUBLE, value, count); }
 
 		~Array() { if (data) delete[] data; }
 
@@ -64,7 +64,7 @@ namespace Cereal {
 
 		void read(byte* dest, int pointer)
 		{
-			this->type = Reader::readBytes<byte>(dest, pointer++);
+			this->type = (DataType)Reader::readBytes<byte>(dest, pointer++);
 
 			assert(type == DataType::DATA_ARRAY);
 

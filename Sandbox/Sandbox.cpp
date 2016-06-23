@@ -9,6 +9,7 @@
 #include <src/Field.h>
 #include <src/Array.h>
 #include <src/Object.h>
+#include <src/Database.h>
 
 void gotoxy(int x, int y)
 {
@@ -58,46 +59,42 @@ void dump(const void* object, unsigned int size, int color = 0x03)
 
 int main()
 {
+	// ABOUT DATABASES: Tested reading, writing, rewriting, reading arrays and fields. Is there something else that I should test?
+
 	byte* dest = new byte[256];
 	byte* dest2 = new byte[256];
+
 	memset(dest, 0, 256);
+	memset(dest2, 0, 256);
 
-	int* data = new int[4]{ 1, 2, 3, 4 };
+	int* data = new int[4] { 1, 2, 3, 4 };
 
-	Cereal::Array* array = new Cereal::Array("Array name", data, 4);
-	Cereal::Field* field = new Cereal::Field("Field name", std::string("test!"));
-	Cereal::Object* object = new Cereal::Object("Object name");
+	Cereal::Database* db = new Cereal::Database("Database name");
 
-	object->addArray(array);
-	object->addField(field);
+	db->addObject(new Cereal::Object("Object name"));
 
-	object->write(dest, 0);
+	db->findObject("Object name")->addArray(new Cereal::Array("Array name", data, 4));
+	db->findObject("Object name")->addField(new Cereal::Field("Field name", std::string("test!")));
+
+	db->write(dest, 0);
 
 	dump(dest, 256);
 
-	Cereal::Object* object2 = new Cereal::Object;
-	object2->read(dest, 0);
+	Cereal::Database* db2 = new Cereal::Database;
+	db2->read(dest, 0);
 
-	memset(dest2, 0, 256);
-
-	object2->write(dest2, 0);
+	db2->write(dest2, 0);
 	dump(dest2, 256);
 
-	int* ret = object->findArray("Array name")->getArray<int>();
+	std::string ret = db2->findObject("Object name")->findField("Field name")->getValue<std::string>();
 
-	for (int i = 0; i < 4; i++)
-	{
-		printf("%i    ", ret[i]);
-	}
-
+	printf("%s", ret.c_str());
 
 	delete[] dest;
 	delete[] dest2;
 
-	delete array;
-	delete field;
-	delete object;
-	delete object2;
+	delete db;
+	delete db2;
 
 	while (1) { _asm nop }
 

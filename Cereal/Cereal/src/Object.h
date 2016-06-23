@@ -22,13 +22,21 @@ namespace Cereal {
 
 	public:
 		//constructor for each field type
-		inline Object() {};
-		inline Object(std::string name) {
+		Object() {};
+		Object(std::string name)
+		{
 			this->name = name;
 			this->type = DataType::DATA_OBJECT;
 		}
 
-		~Object() { }
+		~Object()
+		{
+			for (size_t i = 0; i < arrays.size(); i++)
+				delete arrays[i];
+
+			for (size_t i = 0; i < fields.size(); i++)
+				delete fields[i];
+		}
 
 		unsigned int write(byte* dest, int pointer) const
 		{
@@ -108,6 +116,19 @@ namespace Cereal {
 
 		const std::string& getName() const { return name; }
 		byte getContainerType() const { return type; }
+
+		inline unsigned int getSize() const
+		{
+			unsigned int ret = sizeof(byte) + sizeof(short) + name.length() + sizeof(short) + sizeof(short);
+
+			for (const Field* field : fields)
+				ret += field->getSize();
+
+			for (const Array* array : arrays)
+				ret += array->getSize();
+
+			return ret;
+		}
 
 	};
 
