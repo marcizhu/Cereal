@@ -42,7 +42,10 @@ namespace Cereal {
 			dataType = type;
 
 			//Setting the data
+			if (data) delete[] data;
+
 			data = new byte[value.length() + 2];
+
 			int ptr = Writer::writeBytes<unsigned short>(data, 0, value.length());
 
 			for (unsigned int i = 0; i < value.length(); i++)

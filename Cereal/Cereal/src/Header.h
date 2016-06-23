@@ -53,8 +53,6 @@ namespace Cereal {
 
 				db->read(dest, offs);
 				this->addDatabase(db);
-
-				//pointer += db->getSize();
 			}
 		}
 

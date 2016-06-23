@@ -70,8 +70,6 @@ namespace Cereal {
 				value += readBytes<char>(src, i);
 			}
 
-			//value += '\0';
-
 			return value;
 		}
 	};

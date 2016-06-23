@@ -90,15 +90,15 @@ namespace Cereal {
 		byte getContainerType() const { return type; }
 
 		template<class T>
-		inline T* getArray() const
+		inline std::vector<T>& getArray() const
 		{
-			T* ret = new T[count];
+			std::vector<T> ret;
 
 			unsigned int pointer = 0;
 
 			for (int i = 0; i < count; i++)
 			{
-				ret[i] = Reader::readBytes<T>(data, pointer);
+				ret.push_back(Reader::readBytes<T>(data, pointer));
 
 				pointer += sizeof(T);
 			}
