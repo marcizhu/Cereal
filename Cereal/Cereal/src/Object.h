@@ -35,8 +35,12 @@ namespace Cereal {
 			pointer = Writer::writeBytes<byte>(dest, pointer, type);
 			pointer = Writer::writeBytes<std::string>(dest, pointer, name);
 
+			pointer = Writer::writeBytes<unsigned short>(dest, pointer, fields.size());
+
 			for (const Field* field : fields)
 				pointer = field->write(dest, pointer);
+
+			pointer = Writer::writeBytes<unsigned short>(dest, pointer, arrays.size());
 
 			for (const Array* array : arrays)
 				pointer = array->write(dest, pointer);
@@ -71,10 +75,13 @@ namespace Cereal {
 
 			this->name = Reader::readBytes<std::string>(dest, pointer);
 
-			pointer += 2 + name.length();
+			pointer += sizeof(short) + name.length();
 
-			//Reading fields
-			while (Reader::readBytes<byte>(dest, pointer) == DataType::DATA_FIELD)
+			unsigned short fieldCount = Reader::readBytes<unsigned short>(dest, pointer);
+
+			pointer += sizeof(short);
+
+			for (int i = 0; i < fieldCount; i++)
 			{
 				Field* field = new Field;
 
@@ -84,7 +91,11 @@ namespace Cereal {
 				pointer += 1 + 2 + field->getName().length() + 1 + sizeOf(field->getType());
 			}
 
-			while (Reader::readBytes<byte>(dest, pointer) == DataType::DATA_ARRAY)
+			unsigned short arrayCount = Reader::readBytes<unsigned short>(dest, pointer);
+
+			pointer += sizeof(short);
+
+			for (int i = 0; i < arrayCount; i++)
 			{
 				Array* array = new Array;
 
@@ -93,7 +104,6 @@ namespace Cereal {
 
 				pointer += 1 + 2 + array->getName().length() + 1 + 2 + sizeOf(array->getType()) * array->getCount();
 			}
-
 		}
 
 		const std::string& getName() const { return name; }
