@@ -1,15 +1,18 @@
 #pragma once
 
+#include <string>
+
 #include "Writer.h"
 #include "Reader.h"
-#include "Container.h"
 #include "..\Cereal.h"
 
 namespace Cereal {
 
-	class Field : public Container
+	class Field
 	{
 	private:
+		byte type;
+		std::string name;
 		DataType dataType;
 		byte* data;
 
@@ -61,9 +64,10 @@ namespace Cereal {
 
 		~Field() { if(data) delete[] data; }
 
-		inline int write(byte* dest, int pointer) const
+		unsigned int write(byte* dest, int pointer) const
 		{
-			pointer = this->writeContainer(dest, pointer);
+			pointer = Writer::writeBytes<byte>(dest, pointer, type);
+			pointer = Writer::writeBytes<std::string>(dest, pointer, name);
 			pointer = Writer::writeBytes<byte>(dest, pointer, this->dataType); //write data type
 
 			if (dataType != DataType::DATA_STRING)
@@ -115,6 +119,8 @@ namespace Cereal {
 		template<class T>
 		inline T getValue() const { return Reader::readBytes<T>(data, 0); }
 
+		byte getContainerType() const { return type; }
+		const std::string& getName() const { return name; }
 		inline DataType getType() const { return dataType; }
 	};
 

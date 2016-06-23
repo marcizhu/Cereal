@@ -1,10 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include "Writer.h"
 #include "Reader.h"
-#include "Container.h"
 #include "..\Cereal.h"
 
 #include "Field.h"
@@ -12,9 +12,11 @@
 
 namespace Cereal {
 
-	class Object : public Container
+	class Object
 	{
 	private:
+		byte type;
+		std::string name;
 		std::vector<const Array*> arrays;
 		std::vector<const Field*> fields;
 
@@ -28,15 +30,18 @@ namespace Cereal {
 
 		~Object() { }
 
-		inline void write(byte* dest, int pointer) const
+		unsigned int write(byte* dest, int pointer) const
 		{
-			pointer = this->writeContainer(dest, pointer);
+			pointer = Writer::writeBytes<byte>(dest, pointer, type);
+			pointer = Writer::writeBytes<std::string>(dest, pointer, name);
 
 			for (const Field* field : fields)
 				pointer = field->write(dest, pointer);
 
 			for (const Array* array : arrays)
 				pointer = array->write(dest, pointer);
+
+			return pointer;
 		}
 
 		inline void addField(const Field* field) { fields.push_back(field); }
@@ -61,9 +66,11 @@ namespace Cereal {
 		void read(byte* dest, int pointer)
 		{
 			this->type = Reader::readBytes<byte>(dest, pointer++);
+
 			assert(this->type == DataType::DATA_OBJECT);
 
 			this->name = Reader::readBytes<std::string>(dest, pointer);
+
 			pointer += 2 + name.length();
 
 			//Reading fields
@@ -88,6 +95,9 @@ namespace Cereal {
 			}
 
 		}
+
+		const std::string& getName() const { return name; }
+		byte getContainerType() const { return type; }
 
 	};
 

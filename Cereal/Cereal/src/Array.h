@@ -1,16 +1,20 @@
 #pragma once
 
+#include <string>
+
 #include "Writer.h"
-#include "Container.h"
 #include "../Cereal.h"
 
 namespace Cereal {
 
-	class Array : public Container {
+	class Array
+	{
 	private:
+		byte type;
+		std::string name;
 		DataType dataType;
-		byte* data;
 		short count; // item count
+		byte* data;
 
 		template<class T>
 		void setData(std::string name, DataType type, T* value, short count)
@@ -45,9 +49,10 @@ namespace Cereal {
 
 		~Array() { if (data) delete[] data; }
 
-		inline int write(byte* dest, int pointer) const
+		unsigned int write(byte* dest, int pointer) const
 		{
-			pointer = this->writeContainer(dest, pointer);
+			pointer = Writer::writeBytes<byte>(dest, pointer, type);
+			pointer = Writer::writeBytes<std::string>(dest, pointer, name);
 			pointer = Writer::writeBytes<byte>(dest, pointer, this->dataType); //write data type
 			pointer = Writer::writeBytes<short>(dest, pointer, this->count);
 
@@ -72,21 +77,17 @@ namespace Cereal {
 
 			pointer += sizeof(short);
 
-			switch (dataType)
-			{
-				case DataType::DATA_BOOL: setData(name, dataType, (bool*)(dest + pointer), count); break;
-				case DataType::DATA_CHAR: setData(name, dataType, (char*)(dest + pointer), count); break;
-				case DataType::DATA_SHORT: setData(name, dataType, (short*)(dest + pointer), count); break;
-				case DataType::DATA_INT: setData(name, dataType, (int*)(dest + pointer), count); break;
-				case DataType::DATA_LONG_LONG: setData(name, dataType, (long long*)(dest + pointer), count); break;
-				case DataType::DATA_FLOAT: setData(name, dataType, (float*)(dest + pointer), count); break;
-				case DataType::DATA_DOUBLE: setData(name, dataType, (double*)(dest + pointer), count); break;
-				default: assert(false); break;
-			}
+			if (data) delete[] data;
+
+			data = new byte[count * sizeOf(dataType)];
+
+			memcpy(data, (dest + pointer), count * sizeOf(dataType));
 		}
 
 		inline short getCount() const { return count; }
 		inline DataType getType() const  { return dataType; }
+		const std::string& getName() const { return name; }
+		byte getContainerType() const { return type; }
 
 		template<class T>
 		inline T* getArray() const { return (T*)data; }
