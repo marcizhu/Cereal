@@ -8,8 +8,8 @@ namespace Cereal {
 
 	class Array : public Container {
 	private:
-		DataType dataType = DataType::DATA_UNKNOWN;
-		byte* data = nullptr;
+		DataType dataType;
+		byte* data;
 		short count; // item count
 
 		template<class T>
@@ -33,6 +33,7 @@ namespace Cereal {
 		}
 
 	public:
+		inline Array() : dataType(DataType::DATA_UNKNOWN), data(nullptr), count(0) { name = "", type = DataType::DATA_ARRAY; }
 		inline Array(std::string name, byte* value, int count) { setData<byte>(name, DataType::DATA_CHAR, value, count); }
 		inline Array(std::string name, bool* value, int count) { setData<bool>(name, DataType::DATA_BOOL, value, count); }
 		inline Array(std::string name, char* value, int count) { setData<char>(name, DataType::DATA_CHAR, value, count); }
@@ -56,60 +57,39 @@ namespace Cereal {
 			return pointer;
 		}
 
-		static Array read(byte* dest, int pointer)
+		void read(byte* dest, int pointer)
 		{
-			byte type = Reader::readBytes<byte>(dest, pointer++);
+			this->type = Reader::readBytes<byte>(dest, pointer++);
 
 			assert(type == DataType::DATA_ARRAY);
 
-			std::string name = Reader::readBytes<std::string>(dest, pointer);
+			this->name = Reader::readBytes<std::string>(dest, pointer);
 
 			pointer += sizeof(short) + name.length(); // sizeof Short (length) + length of string - 1 (the buffer starts at 0)
 
-			byte dataType = Reader::readBytes<byte>(dest, pointer++);
-			short itemCount = Reader::readBytes<short>(dest, pointer);
+			this->dataType = (DataType)Reader::readBytes<byte>(dest, pointer++);
+			this->count = Reader::readBytes<short>(dest, pointer);
 
 			pointer += sizeof(short);
 
 			switch (dataType)
 			{
-			case DataType::DATA_BOOL: return Array(name, (bool*)(dest + pointer), itemCount);
-			case DataType::DATA_CHAR: return Array(name, (char*)(dest + pointer), itemCount);
-			case DataType::DATA_SHORT: return Array(name, (short*)(dest + pointer), itemCount);
-			case DataType::DATA_INT: return Array(name, (int*)(dest + pointer), itemCount);
-			case DataType::DATA_LONG_LONG: return Array(name, (long long*)(dest + pointer), itemCount);
-			case DataType::DATA_FLOAT: return Array(name, (float*)(dest + pointer), itemCount);
-			case DataType::DATA_DOUBLE: return Array(name, (double*)(dest + pointer), itemCount);
+				case DataType::DATA_BOOL: setData(name, dataType, (bool*)(dest + pointer), count); break;
+				case DataType::DATA_CHAR: setData(name, dataType, (char*)(dest + pointer), count); break;
+				case DataType::DATA_SHORT: setData(name, dataType, (short*)(dest + pointer), count); break;
+				case DataType::DATA_INT: setData(name, dataType, (int*)(dest + pointer), count); break;
+				case DataType::DATA_LONG_LONG: setData(name, dataType, (long long*)(dest + pointer), count); break;
+				case DataType::DATA_FLOAT: setData(name, dataType, (float*)(dest + pointer), count); break;
+				case DataType::DATA_DOUBLE: setData(name, dataType, (double*)(dest + pointer), count); break;
+				default: assert(false); break;
 			}
-
-			assert(false);
-
-			return Array("", (byte*)nullptr, 0);
 		}
 
-		inline short getCount() { return count; }
+		inline short getCount() const { return count; }
+		inline DataType getType() const  { return dataType; }
 
 		template<class T>
-		inline T* getArray() { return (T*)data; }
-
-		template<>
-		inline std::string* getArray<std::string>()
-		{
-			std::string* array = new std::string[count]; // FIXME: Memory leak!
-
-			int pointer = 0;
-
-			for (int i = 0; i < count; i++)
-			{
-				array[i] = Reader::readBytes<std::string>(data, pointer);
-				pointer += 2 + array[i].length();
-			}
-
-			return array;
-		}
-
-		inline DataType getType() { return dataType; }
-
+		inline T* getArray() const { return (T*)data; }
 	};
 
 

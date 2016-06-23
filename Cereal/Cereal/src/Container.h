@@ -9,7 +9,7 @@ namespace Cereal {
 
 	struct Container
 	{
-	public:
+	protected:
 		byte type;
 		std::string name;
 
@@ -26,6 +26,10 @@ namespace Cereal {
 			this->type = Reader::readBytes<byte>(dest, pointer);
 			this->name = Reader::readBytes<std::string>(dest, pointer);
 		}
+
+	public:
+		const std::string& getName() const { return name; }
+		byte getContainerType() const { return type; }
 
 	};
 

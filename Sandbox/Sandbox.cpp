@@ -62,13 +62,11 @@ int main()
 	byte* dest2 = new byte[256];
 	memset(dest, 0, 256);
 
-	int* data = new int[4]{
-		1, 2, 3, 4
-	};
+	int* data = new int[4]{ 1, 2, 3, 4 };
 
-	Cereal::Array* array = new Cereal::Array("Test", data, 4);
-	Cereal::Field* field = new Cereal::Field("Test2", 0x1234);
-	Cereal::Object* object = new Cereal::Object("Test3");
+	Cereal::Array* array = new Cereal::Array("Array name", data, 4);
+	Cereal::Field* field = new Cereal::Field("Field name", (int)0x1234);
+	Cereal::Object* object = new Cereal::Object("Object name");
 
 	object->addArray(array);
 	object->addField(field);
@@ -77,12 +75,13 @@ int main()
 
 	dump(dest, 256);
 
-
-	Cereal::Object object2 = Cereal::Object::read(dest, 0);
+	Cereal::Object* object2 = new Cereal::Object;
+	object2->read(dest, 0);
 
 	memset(dest2, 0, 256);
 
-	object2.write(dest2, 0);
+	object2->write(dest2, 0);
+	int ret = object2->findField("Field name")->getValue<int>();
 
 	dump(dest2, 256);
 
