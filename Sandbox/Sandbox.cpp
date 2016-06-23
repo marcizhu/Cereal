@@ -86,10 +86,12 @@ int main()
 	dump(dest2, 256);
 
 	delete[] dest;
+	delete[] dest2;
 
 	delete array;
 	delete field;
 	delete object;
+	delete object2;
 
 	while (1) { _asm nop }
 
