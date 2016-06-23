@@ -45,5 +45,8 @@
     <ClInclude Include="Cereal\src\Header.h">
       <Filter>Header Files\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="Cereal\src\Buffer.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

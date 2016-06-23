@@ -71,19 +71,19 @@ int main()
 	int* data = new int[4] { 1, 2, 3, 4 };
 
 	Cereal::Database* db = new Cereal::Database("Database name");
-	Cereal::Database* db2 = new Cereal::Database("Second database");
+	//Cereal::Database* db2 = new Cereal::Database("Second database");
 
 	db->addObject(new Cereal::Object("Object name"));
-	db2->addObject(new Cereal::Object("Test object"));
+	db->addObject(new Cereal::Object("Test object"));
 
 	db->findObject("Object name")->addArray(new Cereal::Array("Array name", data, 4));
 	db->findObject("Object name")->addField(new Cereal::Field("Field name", std::string("test!")));
-	db2->findObject("Test object")->addField(new Cereal::Field("xpos", 1.5f));
+	db->findObject("Test object")->addField(new Cereal::Field("xpos", 1.52f));
 
 	Cereal::Header header;
 
 	header.addDatabase(db);
-	header.addDatabase(db2);
+	//header.addDatabase(db2);
 	header.write(dest, 0);
 
 	//db->write(dest, 0);
@@ -93,7 +93,7 @@ int main()
 	Cereal::Header header2;
 
 	header2.read(dest, 0);
-	float ret = header2.findDatabase("Second database")->findObject("Test object")->findField("xpos")->getValue<float>();
+	float ret = header2.findDatabase("Database name")->findObject("Test object")->findField("xpos")->getValue<float>();
 
 	/*Cereal::Database* db2 = new Cereal::Database;
 	db2->read(dest, 0);

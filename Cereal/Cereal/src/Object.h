@@ -21,7 +21,6 @@ namespace Cereal {
 		std::vector<const Field*> fields;
 
 	public:
-		//constructor for each field type
 		Object() {};
 		Object(std::string name)
 		{

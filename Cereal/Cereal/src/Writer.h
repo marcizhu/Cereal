@@ -1,8 +1,9 @@
 #pragma once
 
 #include <string>
-
 #include <assert.h>
+
+#include "..\Cereal.h"
 
 namespace Cereal {
 
