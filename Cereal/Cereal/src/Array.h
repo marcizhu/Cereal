@@ -13,7 +13,7 @@ namespace Cereal {
 		byte type;
 		std::string name;
 		DataType dataType;
-		short count; // item count
+		unsigned short count; // item count
 		byte* data;
 
 		template<class T>

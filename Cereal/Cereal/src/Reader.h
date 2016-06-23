@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+
+#include "..\Cereal.h"
+
 namespace Cereal {
 
 	class Reader
@@ -8,7 +12,7 @@ namespace Cereal {
 		template<typename T>
 		static T readBytes(byte* src, int pointer)
 		{
-			T value = src[pointer] << (sizeof(T) * 8 - 8);
+			T value = 0;
 
 			for (int i = 0; i < sizeof(T); i++)
 			{
@@ -21,7 +25,7 @@ namespace Cereal {
 		template<>
 		static float readBytes<float>(byte* src, int pointer)
 		{
-			unsigned int value = src[pointer] << (sizeof(int) * 8 - 8);
+			unsigned int value = 0;
 
 			for (int i = 0; i < (int) sizeof(float); i++)
 			{

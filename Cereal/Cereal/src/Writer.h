@@ -52,7 +52,7 @@ namespace Cereal {
 		{
 			unsigned long long x;
 
-			*(unsigned long long*)&x = data;
+			*(unsigned long long*)&x = (unsigned long long)data;
 
 			writeBytes<unsigned long long>(dest, pointer, x);
 

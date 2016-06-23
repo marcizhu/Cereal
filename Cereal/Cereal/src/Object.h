@@ -35,12 +35,12 @@ namespace Cereal {
 			pointer = Writer::writeBytes<byte>(dest, pointer, type);
 			pointer = Writer::writeBytes<std::string>(dest, pointer, name);
 
-			pointer = Writer::writeBytes<unsigned short>(dest, pointer, fields.size());
+			pointer = Writer::writeBytes<unsigned short>(dest, pointer, (unsigned short)fields.size());
 
 			for (const Field* field : fields)
 				pointer = field->write(dest, pointer);
 
-			pointer = Writer::writeBytes<unsigned short>(dest, pointer, arrays.size());
+			pointer = Writer::writeBytes<unsigned short>(dest, pointer, (unsigned short)arrays.size());
 
 			for (const Array* array : arrays)
 				pointer = array->write(dest, pointer);

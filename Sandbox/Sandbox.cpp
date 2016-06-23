@@ -65,7 +65,7 @@ int main()
 	int* data = new int[4]{ 1, 2, 3, 4 };
 
 	Cereal::Array* array = new Cereal::Array("Array name", data, 4);
-	Cereal::Field* field = new Cereal::Field("Field name", (int)0x1234);
+	Cereal::Field* field = new Cereal::Field("Field name", std::string("test!"));
 	Cereal::Object* object = new Cereal::Object("Object name");
 
 	object->addArray(array);

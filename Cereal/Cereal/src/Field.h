@@ -32,9 +32,7 @@ namespace Cereal {
 			Writer::writeBytes<T>(data, 0, value);
 		}
 
-		// This code is unnecessary
-
-		/*template<>
+		template<>
 		void setData<std::string>(std::string name, DataType type, std::string value)
 		{
 			//Initialization of container
@@ -51,20 +49,20 @@ namespace Cereal {
 			{
 				ptr = Writer::writeBytes<char>(data, ptr, value[i]);
 			}
-		}*/
+		}
 
 	public:
 		//constructor for each field type
 		inline Field() : data(nullptr), dataType(DataType::DATA_UNKNOWN) { name = "", type = DataType::DATA_FIELD; }
-		inline Field(std::string name, byte value) { setData(name, DataType::DATA_CHAR /* | MOD_UNSIGNED*/, value); }
-		inline Field(std::string name, bool value) { setData(name, DataType::DATA_BOOL, value); }
-		inline Field(std::string name, char value) { setData(name, DataType::DATA_CHAR, value); }
-		inline Field(std::string name, short value) { setData(name, DataType::DATA_SHORT, value); }
-		inline Field(std::string name, int value) { setData(name, DataType::DATA_INT, value); }
-		inline Field(std::string name, float value) { setData(name, DataType::DATA_FLOAT, value); }
-		inline Field(std::string name, long long value) { setData(name, DataType::DATA_LONG_LONG, value); }
-		inline Field(std::string name, double value) { setData(name, DataType::DATA_DOUBLE, value); }
-		inline Field(std::string name, std::string value) { setData(name, DataType::DATA_STRING, value); }
+		inline Field(std::string name, byte value) { setData<byte>(name, DataType::DATA_CHAR /* | MOD_UNSIGNED*/, value); }
+		inline Field(std::string name, bool value) { setData<bool>(name, DataType::DATA_BOOL, value); }
+		inline Field(std::string name, char value) { setData<char>(name, DataType::DATA_CHAR, value); }
+		inline Field(std::string name, short value) { setData<short>(name, DataType::DATA_SHORT, value); }
+		inline Field(std::string name, int value) { setData<int>(name, DataType::DATA_INT, value); }
+		inline Field(std::string name, float value) { setData<float>(name, DataType::DATA_FLOAT, value); }
+		inline Field(std::string name, long long value) { setData<long long>(name, DataType::DATA_LONG_LONG, value); }
+		inline Field(std::string name, double value) { setData<double>(name, DataType::DATA_DOUBLE, value); }
+		inline Field(std::string name, std::string value) { setData<std::string>(name, DataType::DATA_STRING, value); }
 
 		~Field() { if(data) delete[] data; }
 
@@ -127,7 +125,15 @@ namespace Cereal {
 		const std::string& getName() const { return name; }
 		inline DataType getType() const { return dataType; }
 
-		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeOf(dataType); }
+		inline unsigned int getSize() const
+		{
+			if (dataType == DataType::DATA_STRING)
+			{
+				return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(short) + Reader::readBytes<unsigned short>(data, 0);
+			}
+
+			return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeOf(dataType);
+		}
 	};
 
 }
