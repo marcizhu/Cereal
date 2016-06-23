@@ -10,6 +10,7 @@
 #include <src/Array.h>
 #include <src/Object.h>
 #include <src/Database.h>
+#include <src/Header.h>
 
 void gotoxy(int x, int y)
 {
@@ -70,31 +71,45 @@ int main()
 	int* data = new int[4] { 1, 2, 3, 4 };
 
 	Cereal::Database* db = new Cereal::Database("Database name");
+	Cereal::Database* db2 = new Cereal::Database("Second database");
 
 	db->addObject(new Cereal::Object("Object name"));
+	db2->addObject(new Cereal::Object("Test object"));
 
 	db->findObject("Object name")->addArray(new Cereal::Array("Array name", data, 4));
 	db->findObject("Object name")->addField(new Cereal::Field("Field name", std::string("test!")));
+	db2->findObject("Test object")->addField(new Cereal::Field("xpos", 1.5f));
 
-	db->write(dest, 0);
+	Cereal::Header header;
+
+	header.addDatabase(db);
+	header.addDatabase(db2);
+	header.write(dest, 0);
+
+	//db->write(dest, 0);
 
 	dump(dest, 256);
 
-	Cereal::Database* db2 = new Cereal::Database;
+	Cereal::Header header2;
+
+	header2.read(dest, 0);
+	float ret = header2.findDatabase("Second database")->findObject("Test object")->findField("xpos")->getValue<float>();
+
+	/*Cereal::Database* db2 = new Cereal::Database;
 	db2->read(dest, 0);
 
 	db2->write(dest2, 0);
-	dump(dest2, 256);
+	dump(dest2, 256);*/
 
-	std::string ret = db2->findObject("Object name")->findField("Field name")->getValue<std::string>();
+	//std::string ret = db2->findObject("Object name")->findField("Field name")->getValue<std::string>();
 
-	printf("%s", ret.c_str());
+	printf("%f", ret);
 
 	delete[] dest;
 	delete[] dest2;
 
 	delete db;
-	delete db2;
+	//delete db2;
 
 	while (1) { _asm nop }
 
