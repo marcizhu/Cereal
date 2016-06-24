@@ -7,8 +7,7 @@
 
 #include "..\Cereal.h"
 #include "Database.h"
-#include "Writer.h"
-#include "Reader.h"
+#include "Buffer.h"
 
 #define MAGIC_NUMBER	0x524d
 
@@ -28,52 +27,50 @@ namespace Cereal {
 				delete databases[i];
 		}
 
-		void read(byte* dest, int pointer)
+		void read(Buffer& buffer)
 		{
-			unsigned short magic = Reader::readBytes<unsigned short>(dest, pointer);
+			unsigned short magic = buffer.readBytes<unsigned short>();
 
 			assert(magic == MAGIC_NUMBER);
 
-			pointer += sizeof(short);
-
-			byte count = Reader::readBytes<byte>(dest, pointer++);
+			byte count = buffer.readBytes<byte>();
 
 			std::vector<unsigned int> offsets;
 
 			for (byte i = 0; i < count; i++)
 			{
-				offsets.push_back(Reader::readBytes<unsigned int>(dest, pointer));
-
-				pointer += sizeof(unsigned int);
+				offsets.push_back(buffer.readBytes<unsigned int>());
 			}
 
 			for (unsigned int offs : offsets)
 			{
 				Database* db = new Database;
 
-				db->read(dest, offs);
+				db->read(buffer);
 				this->addDatabase(db);
 			}
 		}
 
-		unsigned int write(byte* dest, int pointer) const
+		bool write(Buffer& buffer) const
 		{
-			pointer = Writer::writeBytes<unsigned short>(dest, pointer, MAGIC_NUMBER);
-			pointer = Writer::writeBytes<byte>(dest, pointer, databases.size());
+			if (!buffer.hasSpace(this->getSize())) return false;
+
+			buffer.writeBytes<unsigned short>(MAGIC_NUMBER);
+			buffer.writeBytes<byte>(databases.size());
 
 			unsigned int offset = sizeof(short) + sizeof(byte) + (sizeof(unsigned int) * databases.size());
 
 			for (unsigned int i = 0; i < databases.size(); i++)
 			{
-				pointer = Writer::writeBytes<unsigned int>(dest, pointer, offset);
+				buffer.writeBytes<unsigned int>(offset);
 
 				offset += databases[i]->getSize();
 			}
 
 			for (Database* db : databases)
-				pointer = db->write(dest, pointer);
+				db->write(buffer);
 
-			return pointer;
+			return true;
 		}
 
 		inline unsigned int getSize() const

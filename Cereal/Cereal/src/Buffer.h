@@ -18,7 +18,13 @@ namespace Cereal {
 		Buffer(unsigned int size) : size(size), start(new byte[size]) { clean(); }
 		Buffer(byte* start, unsigned int size) : size(size), start(start) { clean(); }
 		Buffer(byte* start, unsigned int size, unsigned int offset) : size(size), start(start), offset(offset) {}
-		~Buffer();
+
+		~Buffer()
+		{
+			offset = 0;
+			size = 0;
+			delete[] start;
+		}
 
 		void clean()
 		{
@@ -92,12 +98,10 @@ namespace Cereal {
 
 			unsigned short size = readBytes<unsigned short>();
 
-			for (int i = offset + 2; i < offset + size + 2; i++)
+			for (int i = 0; i < size; i++)
 			{
 				value += readBytes<char>();
 			}
-
-			offset += sizeof(short) + size;
 
 			return value;
 		}
@@ -105,8 +109,6 @@ namespace Cereal {
 		template<typename T>
 		bool writeBytes(T value)
 		{
-			if (!hasSpace(sizeof(T))) return false;
-
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
 				start[offset++] = (value >> ((sizeof(T) - 1) * 8 - i * 8)) & 0xFF;
@@ -166,7 +168,7 @@ namespace Cereal {
 
 		bool hasSpace(unsigned int amount) { return (offset + amount) <= size; }
 
-		void clean();
+		void addOffset(unsigned int offs) { offset += offs; }
 	};
 
 }

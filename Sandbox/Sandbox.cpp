@@ -11,6 +11,7 @@
 #include <src/Object.h>
 #include <src/Database.h>
 #include <src/Header.h>
+#include <src/Buffer.h>
 
 void gotoxy(int x, int y)
 {
@@ -62,11 +63,10 @@ int main()
 {
 	// ABOUT DATABASES: Tested reading, writing, rewriting, reading arrays and fields. Is there something else that I should test?
 
-	byte* dest = new byte[256];
-	byte* dest2 = new byte[256];
+	/*byte* dest = new byte[256];
+	byte* dest2 = new byte[256];*/
 
-	memset(dest, 0, 256);
-	memset(dest2, 0, 256);
+	Cereal::Buffer dest(256);
 
 	int* data = new int[4] { 1, 2, 3, 4 };
 
@@ -84,15 +84,17 @@ int main()
 
 	header.addDatabase(db);
 	//header.addDatabase(db2);
-	header.write(dest, 0);
+	header.write(dest);
 
 	//db->write(dest, 0);
 
-	dump(dest, 256);
+	dump(dest.getStart(), 256);
 
 	Cereal::Header header2;
 
-	header2.read(dest, 0);
+	dest.setOffset(0);
+
+	header2.read(dest);
 	float ret = header2.findDatabase("Database name")->findObject("Test object")->findField("xpos")->getValue<float>();
 
 	/*Cereal::Database* db2 = new Cereal::Database;
@@ -105,8 +107,8 @@ int main()
 
 	printf("%f", ret);
 
-	delete[] dest;
-	delete[] dest2;
+	//delete dest;
+	//delete[] dest2;
 
 	delete db;
 	//delete db2;

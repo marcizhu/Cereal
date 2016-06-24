@@ -3,8 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "Writer.h"
-#include "Reader.h"
+#include "Buffer.h"
 #include "..\Cereal.h"
 
 #include "Field.h"
@@ -37,22 +36,24 @@ namespace Cereal {
 				delete fields[i];
 		}
 
-		unsigned int write(byte* dest, int pointer) const
+		bool write(Buffer& buffer) const
 		{
-			pointer = Writer::writeBytes<byte>(dest, pointer, type);
-			pointer = Writer::writeBytes<std::string>(dest, pointer, name);
+			if (!buffer.hasSpace(this->getSize())) return false;
 
-			pointer = Writer::writeBytes<unsigned short>(dest, pointer, (unsigned short)fields.size());
+			buffer.writeBytes<byte>(type);
+			buffer.writeBytes<std::string>(name);
+
+			buffer.writeBytes<unsigned short>((unsigned short)fields.size());
 
 			for (const Field* field : fields)
-				pointer = field->write(dest, pointer);
+				field->write(buffer);
 
-			pointer = Writer::writeBytes<unsigned short>(dest, pointer, (unsigned short)arrays.size());
+			buffer.writeBytes<unsigned short>((unsigned short)arrays.size());
 
 			for (const Array* array : arrays)
-				pointer = array->write(dest, pointer);
+				array->write(buffer);
 
-			return pointer;
+			return true;
 		}
 
 		inline void addField(const Field* field) { fields.push_back(field); }
@@ -74,42 +75,34 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		void read(byte* dest, int pointer)
+		void read(Buffer& buffer)
 		{
-			this->type = Reader::readBytes<byte>(dest, pointer++);
+			this->type = buffer.readBytes<byte>();
 
 			assert(this->type == DataType::DATA_OBJECT);
 
-			this->name = Reader::readBytes<std::string>(dest, pointer);
+			this->name = buffer.readBytes<std::string>();
 
-			pointer += sizeof(unsigned short) + name.length();
-
-			unsigned short fieldCount = Reader::readBytes<unsigned short>(dest, pointer);
-
-			pointer += sizeof(unsigned short);
+			unsigned short fieldCount = buffer.readBytes<unsigned short>();
 
 			for (int i = 0; i < fieldCount; i++)
 			{
 				Field* field = new Field;
 
-				field->read(dest, pointer);
+				field->read(buffer);
 				this->addField(field);
-
-				pointer += field->getSize();
 			}
 
-			unsigned short arrayCount = Reader::readBytes<unsigned short>(dest, pointer);
-
-			pointer += sizeof(unsigned short);
+			unsigned short arrayCount = buffer.readBytes<unsigned short>();
 
 			for (int i = 0; i < arrayCount; i++)
 			{
 				Array* array = new Array;
 
-				array->read(dest, pointer);
+				array->read(buffer);
 				this->addArray(array);
 
-				pointer += array->getSize();
+				buffer.addOffset(array->getCount() * array->getDataType());
 			}
 		}
 

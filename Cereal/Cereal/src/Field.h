@@ -2,8 +2,9 @@
 
 #include <string>
 
+#include "Buffer.h"
+#include "Reader.h" // Because of the internal buffer. Do we change it to be a Buffer class?
 #include "Writer.h"
-#include "Reader.h"
 #include "..\Cereal.h"
 
 namespace Cereal {
@@ -69,17 +70,19 @@ namespace Cereal {
 
 		~Field() { if(data) delete[] data; }
 
-		unsigned int write(byte* dest, int pointer) const
+		unsigned int write(Buffer& buffer) const
 		{
-			pointer = Writer::writeBytes<byte>(dest, pointer, type);
-			pointer = Writer::writeBytes<std::string>(dest, pointer, name);
-			pointer = Writer::writeBytes<byte>(dest, pointer, this->dataType); //write data type
+			if (!buffer.hasSpace(this->getSize())) return false;
+
+			buffer.writeBytes<byte>(type);
+			buffer.writeBytes<std::string>(name);
+			buffer.writeBytes<byte>(this->dataType); //write data type
 
 			if (dataType != DataType::DATA_STRING)
 			{
 				for (int i = 0; i < sizeOf(dataType); i++)
 				{
-					pointer = Writer::writeBytes<byte>(dest, pointer, data[i]);
+					buffer.writeBytes<byte>(data[i]);
 				}
 			}
 			else
@@ -88,35 +91,35 @@ namespace Cereal {
 
 				for (int i = 0; i < len; i++)
 				{
-					pointer = Writer::writeBytes<byte>(dest, pointer, data[i]);
+					buffer.writeBytes<byte>(data[i]);
 				}
 			}
 
-			return pointer;
+			return true;
 		}
 
-		void read(byte* dest, int pointer)
+		void read(Buffer& buffer)
 		{
-			byte type = Reader::readBytes<byte>(dest, pointer++);
+			byte type = buffer.readBytes<byte>();
 
 			assert(type == DataType::DATA_FIELD);
 
-			std::string name = Reader::readBytes<std::string>(dest, pointer);
+			std::string name = buffer.readBytes<std::string>();
 
-			pointer += sizeof(short) + name.length(); // sizeof Short ( length) + length of string - 1 (the buffer starts at 0)
+			//pointer += sizeof(short) + name.length(); // sizeof Short ( length) + length of string - 1 (the buffer starts at 0)
 
-			DataType dataType = (DataType)Reader::readBytes<byte>(dest, pointer++);
+			DataType dataType = (DataType)buffer.readBytes<byte>();
 
 			switch (dataType)
 			{
-				case DataType::DATA_BOOL: setData<bool>(name, dataType, Reader::readBytes<bool>(dest, pointer)); break;
-				case DataType::DATA_CHAR: setData<byte>(name, dataType, Reader::readBytes<byte>(dest, pointer)); break;
-				case DataType::DATA_SHORT: setData<short>(name, dataType, Reader::readBytes<short>(dest, pointer)); break;
-				case DataType::DATA_INT: setData<int>(name, dataType, Reader::readBytes<int>(dest, pointer)); break;
-				case DataType::DATA_LONG_LONG: setData<long long>(name, dataType, Reader::readBytes<long long>(dest, pointer)); break;
-				case DataType::DATA_FLOAT: setData<float>(name, dataType, Reader::readBytes<float>(dest, pointer)); break;
-				case DataType::DATA_DOUBLE: setData<double>(name, dataType, Reader::readBytes<double>(dest, pointer)); break;
-				case DataType::DATA_STRING: setData<std::string>(name, dataType, Reader::readBytes<std::string>(dest, pointer)); break;
+				case DataType::DATA_BOOL: setData<bool>(name, dataType, buffer.readBytes<bool>()); break;
+				case DataType::DATA_CHAR: setData<byte>(name, dataType, buffer.readBytes<byte>()); break;
+				case DataType::DATA_SHORT: setData<short>(name, dataType, buffer.readBytes<short>()); break;
+				case DataType::DATA_INT: setData<int>(name, dataType, buffer.readBytes<int>()); break;
+				case DataType::DATA_LONG_LONG: setData<long long>(name, dataType, buffer.readBytes<long long>()); break;
+				case DataType::DATA_FLOAT: setData<float>(name, dataType, buffer.readBytes<float>()); break;
+				case DataType::DATA_DOUBLE: setData<double>(name, dataType, buffer.readBytes<double>()); break;
+				case DataType::DATA_STRING: setData<std::string>(name, dataType, buffer.readBytes<std::string>()); break;
 				default: assert(false); break;
 			}
 		}
@@ -126,7 +129,7 @@ namespace Cereal {
 
 		byte getContainerType() const { return type; }
 		const std::string& getName() const { return name; }
-		inline DataType getType() const { return dataType; }
+		inline DataType getDataType() const { return dataType; }
 
 		inline unsigned int getSize() const
 		{

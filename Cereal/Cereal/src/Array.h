@@ -2,7 +2,9 @@
 
 #include <string>
 
-#include "Writer.h"
+#include "Buffer.h"
+#include "Reader.h"
+#include "Writer.h" // Same as Field.h
 #include "../Cereal.h"
 
 namespace Cereal {
@@ -49,45 +51,43 @@ namespace Cereal {
 
 		~Array() { if (data) delete[] data; }
 
-		unsigned int write(byte* dest, int pointer) const
+		bool write(Buffer& buffer) const
 		{
-			pointer = Writer::writeBytes<byte>(dest, pointer, type);
-			pointer = Writer::writeBytes<std::string>(dest, pointer, name);
-			pointer = Writer::writeBytes<byte>(dest, pointer, this->dataType); //write data type
-			pointer = Writer::writeBytes<short>(dest, pointer, this->count);
+			if (!buffer.hasSpace(this->getSize())) return false;
+
+			buffer.writeBytes<byte>(type);
+			buffer.writeBytes<std::string>(name);
+			buffer.writeBytes<byte>(this->dataType); //write data type
+			buffer.writeBytes<short>(this->count);
 
 			for (int i = 0; i < sizeOf(dataType) * count; i++)
-				pointer = Writer::writeBytes<byte>(dest, pointer, data[i]);
+				buffer.writeBytes<byte>(data[i]);
 
-			return pointer;
+			return true;
 		}
 
-		void read(byte* dest, int pointer)
+		void read(Buffer& buffer)
 		{
-			this->type = (DataType)Reader::readBytes<byte>(dest, pointer++);
+			this->type = (DataType)buffer.readBytes<byte>();
 
 			assert(type == DataType::DATA_ARRAY);
 
-			this->name = Reader::readBytes<std::string>(dest, pointer);
+			this->name = buffer.readBytes<std::string>();
 
-			pointer += sizeof(short) + name.length(); // sizeof Short (length) + length of string - 1 (the buffer starts at 0)
-
-			this->dataType = (DataType)Reader::readBytes<byte>(dest, pointer++);
-			this->count = Reader::readBytes<short>(dest, pointer);
-
-			pointer += sizeof(short);
+			this->dataType = (DataType)buffer.readBytes<byte>();
+			this->count = buffer.readBytes<short>();
 
 			if (data) delete[] data;
 
 			data = new byte[count * sizeOf(dataType)];
 
-			memcpy(data, (dest + pointer), count * sizeOf(dataType));
+			memcpy(data, ((byte*)buffer.getStart() + buffer.getOffset()), count * sizeOf(dataType));
 		}
 
 		inline short getCount() const { return count; }
-		inline DataType getType() const  { return dataType; }
+		inline DataType getContainerType() const { return type; }
+		inline DataType getDataType() const  { return dataType; }
 		const std::string& getName() const { return name; }
-		byte getContainerType() const { return type; }
 
 		template<class T>
 		inline std::vector<T>& getArray() const

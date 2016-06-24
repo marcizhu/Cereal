@@ -7,8 +7,7 @@
 
 #include "..\Cereal.h"
 #include "Object.h"
-#include "Writer.h"
-#include "Reader.h"
+#include "Buffer.h"
 
 namespace Cereal {
 
@@ -30,11 +29,9 @@ namespace Cereal {
 				delete objects[i];
 		}
 
-		void read(byte* dest, int pointer)
+		void read(Buffer& buffer)
 		{
-			this->version = (Version)Reader::readBytes<unsigned short>(dest, pointer);
-
-			pointer += sizeof(short);
+			this->version = (Version)buffer.readBytes<unsigned short>();
 
 			assert(version != Version::VERSION_INVALID && version <= Version::VERSION_LATEST);
 
@@ -42,22 +39,18 @@ namespace Cereal {
 			{
 			case Version::VERSION_1_0:
 			{
-				this->name = Reader::readBytes<std::string>(dest, pointer);
+				this->name = buffer.readBytes<std::string>();
 
-				pointer += sizeof(short) + name.length() + sizeof(unsigned int); //we skip the size (don't need it)
+				buffer.addOffset(sizeof(unsigned int)); //we skip the size (don't need it)
 
-				unsigned short objectCount = Reader::readBytes<unsigned short>(dest, pointer);
-
-				pointer += sizeof(short);
+				unsigned short objectCount = buffer.readBytes<unsigned short>();
 
 				for (unsigned short i = 0; i < objectCount; i++)
 				{
 					Object* obj = new Object;
 
-					obj->read(dest, pointer);
+					obj->read(buffer);
 					this->addObject(obj);
-
-					pointer += obj->getSize();
 				}
 
 				break;
@@ -68,19 +61,21 @@ namespace Cereal {
 			}
 		}
 
-		unsigned int write(byte* dest, int pointer) const
+		bool write(Buffer& buffer) const
 		{
-			pointer = Writer::writeBytes<unsigned short>(dest, pointer, version);
+			if (!buffer.hasSpace(this->getSize())) return false;
+
+			buffer.writeBytes<unsigned short>(version);
 
 			switch (version)
 			{
 			case Version::VERSION_1_0:
-				pointer = Writer::writeBytes<std::string>(dest, pointer, name);
-				pointer = Writer::writeBytes<unsigned int>(dest, pointer, this->getSize()); // I'm sure we will need databases > 64 kb
-				pointer = Writer::writeBytes<unsigned short>(dest, pointer, objects.size());
+				buffer.writeBytes<std::string>(name);
+				buffer.writeBytes<unsigned int>(this->getSize()); // I'm sure we will need databases > 64 kb
+				buffer.writeBytes<unsigned short>(objects.size());
 
 				for (const Object* obj : objects)
-					pointer = obj->write(dest, pointer);
+					obj->write(buffer);
 
 				break;
 
@@ -88,7 +83,7 @@ namespace Cereal {
 				__debugbreak(); break;
 			}
 
-			return pointer;
+			return true;
 		}
 
 		inline unsigned int getSize() const
