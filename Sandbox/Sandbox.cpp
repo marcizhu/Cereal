@@ -61,32 +61,25 @@ void dump(const void* object, unsigned int size, int color = 0x03)
 
 int main()
 {
-	// ABOUT DATABASES: Tested reading, writing, rewriting, reading arrays and fields. Is there something else that I should test?
-
-	/*byte* dest = new byte[256];
-	byte* dest2 = new byte[256];*/
-
 	Cereal::Buffer dest(256);
 
 	int* data = new int[4] { 1, 2, 3, 4 };
 
 	Cereal::Database* db = new Cereal::Database("Database name");
-	//Cereal::Database* db2 = new Cereal::Database("Second database");
+	Cereal::Database* db2 = new Cereal::Database("Second database");
 
 	db->addObject(new Cereal::Object("Object name"));
-	db->addObject(new Cereal::Object("Test object"));
+	db2->addObject(new Cereal::Object("Test object"));
 
 	db->findObject("Object name")->addArray(new Cereal::Array("Array name", data, 4));
 	db->findObject("Object name")->addField(new Cereal::Field("Field name", std::string("test!")));
-	db->findObject("Test object")->addField(new Cereal::Field("xpos", 1.52f));
+	db2->findObject("Test object")->addField(new Cereal::Field("xpos", 1.52f));
 
 	Cereal::Header header;
 
 	header.addDatabase(db);
-	//header.addDatabase(db2);
+	header.addDatabase(db2);
 	header.write(dest);
-
-	//db->write(dest, 0);
 
 	dump(dest.getStart(), 256);
 
@@ -95,23 +88,14 @@ int main()
 	dest.setOffset(0);
 
 	header2.read(dest);
-	float ret = header2.findDatabase("Database name")->findObject("Test object")->findField("xpos")->getValue<float>();
-
-	/*Cereal::Database* db2 = new Cereal::Database;
-	db2->read(dest, 0);
-
-	db2->write(dest2, 0);
-	dump(dest2, 256);*/
+	float ret = header2.findDatabase("Second database")->findObject("Test object")->findField("xpos")->getValue<float>();
 
 	//std::string ret = db2->findObject("Object name")->findField("Field name")->getValue<std::string>();
 
 	printf("%f", ret);
 
-	//delete dest;
-	//delete[] dest2;
-
 	delete db;
-	//delete db2;
+	delete db2;
 
 	while (1) { _asm nop }
 
