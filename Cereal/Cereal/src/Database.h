@@ -72,7 +72,7 @@ namespace Cereal {
 			case Version::VERSION_1_0:
 				buffer.writeBytes<std::string>(name);
 				buffer.writeBytes<unsigned int>(this->getSize()); // I'm sure we will need databases > 64 kb
-				buffer.writeBytes<unsigned short>(objects.size());
+				buffer.writeBytes<unsigned short>((unsigned short)objects.size());
 
 				for (const Object* obj : objects)
 					obj->write(buffer);

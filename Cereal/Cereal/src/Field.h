@@ -47,7 +47,7 @@ namespace Cereal {
 
 			data = new byte[value.length() + 2];
 
-			int ptr = Writer::writeBytes<unsigned short>(data, 0, value.length());
+			int ptr = Writer::writeBytes<unsigned short>(data, 0, (unsigned short)value.length());
 
 			for (unsigned int i = 0; i < value.length(); i++)
 			{
