@@ -158,6 +158,18 @@ namespace Cereal {
 			return true;
 		}
 
+		void shrink()
+		{
+			byte* temp = new byte[offset];
+
+			memcpy(temp, start, offset);
+
+			delete[] start;
+
+			start = temp;
+			size = offset;
+		}
+
 		void setOffset(unsigned int off) { offset = off; }
 
 		unsigned int getOffset() { return offset; }

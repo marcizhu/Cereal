@@ -61,7 +61,7 @@ void dump(const void* object, unsigned int size, int color = 0x03)
 
 int main()
 {
-	Cereal::Buffer dest(256);
+	Cereal::Buffer dest(1024);
 
 	int* data = new int[4] { 1, 2, 3, 4 };
 
@@ -81,23 +81,25 @@ int main()
 	header.addDatabase(db2);
 	header.write(dest);
 
-	dump(dest.getStart(), 256);
+	dest.shrink();
+
+	dump(dest.getStart(), dest.getSize());
 
 	Cereal::Header header2;
 
 	dest.setOffset(0);
 
 	header2.read(dest);
-	float ret = header2.findDatabase("Second database")->findObject("Test object")->findField("xpos")->getValue<float>();
+	//float ret = header2.findDatabase("Second database")->findObject("Test object")->findField("xpos")->getValue<float>();
 
-	//std::string ret = db2->findObject("Object name")->findField("Field name")->getValue<std::string>();
+	std::string ret = header2.findDatabase("Database name")->findObject("Object name")->findField("Field name")->getValue<std::string>();
 
-	printf("%f", ret);
+	printf("%s", ret.c_str());
 
 	delete db;
 	delete db2;
 
-	while (1) { _asm nop }
+	while (1) { Sleep(1000); }
 
     return 0;
 }
