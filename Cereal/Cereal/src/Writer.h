@@ -3,7 +3,7 @@
 #include <string>
 #include <assert.h>
 
-#include "..\Cereal.h"
+#include "Internal.h"
 
 namespace Cereal {
 

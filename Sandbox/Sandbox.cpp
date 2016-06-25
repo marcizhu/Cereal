@@ -6,12 +6,6 @@
 #include <stdio.h>
 
 #include <Cereal.h>
-#include <src/Field.h>
-#include <src/Array.h>
-#include <src/Object.h>
-#include <src/Database.h>
-#include <src/Header.h>
-#include <src/Buffer.h>
 
 void gotoxy(int x, int y)
 {

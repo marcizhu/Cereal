@@ -30,9 +30,6 @@
     <ClInclude Include="Cereal\src\Array.h">
       <Filter>Header Files\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="Cereal\Cereal.h">
-      <Filter>Header Files\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="Cereal\src\Field.h">
       <Filter>Header Files\Containers</Filter>
     </ClInclude>
@@ -47,6 +44,12 @@
     </ClInclude>
     <ClInclude Include="Cereal\src\Buffer.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Cereal\src\Internal.h">
+      <Filter>Header Files\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="Cereal\Cereal.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

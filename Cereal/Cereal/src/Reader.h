@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "..\Cereal.h"
+#include "Internal.h"
 
 namespace Cereal {
 

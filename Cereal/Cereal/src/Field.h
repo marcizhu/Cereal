@@ -5,7 +5,7 @@
 #include "Buffer.h"
 #include "Reader.h" // Because of the internal buffer. Do we change it to be a Buffer class?
 #include "Writer.h"
-#include "..\Cereal.h"
+#include "Internal.h"
 
 namespace Cereal {
 

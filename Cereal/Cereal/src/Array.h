@@ -5,7 +5,7 @@
 #include "Buffer.h"
 #include "Reader.h"
 #include "Writer.h" // Same as Field.h
-#include "../Cereal.h"
+#include "Internal.h"
 
 namespace Cereal {
 

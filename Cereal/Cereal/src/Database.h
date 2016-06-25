@@ -5,7 +5,7 @@
 
 #include <assert.h>
 
-#include "..\Cereal.h"
+#include "Internal.h"
 #include "Object.h"
 #include "Buffer.h"
 

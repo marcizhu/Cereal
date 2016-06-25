@@ -138,9 +138,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Cereal\Cereal.h" />
     <ClInclude Include="Cereal\src\Buffer.h" />
     <ClInclude Include="Cereal\src\Array.h" />
-    <ClInclude Include="Cereal\Cereal.h" />
+    <ClInclude Include="Cereal\src\Internal.h" />
     <ClInclude Include="Cereal\src\Field.h" />
     <ClInclude Include="Cereal\src\Object.h" />
     <ClInclude Include="Cereal\src\Writer.h" />

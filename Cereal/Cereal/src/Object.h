@@ -4,7 +4,7 @@
 #include <string>
 
 #include "Buffer.h"
-#include "..\Cereal.h"
+#include "Internal.h"
 
 #include "Field.h"
 #include "Array.h"
