@@ -172,14 +172,14 @@ namespace Cereal {
 
 		void setOffset(unsigned int off) { offset = off; }
 
-		unsigned int getFreeSpace() { return size - offset; }
-		unsigned int getOffset() { return offset; }
-		unsigned int getSize() { return size; }
-		const void* getStart() { return start; }
+		unsigned int getFreeSpace() const { return size - offset; }
+		unsigned int getOffset() const { return offset; }
+		unsigned int getSize() const { return size; }
+		const void* getStart() const { return start; }
 		byte getByte() { return start[offset++]; }
-		byte getByte(unsigned int offs) { return start[offs]; }
+		byte getByte(unsigned int offs) const { return start[offs]; }
 
-		bool hasSpace(unsigned int amount) { return (offset + amount) <= size; }
+		bool hasSpace(unsigned int amount) const { return (offset + amount) <= size; }
 
 		void addOffset(unsigned int offs) { offset += offs; }
 	};

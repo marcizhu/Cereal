@@ -65,14 +65,14 @@ int main()
 	db->addObject(new Cereal::Object("Object name"));
 	db2->addObject(new Cereal::Object("Test object"));
 
-	db->findObject("Object name")->addArray(new Cereal::Array("Array name", data, 4));
-	db->findObject("Object name")->addField(new Cereal::Field("Field name", std::string("test!")));
-	db2->findObject("Test object")->addField(new Cereal::Field("xpos", 3.141592f));
+	db->getObject("Object name")->add(new Cereal::Array("Array name", data, 4));
+	db->getObject("Object name")->add(new Cereal::Field("Field name", std::string("test!")));
+	db2->getObject("Test object")->add(new Cereal::Field("xpos", 3.141592f));
 
 	Cereal::Header header;
 
-	header.addDatabase(db);
-	header.addDatabase(db2);
+	header.add(db);
+	header.add(db2);
 	header.write(dest);
 
 	dest.shrink();
@@ -85,10 +85,9 @@ int main()
 
 	header2.read(dest);
 
-	int j = dest.getFreeSpace();
-	//float ret = header2.findDatabase("Second database")->findObject("Test object")->findField("xpos")->getValue<float>();
+	//float ret = header2.getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
 
-	std::string ret = header2.findDatabase("Database name")->findObject("Object name")->findField("Field name")->getValue<std::string>();
+	std::string ret = header2.getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
 
 	printf("%s", ret.c_str());
 

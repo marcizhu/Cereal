@@ -40,6 +40,9 @@ namespace Cereal {
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
+			assert(fields.size() < 65536);
+			assert(arrays.size() < 65536);
+
 			buffer.writeBytes<byte>(type);
 			buffer.writeBytes<std::string>(name);
 
@@ -56,10 +59,10 @@ namespace Cereal {
 			return true;
 		}
 
-		inline void addField(const Field* field) { fields.push_back(field); }
-		inline void addArray(const Array* array) { arrays.push_back(array); }
+		inline void add(const Field* field) { fields.push_back(field); }
+		inline void add(const Array* array) { arrays.push_back(array); }
 
-		inline const Field* findField(std::string name) const
+		inline const Field* getField(std::string name) const
 		{
 			for (const Field* field : fields)
 				if (field->getName() == name) return field;
@@ -67,7 +70,7 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		inline const Array* findArray(std::string name) const
+		inline const Array* getArray(std::string name) const
 		{
 			for (const Array* array : arrays)
 				if (array->getName() == name) return array;
@@ -90,7 +93,7 @@ namespace Cereal {
 				Field* field = new Field;
 
 				field->read(buffer);
-				this->addField(field);
+				this->add(field);
 			}
 
 			unsigned short arrayCount = buffer.readBytes<unsigned short>();
@@ -100,7 +103,7 @@ namespace Cereal {
 				Array* array = new Array;
 
 				array->read(buffer);
-				this->addArray(array);
+				this->add(array);
 
 				buffer.addOffset(array->getCount() * array->getDataType());
 			}

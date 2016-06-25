@@ -67,11 +67,16 @@ namespace Cereal {
 
 			buffer.writeBytes<unsigned short>(version);
 
+			assert(version != Version::VERSION_INVALID);
+
 			switch (version)
 			{
 			case Version::VERSION_1_0:
+				assert(objects.size() < 65536);
+				assert(this->getSize() < 4294967296); // 2^32, maximum database size
+
 				buffer.writeBytes<std::string>(name);
-				buffer.writeBytes<unsigned int>(this->getSize()); // I'm sure we will need databases > 64 kb
+				buffer.writeBytes<unsigned int>((unsigned int)this->getSize());
 				buffer.writeBytes<unsigned short>((unsigned short)objects.size());
 
 				for (const Object* obj : objects)
@@ -86,9 +91,9 @@ namespace Cereal {
 			return true;
 		}
 
-		inline unsigned int getSize() const
+		inline unsigned long long getSize() const
 		{
-			unsigned int ret = sizeof(short) + sizeof(short) + name.length() + sizeof(unsigned int) + sizeof(unsigned short);
+			unsigned long long ret = sizeof(short) + sizeof(short) + name.length() + sizeof(unsigned int) + sizeof(unsigned short);
 
 			for (const Object* obj : objects)
 				ret += obj->getSize();
@@ -96,7 +101,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		Object* findObject(std::string name) const
+		Object* getObject(std::string name) const
 		{
 			for (Object* obj : objects)
 				if (obj->getName() == name) return obj;

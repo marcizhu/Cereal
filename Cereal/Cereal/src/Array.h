@@ -19,7 +19,7 @@ namespace Cereal {
 		byte* data;
 
 		template<class T>
-		void setData(std::string name, DataType type, T* value, short count)
+		void setData(std::string name, DataType type, T* value, unsigned short count)
 		{
 			//Initialization of container
 			this->type = DataType::DATA_ARRAY;
@@ -40,14 +40,14 @@ namespace Cereal {
 
 	public:
 		Array() : dataType(DataType::DATA_UNKNOWN), data(nullptr), count(0) { name = "", type = DataType::DATA_ARRAY; }
-		Array(std::string name, byte* value, int count) { setData<byte>(name, DataType::DATA_CHAR, value, count); }
-		Array(std::string name, bool* value, int count) { setData<bool>(name, DataType::DATA_BOOL, value, count); }
-		Array(std::string name, char* value, int count) { setData<char>(name, DataType::DATA_CHAR, value, count); }
-		Array(std::string name, short* value, int count) { setData<short>(name, DataType::DATA_SHORT, value, count); }
-		Array(std::string name, int* value, int count) { setData<int>(name, DataType::DATA_INT, value, count); }
-		Array(std::string name, float* value, int count) { setData<float>(name, DataType::DATA_FLOAT, value, count); }
-		Array(std::string name, long long* value, int count) { setData<long long>(name, DataType::DATA_LONG_LONG, value, count); }
-		Array(std::string name, double* value, int count) { setData<double>(name, DataType::DATA_DOUBLE, value, count); }
+		Array(std::string name, byte* value, unsigned short count) { setData<byte>(name, DataType::DATA_CHAR, value, count); }
+		Array(std::string name, bool* value, unsigned short count) { setData<bool>(name, DataType::DATA_BOOL, value, count); }
+		Array(std::string name, char* value, unsigned short count) { setData<char>(name, DataType::DATA_CHAR, value, count); }
+		Array(std::string name, short* value, unsigned short count) { setData<short>(name, DataType::DATA_SHORT, value, count); }
+		Array(std::string name, int* value, unsigned short count) { setData<int>(name, DataType::DATA_INT, value, count); }
+		Array(std::string name, float* value, unsigned short count) { setData<float>(name, DataType::DATA_FLOAT, value, count); }
+		Array(std::string name, long long* value, unsigned short count) { setData<long long>(name, DataType::DATA_LONG_LONG, value, count); }
+		Array(std::string name, double* value, unsigned short count) { setData<double>(name, DataType::DATA_DOUBLE, value, count); }
 
 		~Array() { if (data) delete[] data; }
 
@@ -57,7 +57,7 @@ namespace Cereal {
 
 			buffer.writeBytes<byte>(type);
 			buffer.writeBytes<std::string>(name);
-			buffer.writeBytes<byte>(this->dataType); //write data type
+			buffer.writeBytes<byte>(this->dataType);
 			buffer.writeBytes<short>(this->count);
 
 			for (int i = 0; i < sizeOf(dataType) * count; i++)

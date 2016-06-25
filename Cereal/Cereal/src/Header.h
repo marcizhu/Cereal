@@ -47,13 +47,15 @@ namespace Cereal {
 				Database* db = new Database;
 
 				db->read(buffer);
-				this->addDatabase(db);
+				this->add(db);
 			}
 		}
 
 		bool write(Buffer& buffer) const
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
+
+			assert(databases.size() < 255);
 
 			buffer.writeBytes<unsigned short>(MAGIC_NUMBER);
 			buffer.writeBytes<byte>((byte)databases.size());
@@ -83,7 +85,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		Database* findDatabase(std::string name) const
+		Database* getDatabase(std::string name) const
 		{
 			for (Database* db : databases)
 				if (db->getName() == name) return db;
@@ -91,7 +93,7 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		void addDatabase(Database* db) { databases.push_back(db); }
+		void add(Database* db) { databases.push_back(db); }
 
 	};
 
