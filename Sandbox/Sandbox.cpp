@@ -57,7 +57,7 @@ int main()
 {
 	Cereal::Buffer dest(1024);
 
-	int* data = new int[4] { 1, 2, 3, 4 };
+	int data[4] = { 1, 2, 3, 4 };
 
 	Cereal::Database* db = new Cereal::Database("Database name");
 	Cereal::Database* db2 = new Cereal::Database("Second database");
@@ -67,7 +67,7 @@ int main()
 
 	db->findObject("Object name")->addArray(new Cereal::Array("Array name", data, 4));
 	db->findObject("Object name")->addField(new Cereal::Field("Field name", std::string("test!")));
-	db2->findObject("Test object")->addField(new Cereal::Field("xpos", 1.52f));
+	db2->findObject("Test object")->addField(new Cereal::Field("xpos", 3.141592f));
 
 	Cereal::Header header;
 
@@ -84,6 +84,8 @@ int main()
 	dest.setOffset(0);
 
 	header2.read(dest);
+
+	int j = dest.getFreeSpace();
 	//float ret = header2.findDatabase("Second database")->findObject("Test object")->findField("xpos")->getValue<float>();
 
 	std::string ret = header2.findDatabase("Database name")->findObject("Object name")->findField("Field name")->getValue<std::string>();

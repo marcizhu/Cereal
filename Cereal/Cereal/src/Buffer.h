@@ -172,6 +172,7 @@ namespace Cereal {
 
 		void setOffset(unsigned int off) { offset = off; }
 
+		unsigned int getFreeSpace() { return size - offset; }
 		unsigned int getOffset() { return offset; }
 		unsigned int getSize() { return size; }
 		const void* getStart() { return start; }
