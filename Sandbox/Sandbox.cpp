@@ -79,6 +79,8 @@ int main()
 
 	dump(dest.getStart(), dest.getSize());
 
+	dest.writeFile(std::string("test.db"));
+
 	Cereal::Header header2;
 
 	dest.setOffset(0);

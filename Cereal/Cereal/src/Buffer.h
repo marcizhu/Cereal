@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fstream>
 #include <string>
 #include <assert.h>
 
@@ -182,6 +183,41 @@ namespace Cereal {
 		bool hasSpace(unsigned int amount) const { return (offset + amount) <= size; }
 
 		void addOffset(unsigned int offs) { offset += offs; }
+
+		bool writeFile(std::string& filepath)
+		{
+			std::ofstream outfile(filepath, std::ofstream::binary);
+
+			if (!outfile.good()) return false;
+
+			outfile.write((char*)this->start, offset);
+			outfile.close();
+
+			return true;
+		}
+
+		bool readFile(std::string& filepath)
+		{
+			std::ifstream infile(filepath, std::ifstream::binary);
+
+			if (!infile.good()) return false;
+
+			delete[] start;
+
+			infile.seekg(0, std::ios::end);
+			size_t size = infile.tellg();
+			infile.seekg(0, std::ios::beg);
+
+			start = new byte[size];
+
+			infile.read((char*)start, size);
+			infile.close();
+
+			this->size = size;
+			this->offset = 0;
+
+			return true;
+		}
 	};
 
 }
