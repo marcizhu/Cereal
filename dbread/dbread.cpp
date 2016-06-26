@@ -5,12 +5,15 @@
 
 #include <iostream>
 #include <string>
-#include <fstream>
-#include <sstream>
 #include <vector>
-#include <Windows.h>
 
 typedef unsigned char byte;
+
+typedef struct Node
+{
+	std::string text = "";
+	std::vector<Node*> childs;
+} Node;
 
 void showVerison()
 {
@@ -35,7 +38,34 @@ void showHelp()
 	std::cout << "  -i, --input [file]           Dumps the serialized contents of the file" << std::endl << std::endl;
 }
 
-int process(std::string& input)
+void print(Node* first, bool last = false, int level = 0)
+{
+	Node* temp = first;
+
+	for (int i = 0; i < (level - 1); i++)
+	{
+		std::cout << "     ";
+	}
+
+	if (level)
+	{
+		if (last)
+			std::cout << (char)192;
+		else
+			std::cout << (char)195;
+
+		std::cout << (char)196 << (char)196 << (char)196 << (char)196;
+	}
+
+	std::cout << first->text << std::endl;
+
+	for (int i = 0; i < temp->childs.size(); i++)
+	{
+		print(temp->childs[i], i == (temp->childs.size() - 1), level + 1);
+	}
+}
+
+int process(const std::string& input)
 {
 	if (input == "") return -1;
 
@@ -52,7 +82,59 @@ int process(std::string& input)
 
 		header->read(buffer);
 
-		// TODO: Add code to read and print a tree that represents the databases
+		Node* firstNode = new Node;
+		firstNode->text = input;
+		Node* current = firstNode;
+
+		for (int i = 0; i < header->getDatabases().size(); i++)
+		{
+			Cereal::Database* db = header->getDatabases()[i];
+
+			Node* temp = new Node;
+			temp->text = db->getName();
+
+			firstNode->childs.push_back(temp);
+
+			for (int j = 0; j < db->getObjects().size(); j++)
+			{
+				Cereal::Object* obj = db->getObjects()[j];
+
+				current = firstNode->childs[i];
+
+				Node* temp = new Node;
+				temp->text = obj->getName();
+
+				current->childs.push_back(temp);
+
+				for (int x = 0; x < obj->getFields().size(); x++)
+				{
+					const Cereal::Field* field = obj->getFields()[x];
+
+					current = firstNode->childs[i]->childs[j];
+
+					Node* temp = new Node;
+					temp->text = field->getName();
+
+					current->childs.push_back(temp);
+				}
+
+				for (int y = 0; y < obj->getArrays().size(); y++)
+				{
+					const Cereal::Array* array = obj->getArrays()[y];
+
+					current = firstNode->childs[i]->childs[j];
+
+					Node* temp = new Node;
+					temp->text = array->getName();
+
+					current->childs.push_back(temp);
+				}
+			}
+		}
+
+		print(firstNode);
+
+		__debugbreak();
 	}
 	else
 	{

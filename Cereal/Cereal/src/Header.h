@@ -95,6 +95,8 @@ namespace Cereal {
 
 		void add(Database* db) { databases.push_back(db); }
 
+		const std::vector<Database*>& getDatabases() { return databases; }
+
 	};
 
 }

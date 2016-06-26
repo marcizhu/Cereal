@@ -112,6 +112,7 @@ namespace Cereal {
 		void addObject(Object* object) { objects.push_back(object); }
 
 		const std::string& getName() const { return name; }
+		const std::vector<Object*>& getObjects() { return objects; }
 	};
 
 }

@@ -125,6 +125,9 @@ namespace Cereal {
 			return ret;
 		}
 
+		const std::vector<const Field*>& getFields() { return fields; }
+		const std::vector<const Array*>& getArrays() { return arrays; }
+
 	};
 
 }

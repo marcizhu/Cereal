@@ -184,7 +184,7 @@ namespace Cereal {
 
 		void addOffset(unsigned int offs) { offset += offs; }
 
-		bool writeFile(std::string& filepath)
+		bool writeFile(const std::string& filepath)
 		{
 			std::ofstream outfile(filepath, std::ofstream::binary);
 
@@ -196,7 +196,7 @@ namespace Cereal {
 			return true;
 		}
 
-		bool readFile(std::string& filepath)
+		bool readFile(const std::string& filepath)
 		{
 			std::ifstream infile(filepath, std::ifstream::binary);
 
