@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <Windows.h>
 
 typedef unsigned char byte;
 
@@ -14,6 +15,17 @@ typedef struct Node
 	std::string text = "";
 	std::vector<Node*> childs;
 } Node;
+
+void gotoxy(int x, int y)
+{
+	CONSOLE_SCREEN_BUFFER_INFO SBInfo;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &SBInfo);
+
+	COORD dwPos;
+	x > 0 ? dwPos.X = x : dwPos.X = SBInfo.dwCursorPosition.X;
+	y > 0 ? dwPos.Y = y : dwPos.Y = SBInfo.dwCursorPosition.Y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), dwPos);
+}
 
 void showVerison()
 {
@@ -65,6 +77,51 @@ void print(Node* first, bool last = false, int level = 0)
 	}
 }
 
+void printDatabase(Cereal::Database* db)
+{
+	Node* firstNode = new Node;
+	firstNode->text = db->getName();
+	Node* current = firstNode;
+
+	for (int j = 0; j < db->getObjects().size(); j++)
+	{
+		Cereal::Object* obj = db->getObjects()[j];
+
+		current = firstNode;
+
+		Node* temp = new Node;
+		temp->text = obj->getName();
+
+		current->childs.push_back(temp);
+
+		for (int x = 0; x < obj->getFields().size(); x++)
+		{
+			const Cereal::Field* field = obj->getFields()[x];
+
+			current = firstNode->childs[j];
+
+			Node* temp = new Node;
+			temp->text = field->getName();
+
+			current->childs.push_back(temp);
+		}
+
+		for (int y = 0; y < obj->getArrays().size(); y++)
+		{
+			const Cereal::Array* array = obj->getArrays()[y];
+
+			current = firstNode->childs[j];
+
+			Node* temp = new Node;
+			temp->text = array->getName();
+
+			current->childs.push_back(temp);
+		}
+	}
+
+	print(firstNode);
+}
+
 int process(const std::string& input)
 {
 	if (input == "") return -1;
@@ -78,6 +135,9 @@ int process(const std::string& input)
 	if (headerSign == MAGIC_NUMBER)
 	{
 		// The file has a header
+
+		std::cout << "Contents of the file '" << input << "':" << std::endl << std::endl;
+
 		Cereal::Header* header = new Cereal::Header;
 
 		header->read(buffer);
@@ -85,6 +145,11 @@ int process(const std::string& input)
 		Node* firstNode = new Node;
 		firstNode->text = input;
 		Node* current = firstNode;
+
+		int dbCount = 0;
+		int objCount = 0;
+		int fieldCount = 0;
+		int arrayCount = 0;
 
 		for (int i = 0; i < header->getDatabases().size(); i++)
 		{
@@ -94,6 +159,8 @@ int process(const std::string& input)
 			temp->text = db->getName();
 
 			firstNode->childs.push_back(temp);
+
+			dbCount++;
 
 			for (int j = 0; j < db->getObjects().size(); j++)
 			{
@@ -106,6 +173,8 @@ int process(const std::string& input)
 
 				current->childs.push_back(temp);
 
+				objCount++;
+
 				for (int x = 0; x < obj->getFields().size(); x++)
 				{
 					const Cereal::Field* field = obj->getFields()[x];
@@ -116,6 +185,8 @@ int process(const std::string& input)
 					temp->text = field->getName();
 
 					current->childs.push_back(temp);
+
+					fieldCount++;
 				}
 
 				for (int y = 0; y < obj->getArrays().size(); y++)
@@ -128,20 +199,41 @@ int process(const std::string& input)
 					temp->text = array->getName();
 
 					current->childs.push_back(temp);
+
+					arrayCount++;
 				}
 			}
 		}
 
 		print(firstNode);
 
+		delete firstNode; // memory leak
+
+		std::cout << std::endl /*<< "--------------------------------------------------------------------------------"*/ << std::endl;
+
+		std::cout << "The file contains:" << std::endl;
+		std::cout << dbCount << " Databases" << std::endl;
+		std::cout << objCount << " Objects" << std::endl;
+		std::cout << fieldCount << " Fields" << std::endl;
+		std::cout << arrayCount << " Arrays" << std::endl << std::endl;
+
+		std::cout << "The total size of the file is " << header->getSize() << " bytes" << std::endl;
+
+		delete header;
+
 		__debugbreak();
 	}
 	else
 	{
 		// The file doesn't have a header
+
 		Cereal::Database* db = new Cereal::Database;
 
 		db->read(buffer);
+
+		printDatabase(db);
+
+		delete db;
 	}
 
 	return 0;
