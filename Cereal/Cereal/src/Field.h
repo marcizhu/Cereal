@@ -106,8 +106,6 @@ namespace Cereal {
 
 			std::string name = buffer.readBytes<std::string>();
 
-			//pointer += sizeof(short) + name.length(); // sizeof Short ( length) + length of string - 1 (the buffer starts at 0)
-
 			DataType dataType = (DataType)buffer.readBytes<byte>();
 
 			switch (dataType)
