@@ -32,11 +32,11 @@ namespace Cereal {
 		DataType type;
 		std::string name;
 		DataType dataType;
-		unsigned short count; // item count
+		unsigned int count; // item count
 		byte* data;
 
 		template<class T>
-		void setData(std::string name, DataType type, T* value, unsigned short count)
+		void setData(std::string name, DataType type, T* value, unsigned int count)
 		{
 			//Initialization of container
 			this->type = DataType::DATA_ARRAY;
@@ -49,22 +49,22 @@ namespace Cereal {
 
 			data = new byte[sizeof(T) * count];
 
-			int pointer = 0;
+			unsigned int pointer = 0;
 
-			for (short i = 0; i < count; i++)
+			for (unsigned int i = 0; i < count; i++)
 				pointer = Writer::writeBytes<T>(data, pointer, value[i]);
 		}
 
 	public:
 		Array() : dataType(DataType::DATA_UNKNOWN), data(nullptr), count(0) { name = "", type = DataType::DATA_ARRAY; }
-		Array(std::string name, byte* value, unsigned short count) { setData<byte>(name, DataType::DATA_CHAR, value, count); }
-		Array(std::string name, bool* value, unsigned short count) { setData<bool>(name, DataType::DATA_BOOL, value, count); }
-		Array(std::string name, char* value, unsigned short count) { setData<char>(name, DataType::DATA_CHAR, value, count); }
-		Array(std::string name, short* value, unsigned short count) { setData<short>(name, DataType::DATA_SHORT, value, count); }
-		Array(std::string name, int* value, unsigned short count) { setData<int>(name, DataType::DATA_INT, value, count); }
-		Array(std::string name, float* value, unsigned short count) { setData<float>(name, DataType::DATA_FLOAT, value, count); }
-		Array(std::string name, long long* value, unsigned short count) { setData<long long>(name, DataType::DATA_LONG_LONG, value, count); }
-		Array(std::string name, double* value, unsigned short count) { setData<double>(name, DataType::DATA_DOUBLE, value, count); }
+		Array(std::string name, byte* value, unsigned int count) { setData<byte>(name, DataType::DATA_CHAR, value, count); }
+		Array(std::string name, bool* value, unsigned int count) { setData<bool>(name, DataType::DATA_BOOL, value, count); }
+		Array(std::string name, char* value, unsigned int count) { setData<char>(name, DataType::DATA_CHAR, value, count); }
+		Array(std::string name, short* value, unsigned int count) { setData<short>(name, DataType::DATA_SHORT, value, count); }
+		Array(std::string name, int* value, unsigned int count) { setData<int>(name, DataType::DATA_INT, value, count); }
+		Array(std::string name, float* value, unsigned int count) { setData<float>(name, DataType::DATA_FLOAT, value, count); }
+		Array(std::string name, long long* value, unsigned int count) { setData<long long>(name, DataType::DATA_LONG_LONG, value, count); }
+		Array(std::string name, double* value, unsigned int count) { setData<double>(name, DataType::DATA_DOUBLE, value, count); }
 
 		~Array() { if (data) delete[] data; }
 
@@ -75,9 +75,9 @@ namespace Cereal {
 			buffer.writeBytes<byte>(type);
 			buffer.writeBytes<std::string>(name);
 			buffer.writeBytes<byte>(this->dataType);
-			buffer.writeBytes<short>(this->count);
+			buffer.writeBytes<unsigned int>(this->count);
 
-			for (int i = 0; i < sizeOf(dataType) * count; i++)
+			for (unsigned int i = 0; i < sizeOf(dataType) * count; i++)
 				buffer.writeBytes<byte>(data[i]);
 
 			return true;
@@ -92,7 +92,7 @@ namespace Cereal {
 			this->name = buffer.readBytes<std::string>();
 
 			this->dataType = (DataType)buffer.readBytes<byte>();
-			this->count = buffer.readBytes<short>();
+			this->count = buffer.readBytes<unsigned int>();
 
 			if (data) delete[] data;
 
@@ -103,11 +103,11 @@ namespace Cereal {
 
 		inline short getCount() const { return count; }
 		inline DataType getContainerType() const { return type; }
-		inline DataType getDataType() const  { return dataType; }
+		inline DataType getDataType() const { return dataType; }
 		const std::string& getName() const { return name; }
 
 		template<class T>
-		inline std::vector<T>& getArray() const
+		inline std::vector<T> getArray() const
 		{
 			std::vector<T> ret;
 
@@ -123,7 +123,11 @@ namespace Cereal {
 			return ret;
 		}
 
-		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(short) + count * sizeOf(dataType); }
+		inline byte* getRawArray() const {
+			return data;
+		}
+
+		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType); }
 	};
 
 

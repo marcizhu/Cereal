@@ -96,6 +96,7 @@ int main()
 	delete db;
 	delete db2;
 
+
 	while (1) { Sleep(1000); }
 
     return 0;

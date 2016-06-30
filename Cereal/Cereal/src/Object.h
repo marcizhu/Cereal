@@ -32,8 +32,8 @@ namespace Cereal {
 	private:
 		byte type;
 		std::string name;
-		std::vector<const Array*> arrays;
-		std::vector<const Field*> fields;
+		std::vector<Array*> arrays;
+		std::vector<Field*> fields;
 
 	public:
 		Object() {};
@@ -75,20 +75,20 @@ namespace Cereal {
 			return true;
 		}
 
-		inline void add(const Field* field) { fields.push_back(field); }
-		inline void add(const Array* array) { arrays.push_back(array); }
+		inline void add(Field* field) { fields.push_back(field); }
+		inline void add(Array* array) { arrays.push_back(array); }
 
-		inline const Field* getField(std::string name) const
+		inline Field* getField(std::string name) const
 		{
-			for (const Field* field : fields)
+			for (Field* field : fields)
 				if (field->getName() == name) return field;
 
 			return nullptr;
 		}
 
-		inline const Array* getArray(std::string name) const
+		inline Array* getArray(std::string name) const
 		{
-			for (const Array* array : arrays)
+			for (Array* array : arrays)
 				if (array->getName() == name) return array;
 
 			return nullptr;
@@ -141,8 +141,8 @@ namespace Cereal {
 			return ret;
 		}
 
-		const std::vector<const Field*>& getFields() { return fields; }
-		const std::vector<const Array*>& getArrays() { return arrays; }
+		const std::vector<Field*>& getFields() { return fields; }
+		const std::vector<Array*>& getArrays() { return arrays; }
 	};
 
 }
