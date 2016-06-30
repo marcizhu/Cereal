@@ -1,5 +1,4 @@
-// dbread.cpp : Defines the entry point for the console application.
-//
+//  dbread: A database reader tool for Cereal
 
 #include <Cereal.h>
 
