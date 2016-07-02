@@ -69,11 +69,11 @@ int main()
 	db->getObject("Object name")->add(new Cereal::Field("Field name", std::string("test!")));
 	db2->getObject("Test object")->add(new Cereal::Field("xpos", 3.141592f));
 
-	Cereal::Header header;
+	Cereal::Header* header = new Cereal::Header;
 
-	header.add(db);
-	header.add(db2);
-	header.write(dest);
+	header->add(db);
+	header->add(db2);
+	header->write(dest);
 
 	dest.shrink();
 
@@ -81,15 +81,15 @@ int main()
 
 	dest.writeFile(std::string("test.db"));
 
-	Cereal::Header header2;
+	Cereal::Header* header2 = new Cereal::Header;
 
 	dest.setOffset(0);
 
-	header2.read(dest);
+	header2->read(dest);
 
 	//float ret = header2.getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
 
-	std::string ret = header2.getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
+	std::string ret = header2->getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
 
 	//int* array = new int[4];
 
@@ -97,8 +97,8 @@ int main()
 
 	printf("%s", ret.c_str());
 
-	delete db;
-	delete db2;
+	delete header;
+	delete header2;
 
 	while (1) { Sleep(1000); }
 
