@@ -91,11 +91,14 @@ int main()
 
 	std::string ret = header2.getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
 
+	//int* array = new int[4];
+
+	//array = header2.getDatabase("Database name")->getObject("Object name")->getArray("Array name")->getRawArray<int>(array);
+
 	printf("%s", ret.c_str());
 
 	delete db;
 	delete db2;
-
 
 	while (1) { Sleep(1000); }
 

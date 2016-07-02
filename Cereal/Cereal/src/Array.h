@@ -29,18 +29,14 @@ namespace Cereal {
 	class Array
 	{
 	private:
-		DataType type;
 		std::string name;
 		DataType dataType;
 		unsigned int count; // item count
 		byte* data;
 
 		template<class T>
-		void setData(std::string name, DataType type, T* value, unsigned int count)
+		void setData(DataType type, T* value, unsigned int count)
 		{
-			//Initialization of container
-			this->type = DataType::DATA_ARRAY;
-			this->name = name;
 			this->count = count;
 			this->dataType = type;
 
@@ -49,6 +45,8 @@ namespace Cereal {
 
 			data = new byte[sizeof(T) * count];
 
+			assert(count < 1073741824); // Maximum item count (overflow of pointer and buffer)
+
 			unsigned int pointer = 0;
 
 			for (unsigned int i = 0; i < count; i++)
@@ -56,15 +54,15 @@ namespace Cereal {
 		}
 
 	public:
-		Array() : dataType(DataType::DATA_UNKNOWN), data(nullptr), count(0) { name = "", type = DataType::DATA_ARRAY; }
-		Array(std::string name, byte* value, unsigned int count) { setData<byte>(name, DataType::DATA_CHAR, value, count); }
-		Array(std::string name, bool* value, unsigned int count) { setData<bool>(name, DataType::DATA_BOOL, value, count); }
-		Array(std::string name, char* value, unsigned int count) { setData<char>(name, DataType::DATA_CHAR, value, count); }
-		Array(std::string name, short* value, unsigned int count) { setData<short>(name, DataType::DATA_SHORT, value, count); }
-		Array(std::string name, int* value, unsigned int count) { setData<int>(name, DataType::DATA_INT, value, count); }
-		Array(std::string name, float* value, unsigned int count) { setData<float>(name, DataType::DATA_FLOAT, value, count); }
-		Array(std::string name, long long* value, unsigned int count) { setData<long long>(name, DataType::DATA_LONG_LONG, value, count); }
-		Array(std::string name, double* value, unsigned int count) { setData<double>(name, DataType::DATA_DOUBLE, value, count); }
+		Array() : dataType(DataType::DATA_UNKNOWN), data(nullptr), count(0), name("") { }
+		Array(std::string name, byte* value, unsigned int count) : name(name) { setData<byte>(DataType::DATA_CHAR, value, count); }
+		Array(std::string name, bool* value, unsigned int count) : name(name) { setData<bool>(DataType::DATA_BOOL, value, count); }
+		Array(std::string name, char* value, unsigned int count) : name(name) { setData<char>(DataType::DATA_CHAR, value, count); }
+		Array(std::string name, short* value, unsigned int count) : name(name) { setData<short>(DataType::DATA_SHORT, value, count); }
+		Array(std::string name, int* value, unsigned int count) : name(name) { setData<int>(DataType::DATA_INT, value, count); }
+		Array(std::string name, float* value, unsigned int count) : name(name) { setData<float>(DataType::DATA_FLOAT, value, count); }
+		Array(std::string name, long long* value, unsigned int count) : name(name) { setData<long long>(DataType::DATA_LONG_LONG, value, count); }
+		Array(std::string name, double* value, unsigned int count) : name(name) { setData<double>(DataType::DATA_DOUBLE, value, count); }
 
 		~Array() { if (data) delete[] data; }
 
@@ -72,7 +70,7 @@ namespace Cereal {
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
-			buffer.writeBytes<byte>(type);
+			buffer.writeBytes<byte>(DataType::DATA_ARRAY);
 			buffer.writeBytes<std::string>(name);
 			buffer.writeBytes<byte>(this->dataType);
 			buffer.writeBytes<unsigned int>(this->count);
@@ -85,7 +83,7 @@ namespace Cereal {
 
 		void read(Buffer& buffer)
 		{
-			this->type = (DataType)buffer.readBytes<byte>();
+			DataType type = (DataType)buffer.readBytes<byte>();
 
 			assert(type == DataType::DATA_ARRAY);
 
@@ -101,10 +99,10 @@ namespace Cereal {
 			memcpy(data, ((byte*)buffer.getStart() + buffer.getOffset()), count * sizeOf(dataType));
 		}
 
-		inline short getCount() const { return count; }
-		inline DataType getContainerType() const { return type; }
+		inline unsigned int getCount() const { return count; }
+		inline DataType getContainerType() const { return DataType::DATA_ARRAY; }
 		inline DataType getDataType() const { return dataType; }
-		const std::string& getName() const { return name; }
+		inline const std::string& getName() const { return name; }
 
 		template<class T>
 		inline std::vector<T>& getArray() const
@@ -123,7 +121,24 @@ namespace Cereal {
 			return ret;
 		}
 
-		inline byte* getRawArray() const { return data; }
+		__declspec(deprecated("Array::getRawArray() is deprecated! Array::getRawArray(void* mem) should be used instead"))
+		inline byte* getRawArray() const { return data; } // this returns the array in BIG ENDIAN, not in little endian
+
+		// THIS should be used instead, as it returns the data in little endian (necessary for >1 byte data types like shorts or ints)
+		template<typename T>
+		inline T* getRawArray(T* mem) const
+		{
+			unsigned int pointer = 0;
+
+			for (unsigned int i = 0; i < count; i++)
+			{
+				mem[i] = Reader::readBytes<T>(data, pointer);
+
+				pointer += sizeof(T);
+			}
+
+			return mem;
+		}
 
 		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType); }
 	};

@@ -30,18 +30,13 @@ namespace Cereal {
 	class Object
 	{
 	private:
-		byte type;
 		std::string name;
 		std::vector<Array*> arrays;
 		std::vector<Field*> fields;
 
 	public:
-		Object() {};
-		Object(std::string name)
-		{
-			this->name = name;
-			this->type = DataType::DATA_OBJECT;
-		}
+		Object(std::string name) : name(name) { }
+		Object() { }
 
 		~Object()
 		{
@@ -59,7 +54,7 @@ namespace Cereal {
 			assert(fields.size() < 65536);
 			assert(arrays.size() < 65536);
 
-			buffer.writeBytes<byte>(type);
+			buffer.writeBytes<byte>(DataType::DATA_OBJECT);
 			buffer.writeBytes<std::string>(name);
 
 			buffer.writeBytes<unsigned short>((unsigned short)fields.size());
@@ -96,9 +91,9 @@ namespace Cereal {
 
 		void read(Buffer& buffer)
 		{
-			this->type = buffer.readBytes<byte>();
+			byte type = buffer.readBytes<byte>();
 
-			assert(this->type == DataType::DATA_OBJECT);
+			assert(type == DataType::DATA_OBJECT);
 
 			this->name = buffer.readBytes<std::string>();
 
@@ -125,8 +120,8 @@ namespace Cereal {
 			}
 		}
 
-		const std::string& getName() const { return name; }
-		byte getContainerType() const { return type; }
+		inline const std::string& getName() const { return name; }
+		inline byte getContainerType() const { return DataType::DATA_OBJECT; }
 
 		inline unsigned int getSize() const
 		{
