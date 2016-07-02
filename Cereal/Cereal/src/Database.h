@@ -79,7 +79,7 @@ namespace Cereal {
 
 		bool write(Buffer& buffer) const
 		{
-			if (!buffer.hasSpace(this->getSize())) return false;
+			if (!buffer.hasSpace((unsigned int)this->getSize())) return false;
 
 			buffer.writeBytes<unsigned short>(version);
 

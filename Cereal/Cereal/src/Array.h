@@ -107,7 +107,7 @@ namespace Cereal {
 		const std::string& getName() const { return name; }
 
 		template<class T>
-		inline std::vector<T> getArray() const
+		inline std::vector<T>& getArray() const
 		{
 			std::vector<T> ret;
 
@@ -123,9 +123,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		inline byte* getRawArray() const {
-			return data;
-		}
+		inline byte* getRawArray() const { return data; }
 
 		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType); }
 	};

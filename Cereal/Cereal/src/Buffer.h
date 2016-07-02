@@ -221,7 +221,7 @@ namespace Cereal {
 			delete[] start;
 
 			infile.seekg(0, std::ios::end);
-			size_t size = infile.tellg();
+			size_t size = (size_t)infile.tellg();
 			infile.seekg(0, std::ios::beg);
 
 			start = new byte[size];

@@ -82,7 +82,7 @@ namespace Cereal {
 			{
 				buffer.writeBytes<unsigned int>(offset);
 
-				offset += databases[i]->getSize();
+				offset += (unsigned int)databases[i]->getSize();
 			}
 
 			for (Database* db : databases)
@@ -96,7 +96,7 @@ namespace Cereal {
 			unsigned int ret = sizeof(short) + sizeof(byte) + (sizeof(unsigned int) * databases.size());
 
 			for (const Database* db : databases)
-				ret += db->getSize();
+				ret += (unsigned int)db->getSize();
 
 			return ret;
 		}

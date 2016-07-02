@@ -70,7 +70,7 @@ void print(Node* first, bool last = false, int level = 0)
 
 	std::cout << first->text << std::endl;
 
-	for (int i = 0; i < temp->childs.size(); i++)
+	for (unsigned int i = 0; i < temp->childs.size(); i++)
 	{
 		print(temp->childs[i], i == (temp->childs.size() - 1), level + 1);
 	}
@@ -82,7 +82,7 @@ void printDatabase(Cereal::Database* db)
 	firstNode->text = db->getName();
 	Node* current = firstNode;
 
-	for (int j = 0; j < db->getObjects().size(); j++)
+	for (unsigned int j = 0; j < db->getObjects().size(); j++)
 	{
 		Cereal::Object* obj = db->getObjects()[j];
 
@@ -93,7 +93,7 @@ void printDatabase(Cereal::Database* db)
 
 		current->childs.push_back(temp);
 
-		for (int x = 0; x < obj->getFields().size(); x++)
+		for (unsigned int x = 0; x < obj->getFields().size(); x++)
 		{
 			const Cereal::Field* field = obj->getFields()[x];
 
@@ -105,7 +105,7 @@ void printDatabase(Cereal::Database* db)
 			current->childs.push_back(temp);
 		}
 
-		for (int y = 0; y < obj->getArrays().size(); y++)
+		for (unsigned int y = 0; y < obj->getArrays().size(); y++)
 		{
 			const Cereal::Array* array = obj->getArrays()[y];
 
@@ -150,7 +150,7 @@ int process(const std::string& input)
 		int fieldCount = 0;
 		int arrayCount = 0;
 
-		for (int i = 0; i < header->getDatabases().size(); i++)
+		for (unsigned int i = 0; i < header->getDatabases().size(); i++)
 		{
 			Cereal::Database* db = header->getDatabases()[i];
 
@@ -161,7 +161,7 @@ int process(const std::string& input)
 
 			dbCount++;
 
-			for (int j = 0; j < db->getObjects().size(); j++)
+			for (unsigned int j = 0; j < db->getObjects().size(); j++)
 			{
 				Cereal::Object* obj = db->getObjects()[j];
 
@@ -174,7 +174,7 @@ int process(const std::string& input)
 
 				objCount++;
 
-				for (int x = 0; x < obj->getFields().size(); x++)
+				for (unsigned int x = 0; x < obj->getFields().size(); x++)
 				{
 					const Cereal::Field* field = obj->getFields()[x];
 
@@ -188,7 +188,7 @@ int process(const std::string& input)
 					fieldCount++;
 				}
 
-				for (int y = 0; y < obj->getArrays().size(); y++)
+				for (unsigned int y = 0; y < obj->getArrays().size(); y++)
 				{
 					const Cereal::Array* array = obj->getArrays()[y];
 

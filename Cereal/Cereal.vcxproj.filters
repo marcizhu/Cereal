@@ -1,55 +1,50 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Header Files\Cereal">
+      <UniqueIdentifier>{9e1fcf2d-e0d3-4ad2-b862-a06110f31ecd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Utils">
+    <Filter Include="Header Files\Cereal\Utils">
       <UniqueIdentifier>{8c033b9d-10c7-46f6-9f4d-6976a05f45ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Containers">
+    <Filter Include="Header Files\Cereal\Containers">
       <UniqueIdentifier>{766edfa0-a263-48ba-b7ad-4aeeb5ae3ee1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cereal\src\Writer.h">
-      <Filter>Header Files\Utils</Filter>
+      <Filter>Header Files\Cereal\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\src\Reader.h">
-      <Filter>Header Files\Utils</Filter>
+      <Filter>Header Files\Cereal\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\src\Array.h">
-      <Filter>Header Files\Containers</Filter>
+      <Filter>Header Files\Cereal\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\src\Field.h">
-      <Filter>Header Files\Containers</Filter>
+      <Filter>Header Files\Cereal\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\src\Object.h">
-      <Filter>Header Files\Containers</Filter>
+      <Filter>Header Files\Cereal\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\src\Database.h">
-      <Filter>Header Files\Containers</Filter>
+      <Filter>Header Files\Cereal\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\src\Header.h">
-      <Filter>Header Files\Containers</Filter>
+      <Filter>Header Files\Cereal\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\src\Buffer.h">
-      <Filter>Header Files\Utils</Filter>
+      <Filter>Header Files\Cereal\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\src\Internal.h">
-      <Filter>Header Files\Containers</Filter>
+      <Filter>Header Files\Cereal\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Cereal\Cereal.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Cereal</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

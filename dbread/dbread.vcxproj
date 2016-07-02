@@ -72,25 +72,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Cereal\Cereal;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)tools\$(Configuration)-$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)tools\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)tools\Intermediates\dbread\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Cereal\Cereal;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)tools\$(Configuration)-$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)tools\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)tools\Intermediates\dbread\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Cereal\Cereal;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)tools\$(Configuration)-$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)tools\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)tools\Intermediates\dbread\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Cereal\Cereal;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)tools\$(Configuration)-$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)tools\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)tools\Intermediates\dbread\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -153,9 +153,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dbread.cpp" />
   </ItemGroup>
