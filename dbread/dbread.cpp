@@ -145,10 +145,10 @@ int process(const std::string& input)
 		firstNode->text = input;
 		Node* current = firstNode;
 
-		int dbCount = 0;
-		int objCount = 0;
-		int fieldCount = 0;
-		int arrayCount = 0;
+		byte dbCount = 0;
+		unsigned int objCount = 0;
+		unsigned int fieldCount = 0;
+		unsigned int arrayCount = 0;
 
 		for (unsigned int i = 0; i < header->getDatabases().size(); i++)
 		{

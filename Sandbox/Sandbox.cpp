@@ -65,9 +65,9 @@ int main()
 	db->addObject(new Cereal::Object("Object name"));
 	db2->addObject(new Cereal::Object("Test object"));
 
-	db->getObject("Object name")->add(new Cereal::Array("Array name", data, 4));
-	db->getObject("Object name")->add(new Cereal::Field("Field name", std::string("test!")));
-	db2->getObject("Test object")->add(new Cereal::Field("xpos", 3.141592f));
+	db->getObject("Object name")->addArray(new Cereal::Array("Array name", data, 4));
+	db->getObject("Object name")->addField(new Cereal::Field("Field name", std::string("test!")));
+	db2->getObject("Test object")->addField(new Cereal::Field("xpos", 3.141592f));
 
 	Cereal::Header* header = new Cereal::Header;
 
@@ -87,15 +87,15 @@ int main()
 
 	header2->read(dest);
 
-	//float ret = header2.getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
+	float ret = header2->getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
 
-	std::string ret = header2->getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
+	//std::string ret = header2->getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
 
 	//int* array = new int[4];
 
-	//array = header2.getDatabase("Database name")->getObject("Object name")->getArray("Array name")->getRawArray<int>(array);
+	//array = header2->getDatabase("Database name")->getObject("Object name")->getArray("Array name")->getRawArray<int>(array);
 
-	printf("%s", ret.c_str());
+	printf("%f", ret);
 
 	delete header;
 	delete header2;

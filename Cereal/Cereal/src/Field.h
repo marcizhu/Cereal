@@ -125,14 +125,13 @@ namespace Cereal {
 				case DataType::DATA_FLOAT: setData<float>(dataType, buffer.readBytes<float>()); break;
 				case DataType::DATA_DOUBLE: setData<double>(dataType, buffer.readBytes<double>()); break;
 				case DataType::DATA_STRING: setData<std::string>(dataType, buffer.readBytes<std::string>()); break;
-				default: assert(false); break;
+				default: __debugbreak(); break;
 			}
 		}
 
 		template<class T>
 		inline T getValue() const { return Reader::readBytes<T>(data, 0); }
 
-		inline byte getContainerType() const { return DataType::DATA_FIELD; }
 		inline const std::string& getName() const { return name; }
 		inline DataType getDataType() const { return dataType; }
 

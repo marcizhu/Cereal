@@ -70,8 +70,8 @@ namespace Cereal {
 			return true;
 		}
 
-		inline void add(Field* field) { fields.push_back(field); }
-		inline void add(Array* array) { arrays.push_back(array); }
+		inline void addField(Field* field) { fields.push_back(field); }
+		inline void addArray(Array* array) { arrays.push_back(array); }
 
 		inline Field* getField(std::string name) const
 		{
@@ -104,7 +104,7 @@ namespace Cereal {
 				Field* field = new Field;
 
 				field->read(buffer);
-				this->add(field);
+				this->addField(field);
 			}
 
 			unsigned short arrayCount = buffer.readBytes<unsigned short>();
@@ -114,14 +114,13 @@ namespace Cereal {
 				Array* array = new Array;
 
 				array->read(buffer);
-				this->add(array);
+				this->addArray(array);
 
 				buffer.addOffset(array->getCount() * array->getDataType());
 			}
 		}
 
 		inline const std::string& getName() const { return name; }
-		inline byte getContainerType() const { return DataType::DATA_OBJECT; }
 
 		inline unsigned int getSize() const
 		{

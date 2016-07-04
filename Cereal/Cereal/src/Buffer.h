@@ -34,24 +34,15 @@ namespace Cereal {
 	public:
 		Buffer(unsigned int size) : size(size), start(new byte[size]) { clean(); }
 		Buffer(byte* start, unsigned int size) : size(size), start(start) { clean(); }
-		Buffer(byte* start, unsigned int size, unsigned int offset) : size(size), start(start), offset(offset) {}
+		Buffer(byte* start, unsigned int size, unsigned int offset, bool clean = false) : size(size), start(start), offset(offset) { if (clean) this->clean(); }
 
 		~Buffer()
 		{
-			offset = 0;
-			size = 0;
 			delete[] start;
+			offset = size = 0;
 		}
 
-		void clean()
-		{
-			offset = 0;
-
-			for (unsigned int i = 0; i < size; i++)
-			{
-				start[i] = 0;
-			}
-		}
+		void clean() { memset(start, 0, size); offset = 0; }
 
 		template<typename T>
 		T readBytes()
@@ -156,7 +147,7 @@ namespace Cereal {
 		{
 			unsigned int x;
 
-			memcpy_s(&x, sizeof(unsigned int), &data, sizeof(float));
+			*(unsigned int*)&x = (unsigned int)data;
 
 			writeBytes<unsigned int>(x);
 
@@ -206,7 +197,7 @@ namespace Cereal {
 
 			if (!outfile.good()) return false;
 
-			outfile.write((char*)this->start, offset);
+			outfile.write((char*)start, offset);
 			outfile.close();
 
 			return true;
@@ -221,7 +212,7 @@ namespace Cereal {
 			delete[] start;
 
 			infile.seekg(0, std::ios::end);
-			size_t size = (size_t)infile.tellg();
+			this->size = (unsigned int)infile.tellg();
 			infile.seekg(0, std::ios::beg);
 
 			start = new byte[size];
@@ -229,7 +220,6 @@ namespace Cereal {
 			infile.read((char*)start, size);
 			infile.close();
 
-			this->size = size;
 			this->offset = 0;
 
 			return true;

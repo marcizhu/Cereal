@@ -100,7 +100,6 @@ namespace Cereal {
 		}
 
 		inline unsigned int getCount() const { return count; }
-		inline DataType getContainerType() const { return DataType::DATA_ARRAY; }
 		inline DataType getDataType() const { return dataType; }
 		inline const std::string& getName() const { return name; }
 
@@ -121,7 +120,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		__declspec(deprecated("Array::getRawArray() is deprecated! Array::getRawArray(void* mem) should be used instead"))
+		__declspec(deprecated("Array::getRawArray() is deprecated! Array::getRawArray<T>(void* mem) should be used instead"))
 		inline byte* getRawArray() const { return data; } // this returns the array in BIG ENDIAN, not in little endian
 
 		// THIS should be used instead, as it returns the data in little endian (necessary for >1 byte data types like shorts or ints)
@@ -142,6 +141,5 @@ namespace Cereal {
 
 		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType); }
 	};
-
 
 }

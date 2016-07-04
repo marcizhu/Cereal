@@ -109,7 +109,16 @@ namespace Cereal {
 
 		inline unsigned long long getSize() const
 		{
-			unsigned long long ret = sizeof(short) + sizeof(short) + name.length() + sizeof(unsigned int) + sizeof(unsigned short);
+			unsigned long long ret = sizeof(short);
+
+			switch (version)
+			{
+			case Version::VERSION_1_0:
+				ret += sizeof(short) + name.length() + sizeof(int) + sizeof(short); break;
+
+			default:
+				__debugbreak(); break; // Invalid version
+			}
 
 			for (const Object* obj : objects)
 				ret += obj->getSize();
