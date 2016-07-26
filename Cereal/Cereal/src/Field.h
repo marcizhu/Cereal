@@ -30,7 +30,7 @@ namespace Cereal {
 	private:
 		std::string name;
 		DataType dataType;
-		byte* data;
+		byte* data = nullptr;
 
 		template<class T>
 		void setData(DataType type, T value)
