@@ -60,6 +60,10 @@ namespace Cereal {
 
 			for (unsigned int offs : offsets)
 			{
+				assert(buffer.getOffset() == offs);
+
+				buffer.setOffset(offs);
+
 				Database* db = new Database;
 
 				db->read(buffer);

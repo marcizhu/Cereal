@@ -115,8 +115,6 @@ namespace Cereal {
 
 				array->read(buffer);
 				this->addArray(array);
-
-				buffer.addOffset(array->getCount() * array->getDataType());
 			}
 		}
 
