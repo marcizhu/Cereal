@@ -46,8 +46,5 @@
     <ClInclude Include="Cereal\Cereal.h">
       <Filter>Header Files\Cereal</Filter>
     </ClInclude>
-    <ClInclude Include="Cereal\src\Semaphore.h">
-      <Filter>Header Files\Cereal\Utils</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
