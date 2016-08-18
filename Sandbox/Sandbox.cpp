@@ -71,8 +71,8 @@ int main()
 
 	Cereal::Header* header = new Cereal::Header;
 
-	header->add(db);
-	header->add(db2);
+	header->addDatabase(db);
+	header->addDatabase(db2);
 	header->write(dest);
 
 	dest.shrink();

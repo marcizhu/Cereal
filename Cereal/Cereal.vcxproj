@@ -148,6 +148,7 @@
     <ClInclude Include="Cereal\src\Reader.h" />
     <ClInclude Include="Cereal\src\Database.h" />
     <ClInclude Include="Cereal\src\Header.h" />
+    <ClInclude Include="Cereal\src\Semaphore.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -67,7 +67,7 @@ namespace Cereal {
 				Database* db = new Database;
 
 				db->read(buffer);
-				this->add(db);
+				this->addDatabase(db);
 			}
 		}
 
@@ -113,7 +113,7 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		void add(Database* db) { databases.push_back(db); }
+		void addDatabase(Database* db) { databases.push_back(db); }
 
 		const std::vector<Database*>& getDatabases() { return databases; }
 	};
