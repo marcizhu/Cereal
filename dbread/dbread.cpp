@@ -211,7 +211,7 @@ int process(const std::string& input)
 		std::cout << std::endl /*<< "--------------------------------------------------------------------------------"*/ << std::endl;
 
 		std::cout << "The file contains:" << std::endl;
-		std::cout << dbCount << " Databases" << std::endl;
+		std::cout << (int)dbCount << " Databases" << std::endl;
 		std::cout << objCount << " Objects" << std::endl;
 		std::cout << fieldCount << " Fields" << std::endl;
 		std::cout << arrayCount << " Arrays" << std::endl << std::endl;
