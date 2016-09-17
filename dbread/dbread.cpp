@@ -21,8 +21,8 @@ void gotoxy(int x, int y)
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &SBInfo);
 
 	COORD dwPos;
-	x > 0 ? dwPos.X = x : dwPos.X = SBInfo.dwCursorPosition.X;
-	y > 0 ? dwPos.Y = y : dwPos.Y = SBInfo.dwCursorPosition.Y;
+	dwPos.X = x > 0 ? x : SBInfo.dwCursorPosition.X;
+	dwPos.Y = y > 0 ? y : SBInfo.dwCursorPosition.Y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), dwPos);
 }
 
