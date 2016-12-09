@@ -50,7 +50,7 @@ namespace Cereal {
 
 			float result;
 
-			memcpy_s(&result, 4, &value, 4);
+			memcpy_s(&result, sizeof(float), &value, sizeof(float));
 
 			return result;
 		}
@@ -63,13 +63,13 @@ namespace Cereal {
 		{
 			unsigned long long value = src[pointer] << (sizeof(int) * 8 - 8);
 
-			for (int i = pointer; i < (int)pointer + (int) sizeof(float); i++)
+			for (int i = 0; i < (int) sizeof(double); i++)
 			{
 				value |= (src[pointer + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
 			}
 
 			double result;
-			memcpy_s(&result, 4, &value, 4);
+			memcpy_s(&result, sizeof(double), &value, sizeof(double));
 
 			return result;
 		}

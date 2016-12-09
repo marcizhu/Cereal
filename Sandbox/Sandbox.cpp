@@ -7,6 +7,8 @@
 
 #include <Cereal.h>
 
+#include <src/Writer.h>
+
 void gotoxy(int x, int y)
 {
 	CONSOLE_SCREEN_BUFFER_INFO SBInfo;

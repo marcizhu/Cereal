@@ -147,7 +147,7 @@ namespace Cereal {
 		{
 			unsigned int x;
 
-			*(unsigned int*)&x = (unsigned int)data;
+			*(unsigned int*)&x = *(unsigned int*)&data;
 
 			writeBytes<unsigned int>(x);
 
@@ -159,7 +159,7 @@ namespace Cereal {
 		{
 			unsigned long long x;
 
-			*(unsigned long long*)&x = (unsigned long long)data;
+			*(unsigned long long*)&x = *(unsigned long long*)&data;
 
 			writeBytes<unsigned long long>(x);
 
