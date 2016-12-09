@@ -57,7 +57,7 @@ int main()
 {
 	Cereal::Buffer dest(1024);
 
-	int data[4] = { 1, 2, 3, 4 };
+	std::string data[3] = { "test", "test2", "test of a longer but equally valid string" };
 
 	Cereal::Database* db = new Cereal::Database("Database name");
 	Cereal::Database* db2 = new Cereal::Database("Second database");
@@ -65,7 +65,7 @@ int main()
 	db->addObject(new Cereal::Object("Object name"));
 	db2->addObject(new Cereal::Object("Test object"));
 
-	db->getObject("Object name")->addArray(new Cereal::Array("Array name", data, 4));
+	db->getObject("Object name")->addArray(new Cereal::Array("Array name", data, 3));
 	db->getObject("Object name")->addField(new Cereal::Field("Field name", std::string("test!")));
 	db2->getObject("Test object")->addField(new Cereal::Field("xpos", 3.141592f));
 
@@ -79,7 +79,7 @@ int main()
 
 	dump(dest.getStart(), dest.getSize());
 
-	dest.writeFile(std::string("test.db"));
+	//dest.writeFile(std::string("test.db"));
 
 	Cereal::Header* header2 = new Cereal::Header;
 
@@ -87,15 +87,13 @@ int main()
 
 	header2->read(dest);
 
-	float ret = header2->getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
+	float retf = header2->getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
 
-	//std::string ret = header2->getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
+	std::string ret = header2->getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
 
-	//int* array = new int[4];
+	std::vector<std::string> array = header2->getDatabase("Database name")->getObject("Object name")->getArray("Array name")->getArray<std::string>();
 
-	//array = header2->getDatabase("Database name")->getObject("Object name")->getArray("Array name")->getRawArray<int>(array);
-
-	printf("%f", ret);
+	printf("%s\n%s\n%s", array[0].c_str(), array[1].c_str(), array[2].c_str());
 
 	delete header;
 	delete header2;

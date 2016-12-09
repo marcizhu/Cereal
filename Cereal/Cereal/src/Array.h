@@ -32,6 +32,7 @@ namespace Cereal {
 		std::string name;
 		DataType dataType;
 		unsigned int count; // item count
+		unsigned int size = 0;
 		byte* data;
 
 		template<class T>
@@ -53,6 +54,31 @@ namespace Cereal {
 				pointer = Writer::writeBytes<T>(data, pointer, value[i]);
 		}
 
+		template<>
+		void setData<std::string>(DataType type, std::string* value, unsigned int count)
+		{
+			this->count = count;
+			this->dataType = type;
+
+			//Setting the data
+			if (data) delete[] data;
+
+			size = 0;
+
+			for (unsigned int i = 0; i < count; i++)
+			{
+				size += 2;
+				size += value[i].length();
+			}
+
+			data = new byte[size];
+
+			unsigned int pointer = 0;
+
+			for (unsigned int i = 0; i < count; i++)
+				pointer = Writer::writeBytes<std::string>(data, pointer, value[i]);
+		}
+
 	public:
 		Array() : dataType(DataType::DATA_UNKNOWN), data(nullptr), count(0), name("") { }
 		Array(std::string name, byte* value, unsigned int count) : name(name), data(nullptr) { setData<byte>(DataType::DATA_CHAR, value, count); }
@@ -63,7 +89,7 @@ namespace Cereal {
 		Array(std::string name, float* value, unsigned int count) : name(name), data(nullptr) { setData<float>(DataType::DATA_FLOAT, value, count); }
 		Array(std::string name, long long* value, unsigned int count) : name(name), data(nullptr) { setData<long long>(DataType::DATA_LONG_LONG, value, count); }
 		Array(std::string name, double* value, unsigned int count) : name(name), data(nullptr) { setData<double>(DataType::DATA_DOUBLE, value, count); }
-
+		Array(std::string name, std::string* value, unsigned int count) : name(name), data(nullptr) { setData<std::string>(DataType::DATA_STRING, value, count); }
 		~Array() { if (data) delete[] data; }
 
 		bool write(Buffer& buffer) const
@@ -75,7 +101,14 @@ namespace Cereal {
 			buffer.writeBytes<byte>(this->dataType);
 			buffer.writeBytes<unsigned int>(this->count);
 
-			for (unsigned int i = 0; i < sizeOf(dataType) * count; i++)
+			unsigned int s;
+
+			if (dataType != DataType::DATA_STRING)
+				s = sizeOf(dataType) * count;
+			else
+				s = size;
+
+			for (unsigned int i = 0; i < s; i++)
 				buffer.writeBytes<byte>(data[i]);
 
 			return true;
@@ -94,11 +127,29 @@ namespace Cereal {
 
 			if (data) delete[] data;
 
-			data = new byte[count * sizeOf(dataType)];
+			if (dataType != DATA_STRING)
+			{
+				data = new byte[count * sizeOf(dataType)];
 
-			memcpy(data, ((byte*)buffer.getStart() + buffer.getOffset()), count * sizeOf(dataType));
+				memcpy(data, ((byte*)buffer.getStart() + buffer.getOffset()), count * sizeOf(dataType));
 
-			buffer.addOffset(count * sizeOf(dataType));
+				buffer.addOffset(count * sizeOf(dataType));
+			}
+			else
+			{
+				unsigned int start = buffer.getOffset();
+
+				for (unsigned int i = 0; i < count; i++)
+				{
+					buffer.readBytes<std::string>();
+				}
+
+				size = buffer.getOffset() - start;
+
+				data = new byte[size];
+
+				memcpy(data, ((byte*)buffer.getStart() + start), size);
+			}
 		}
 
 		inline unsigned int getCount() const { return count; }
@@ -106,7 +157,7 @@ namespace Cereal {
 		inline const std::string& getName() const { return name; }
 
 		template<class T>
-		inline std::vector<T>& getArray() const
+		inline std::vector<T> getArray() const
 		{
 			std::vector<T> ret;
 
@@ -117,6 +168,23 @@ namespace Cereal {
 				ret.push_back(Reader::readBytes<T>(data, pointer));
 
 				pointer += sizeof(T);
+			}
+
+			return ret;
+		}
+
+		template<>
+		inline std::vector<std::string> getArray() const
+		{
+			std::vector<std::string> ret;
+
+			unsigned int pointer = 0;
+
+			for (int i = 0; i < count; i++)
+			{
+				ret.push_back(Reader::readBytes<std::string>(data, pointer));
+
+				pointer += Reader::readBytes<unsigned short>(data, pointer) + sizeof(unsigned short);
 			}
 
 			return ret;
@@ -138,7 +206,13 @@ namespace Cereal {
 			return mem;
 		}
 
-		inline unsigned int getSize() const { return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType); }
+		inline unsigned int getSize() const
+		{
+			if(dataType != DataType::DATA_STRING)
+				return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType);
+			else
+				return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + size;
+		}
 	};
 
 }
