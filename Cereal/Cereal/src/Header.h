@@ -75,7 +75,7 @@ namespace Cereal {
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
-			assert(databases.size() < 255);
+			assert(databases.size() < 256);
 
 			buffer.writeBytes<unsigned short>(MAGIC_NUMBER);
 			buffer.writeBytes<byte>((byte)databases.size());

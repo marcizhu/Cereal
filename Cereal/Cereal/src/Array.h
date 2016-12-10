@@ -46,7 +46,7 @@ namespace Cereal {
 
 			data = new byte[sizeof(T) * count];
 
-			assert(count < 1073741824); // Maximum item count (overflow of pointer and buffer)
+			assert((count * sizeof(T)) < 4294967296); // Maximum item count (overflow of pointer and buffer)
 
 			unsigned int pointer = 0;
 
