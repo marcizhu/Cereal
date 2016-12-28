@@ -1,4 +1,4 @@
-//  Cereal: A C++ Serialization library
+//  Cereal: A C++/C# Serialization library
 //  Copyright (C) 2016  The Cereal Team
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ namespace Cereal {
 	{
 	public:
 		template<typename T>
-		static T readBytes(byte* src, int pointer)
+		static T readBytes(byte* src, unsigned int pointer)
 		{
 			T value = 0;
 
@@ -39,7 +39,7 @@ namespace Cereal {
 		}
 
 		template<>
-		static float readBytes<float>(byte* src, int pointer)
+		static float readBytes<float>(byte* src, unsigned int pointer)
 		{
 			unsigned int value = 0;
 
@@ -56,10 +56,10 @@ namespace Cereal {
 		}
 
 		template<>
-		static bool readBytes<bool>(byte* src, int pointer)	{ return src[pointer] != 0; }
+		static bool readBytes<bool>(byte* src, unsigned int pointer) { return src[pointer] != 0; }
 
 		template<>
-		static double readBytes<double>(byte* src, int pointer)
+		static double readBytes<double>(byte* src, unsigned int pointer)
 		{
 			unsigned long long value = src[pointer] << (sizeof(int) * 8 - 8);
 
@@ -75,7 +75,7 @@ namespace Cereal {
 		}
 
 		template<>
-		static std::string readBytes<std::string>(byte* src, int pointer)
+		static std::string readBytes<std::string>(byte* src, unsigned int pointer)
 		{
 			std::string value = "";
 

@@ -1,4 +1,4 @@
-//  Cereal: A C++ Serialization library
+//  Cereal: A C++/C# Serialization library
 //  Copyright (C) 2016  The Cereal Team
 //
 //  This program is free software: you can redistribute it and/or modify

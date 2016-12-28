@@ -1,4 +1,4 @@
-//  Cereal: A C++ Serialization library
+//  Cereal: A C++/C# Serialization library
 //  Copyright (C) 2016  The Cereal Team
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -88,7 +88,7 @@ namespace Cereal {
 
 			for (int i = offset; i < (int)offset + (int)sizeof(float); i++)
 			{
-				value |= (start[offset + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				value |= (start[i] << ((sizeof(int) * 8 - 8) - (i * 8)));
 			}
 
 			double result;
