@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using static Cereal.Global;
 
@@ -46,7 +47,7 @@ namespace Cereal
 
 			data = new byte[Global.sizeOf(type) * count];
 
-			//assert((count * sizeof(T)) < 4294967296); // Maximum item count (overflow of pointer and buffer)
+			Debug.Assert((count * Marshal.SizeOf(typeof(T))) < 4294967296); // Maximum item count (overflow of pointer and buffer)
 
 			uint pointer = 0;
 
@@ -82,7 +83,7 @@ namespace Cereal
 
 			for (uint i = 0; i < count; i++)
 			{
-				pointer = Writer.writeBytes<string>(data, pointer, value[i]);
+				pointer = Writer.writeBytes(data, pointer, value[i]);
 			}
 		}
 
@@ -96,7 +97,7 @@ namespace Cereal
 		public Array(string name, float[] value) { setData<float>(DataType.DATA_FLOAT, value, name); }
 		public Array(string name, UInt64[] value) { setData<UInt64>(DataType.DATA_LONG_LONG, value, name); }
 		public Array(string name, double[] value) { setData<double>(DataType.DATA_DOUBLE, value, name); }
-		public Array(string name, string[] value) { setData<string>(DataType.DATA_STRING, value, name); }
+		public Array(string name, string[] value) { setData(DataType.DATA_STRING, value, name); }
 
 		~Array()
 		{
@@ -113,7 +114,7 @@ namespace Cereal
 			if (!buffer.hasSpace(Size)) return false;
 
 			buffer.writeBytes<byte>((byte)DataType.DATA_ARRAY);
-			buffer.writeBytes<string>(name);
+			buffer.writeBytes(name);
 			buffer.writeBytes<byte>((byte)dataType);
 			buffer.writeBytes<uint>(count);
 
@@ -132,14 +133,14 @@ namespace Cereal
 
 		public void read(ref Buffer buffer)
 		{
-			DataType type = (DataType)buffer.readBytes<byte>();
+			DataType type = (DataType)buffer.readBytesByte();
 
-			//assert(type == DataType::DATA_ARRAY);
+			Debug.Assert(type == DataType.DATA_ARRAY);
 
-			name = buffer.readBytes<string>();
+			name = buffer.readBytesString();
 
-			dataType = (DataType)buffer.readBytes<byte>();
-			count = buffer.readBytes<uint>();
+			dataType = (DataType)buffer.readBytesByte();
+			count = (uint)buffer.readBytesInt32();
 
 			if (data != null)
 			{
@@ -152,24 +153,24 @@ namespace Cereal
 			{
 				data = new byte[count * sizeOf(dataType)];
 
-				System.Array.Copy(buffer.Start, buffer.Offset, data, 0, count * sizeOf(dataType));
+				System.Array.Copy(buffer.Start, buffer.Position, data, 0, count * sizeOf(dataType));
 
 				buffer.addOffset(count * sizeOf(dataType));
 			}
 			else
 			{
-				uint start = buffer.Offset;
+				uint start = buffer.Position;
 
 				for (uint i = 0; i < count; i++)
 				{
-					buffer.readBytes<string>();
+					buffer.readBytesString();
 				}
 
-				size = buffer.Offset - start;
+				size = buffer.Position - start;
 
 				data = new byte[size];
 
-				System.Array.Copy(buffer.Start, buffer.Offset, data, 0, size);
+				System.Array.Copy(buffer.Start, start, data, 0, size);
 			}
 		}
 
@@ -181,9 +182,9 @@ namespace Cereal
 
 			for (int i = 0; i < count; i++)
 			{
-				ret.Add(Reader.readBytes<T>(data, pointer));
+				//ret.Add(Reader.readBytes<T>(data, pointer));
 
-				pointer += (uint)Marshal.SizeOf<T>();
+				pointer += (uint)Marshal.SizeOf(typeof(T));
 			}
 
 			return ret;
@@ -197,16 +198,16 @@ namespace Cereal
 
 			for (uint i = 0; i < count; i++)
 			{
-				ret.Add(Reader.readBytes<string>(data, pointer));
+				ret.Add(Reader.readBytesString(data, pointer));
 
-				pointer += Reader.readBytes<ushort>(data, pointer) + (uint)sizeof(ushort);
+				pointer += (ushort)Reader.readBytesShort(data, pointer) + (uint)sizeof(ushort);
 			}
 
 			return ret;
 		}
 
 		// This returns the data in little endian (necessary for >1 byte data types like shorts or ints)
-		public T[] getRawArray<T>(T[] mem)
+		/*public T[] getRawArray<T>(T[] mem)
 		{
 			uint pointer = 0;
 
@@ -214,11 +215,11 @@ namespace Cereal
 			{
 				mem[i] = Reader.readBytes<T>(data, pointer);
 
-				pointer += (uint)Marshal.SizeOf<T>();
+				pointer += (uint)Marshal.SizeOf(typeof(T));
 			}
 
 			return mem;
-		}
+		}*/
 
 		public string[] getRawArray(string[] mem)
 		{

@@ -15,7 +15,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Cereal
 {
@@ -23,21 +26,44 @@ namespace Cereal
 	{
 		public static uint writeBytes<T>(byte[] dest, uint pointer, T value)
 		{
-			byte size = (byte)Marshal.SizeOf<T>();
+			MemoryStream ms = new MemoryStream();
+			BinaryWriter writer = new BinaryWriter(ms);
 
-			for (uint i = 0; i < size; i++)
+			int size = Marshal.SizeOf(value);
+
+			switch (size)
 			{
-				dest[pointer++] = (value >> ((sizeof(T) - 1) * 8 - i * 8)) & 0xFF;
+				case 8:
+					writer.Write(Convert.ToInt64(value)); break;
+
+				case 4:
+					writer.Write(Convert.ToInt32(value)); break;
+
+				case 2:
+					writer.Write(Convert.ToInt16(value)); break;
+
+				case 1:
+					writer.Write(Convert.ToByte(value)); break;
+
+				default:
+					throw new Exception("Invalid call to Writer::writeBytes<T>");
 			}
 
-			return pointer;
+			byte[] src = ms.ToArray();
+
+			for(int i = 0; i < size; i++)
+			{
+				dest[pointer + i] = src[size - 1 - i];
+			}
+
+			return pointer + (uint)size;
 		}
 
 		public static uint writeBytes(byte[] dest, uint pointer, string str)
 		{
 			ushort size = (ushort)str.Length;
 
-			//assert(size <= 65535);
+			Debug.Assert(size <= 65535);
 
 			pointer = writeBytes<ushort>(dest, pointer, size);
 

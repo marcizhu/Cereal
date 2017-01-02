@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Cereal
 {
@@ -37,24 +38,24 @@ namespace Cereal
 
 		public void read(ref Buffer buffer)
 		{
-			ushort magic = buffer.readBytes<ushort>();
+			ushort magic = (ushort)buffer.readBytesShort();
 
-			//assert(magic == Global.MAGIC_NUMBER);
+			Debug.Assert(magic == Global.MAGIC_NUMBER);
 
-			byte count = buffer.readBytes<byte>();
+			byte count = buffer.readBytesByte();
 
 			List<uint> offsets = new List<uint>();
 
 			for (byte i = 0; i < count; i++)
 			{
-				offsets.Add(buffer.readBytes<uint>());
+				offsets.Add((uint)buffer.readBytesInt32());
 			}
 
 			foreach (uint offs in offsets)
 			{
-				//assert(buffer.Offset == offs);
+				Debug.Assert(buffer.Position == offs);
 
-				buffer.Offset = offs;
+				buffer.Position = offs;
 
 				Database db = new Database();
 
@@ -67,7 +68,7 @@ namespace Cereal
 		{
 			if (!buffer.hasSpace(Size)) return false;
 
-			//assert(databases.size() < 256);
+			Debug.Assert(databases.Count < 256);
 
 			buffer.writeBytes<ushort>(Global.MAGIC_NUMBER);
 			buffer.writeBytes<byte>((byte)databases.Count);

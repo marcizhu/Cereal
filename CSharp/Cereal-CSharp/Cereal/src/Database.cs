@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using static Cereal.Global;
 
 namespace Cereal
@@ -54,19 +55,19 @@ namespace Cereal
 
 		public void read(ref Buffer buffer)
 		{
-			version = (Global.Version)buffer.readBytes<ushort>();
+			version = (Global.Version)buffer.readBytesShort();
 
-			//assert(version != Version.VERSION_INVALID && version <= Version.VERSION_LATEST);
+			Debug.Assert(version != Global.Version.VERSION_INVALID && version <= Global.Version.VERSION_LATEST);
 
 			switch (version)
 			{
 				case Global.Version.VERSION_1_0:
 					{
-						name = buffer.readBytes<string>();
+						name = buffer.readBytesString();
 
 						buffer.addOffset(sizeof(uint)); //we skip the size (don't need it)
 
-						ushort objectCount = buffer.readBytes<ushort>();
+						ushort objectCount = (ushort)buffer.readBytesShort();
 
 						for (ushort i = 0; i < objectCount; i++)
 						{
@@ -90,15 +91,15 @@ namespace Cereal
 
 			buffer.writeBytes<ushort>((ushort)version);
 
-			//assert(version != Version::VERSION_INVALID);
+			Debug.Assert(version != Global.Version.VERSION_INVALID);
 
 			switch (version)
 			{
 			case Global.Version.VERSION_1_0:
-				//assert(objects.size() < 65536);
-				//assert(this->getSize() < 4294967296); // 2^32, maximum database size
+				Debug.Assert(objects.Count < 65536);
+				Debug.Assert(Size <= 4294967295); // 2^32, maximum database size
 
-				buffer.writeBytes<string>(name);
+				buffer.writeBytes(name);
 				buffer.writeBytes<uint>((uint)Size);
 				buffer.writeBytes<ushort>((ushort)objects.Count);
 

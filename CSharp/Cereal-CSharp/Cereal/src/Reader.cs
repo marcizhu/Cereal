@@ -21,64 +21,84 @@ namespace Cereal
 {
 	public static class Reader
 	{
-		public static T readBytes<T>(byte[] src, uint pointer)
+		public static Int64 readBytesInt64(byte[] src, uint pointer)
 		{
-			T value;
+			int hiByte = readBytesInt32(src, pointer);
+			int loByte = readBytesInt32(src, pointer + sizeof(int));
 
-			for (int i = 0; i < (uint)Marshal.SizeOf<T>(); i++)
-			{
-				value |= (src[pointer + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
-			}
-
-			return value;
+			return (hiByte << sizeof(int) * 8) | loByte;
 		}
 
-		public static float readBytes(byte[] src, uint pointer)
+		public static int readBytesInt32(byte[] src, uint pointer)
 		{
-			uint value = 0;
+			int ret = 0;
 
-			for (int i = 0; i < (int)sizeof(float); i++)
+			for(int i = 0; i < sizeof(int); i++)
 			{
-				value |= (src[pointer + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				ret |= src[pointer + i] << ((sizeof(int) * 8 - 8) - (i * 8));
 			}
 
-			float result;
-
-			memcpy_s(&result, sizeof(float), &value, sizeof(float));
-
-			return result;
+			return ret;
 		}
 
-		public static bool readBytes(byte[] src, uint pointer) { return src[pointer] != 0; }
+		public static bool readBytesBool(byte[] src, uint pointer) { return src[pointer] != 0; }
 
-		public static double readBytes(byte[] src, uint pointer)
+		public static short readBytesShort(byte[] src, uint pointer)
 		{
-			UInt64 value = src[pointer] << (sizeof(int) * 8 - 8);
+			int ret = 0;
 
-			for (int i = 0; i < (int)sizeof(double); i++)
+			for (int i = 0; i < sizeof(short); i++)
 			{
-				value |= (src[pointer + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				ret |= src[pointer + i] << ((sizeof(short) * 8 - 8) - (short)(i * 8));
 			}
 
-			double result;
-			memcpy_s(&result, sizeof(double), &value, sizeof(double));
-
-			return result;
+			return (short)ret;
 		}
 
-		public static string readBytes(byte[] src, uint pointer)
+		public static byte readBytesByte(byte[] src, uint pointer) { return src[pointer]; }
+
+		public static char readBytesChar(byte[] src, uint pointer) { return (char)src[pointer]; }
+
+		public static float readBytesFloat(byte[] src, uint pointer)
+		{
+			uint value = (uint)readBytesInt32(src, pointer);
+
+			byte[] result = new byte[sizeof(float)];
+
+			for (int i = 0; i < sizeof(float); i++)
+			{
+				result[i] = BitConverter.GetBytes(value)[i];
+			}
+
+			return BitConverter.ToSingle(result, 0);
+		}
+
+		public static double readBytesDouble(byte[] src, uint pointer)
+		{
+			UInt64 value = (UInt64)readBytesInt64(src, pointer);
+
+			byte[] result = new byte[sizeof(double)];
+
+			for (int i = 0; i < sizeof(double); i++)
+			{
+				result[i] = BitConverter.GetBytes(value)[i];
+			}
+
+			return BitConverter.ToDouble(result, 0);
+		}
+
+		public static string readBytesString(byte[] src, uint pointer)
 		{
 			string value = "";
 
-			ushort size = readBytes < ushort> (src, pointer);
+			ushort size = (ushort)readBytesShort(src, pointer);
 
 			for (uint i = pointer + 2; i < pointer + size + 2; i++)
 			{
-				value += readBytes<char>(src, i);
+				value += readBytesChar(src, i);
 			}
 
 			return value;
 		}
 	};
-
 }

@@ -15,8 +15,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Cereal
 {
@@ -56,66 +58,95 @@ namespace Cereal
 
 		public void cleanBuffer() { System.Array.Clear(start, 0, start.Length); }
 
-		public T readBytes<T>()
+		public Int64 readBytesInt64()
 		{
-			T value;
+			int hiByte = readBytesInt32();
+			int loByte = readBytesInt32();
 
-			for (int i = 0; i < (uint)Marshal.SizeOf<T>(); i++)
+			return (hiByte << sizeof(int) * 8) | loByte;
+		}
+
+		public int readBytesInt32()
+		{
+			int ret = 0;
+
+			for (int i = 0; i < sizeof(int); i++)
 			{
-				value |= (start[offset + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
+				ret |= start[offset++] << ((sizeof(int) * 8 - 8) - (i * 8));
 			}
 
-			offset += sizeof(T);
-
-			return value;
+			return ret;
 		}
+
+		public short readBytesShort()
+		{
+			int ret = 0;
+
+			for (int i = 0; i< sizeof(short); i++)
+			{
+				ret |= start[offset++] << ((sizeof(short) * 8 - 8) - (short)(i* 8));
+			}
+
+			return (short)ret;
+		}
+
+		public char readBytesChar() { return (char)start[offset++]; }
+
+		public byte readBytesByte() { return start[offset++]; }
 
 		public float readBytes()
 		{
-			uint value = 0;
+			uint value = (uint)readBytesInt32();
 
-			for (uint i = 0; i < sizeof(float); i++)
+			byte[] result = new byte[sizeof(float)];
+
+			for (int i = 0; i < sizeof(float); i++)
 			{
-				value |= (start[offset + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				result[i] = BitConverter.GetBytes(value)[i];
 			}
 
-			float result;
-
-			offset += sizeof(float);
-
-			memcpy_s(&result, 4, &value, 4);
-
-			return result;
+			return BitConverter.ToSingle(result, 0);
 		}
 
-		public bool readBytes() { return start[offset++] != 0; }
+		public bool readBytesBool() { return start[offset++] != 0; }
 
-		public double readBytes()
+		public float readBytesFloat()
 		{
-			UInt64 value = (UInt64)(start[offset] << (sizeof(int) * 8 - 8));
+			uint value = (uint)readBytesInt32();
 
-			for (uint i = offset; i < offset + sizeof(float); i++)
+			byte[] result = new byte[sizeof(float)];
+
+			for (int i = 0; i < sizeof(float); i++)
 			{
-				value |= (start[i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				result[i] = BitConverter.GetBytes(value)[i];
 			}
 
-			double result;
-			memcpy_s(&result, 4, &value, 4);
-
-			offset += sizeof(double);
-
-			return result;
+			return BitConverter.ToSingle(result, 0);
 		}
 
-		public string readBytes<string>()
+		public double readBytesDouble()
+		{
+			UInt64 value = (UInt64)readBytesInt64();
+
+			byte[] result = new byte[sizeof(double)];
+
+			for (int i = 0; i < sizeof(double); i++)
+			{
+				result[i] = BitConverter.GetBytes(value)[i];
+			}
+
+			return BitConverter.ToDouble(result, 0);
+		}
+
+		public string readBytesString()
 		{
 			string value = "";
 
-			ushort size = readBytes<ushort>();
+			ushort size = (ushort)readBytesShort();
 
-			for (int i = 0; i < size; i++)
+			for (uint i = 0; i < size; i++)
 			{
-				value += readBytes<char>();
+				value += readBytesChar();
 			}
 
 			return value;
@@ -123,25 +154,55 @@ namespace Cereal
 
 		public bool writeBytes<T>(T value)
 		{
-			for (uint i = 0; i < (uint)Marshal.SizeOf<T>(); i++)
+			if(typeof(T) == typeof(string))
 			{
-				start[offset++] = (value >> ((sizeof(T) - 1) * 8 - i * 8)) & 0xFF;
+				throw new Exception("Invalid call to Buffer::writeBytes<T>(...)");
+			}
+
+			MemoryStream ms = new MemoryStream();
+			BinaryWriter writer = new BinaryWriter(ms);
+
+			int size = Marshal.SizeOf(value);
+
+			switch (size)
+			{
+				case 8:
+					writer.Write(Convert.ToInt64(value)); break;
+
+				case 4:
+					writer.Write(Convert.ToInt32(value)); break;
+
+				case 2:
+					writer.Write(Convert.ToInt16(value)); break;
+
+				case 1:
+					writer.Write(Convert.ToByte(value)); break;
+
+				default:
+					throw new Exception("Invalid call to Writer::writeBytes<T>");
+			}
+
+			byte[] src = ms.ToArray();
+
+			for (int i = 0; i < size; i++)
+			{
+				start[offset++] = src[size - 1 - i];
 			}
 
 			return true;
 		}
 
-		public bool writeBytes(string str)
+		public bool writeBytes(string value)
 		{
-			ushort size = (ushort)str.Length;
+			ushort size = (ushort)value.Length;
 
-			//assert(size <= 65535);
+			Debug.Assert(size <= 65535);
 
 			writeBytes<ushort>(size);
 
 			for (ushort i = 0; i < size; i++)
 			{
-				writeBytes<char>(str[i]);
+				writeBytes<char>(value[i]);
 			}
 
 			return true;
@@ -191,7 +252,7 @@ namespace Cereal
 			}
 		}
 
-		public uint Offset
+		public uint Position
 		{
 			get
 			{
@@ -204,7 +265,7 @@ namespace Cereal
 			}
 		}
 
-		public uint Size
+		public uint Length
 		{
 			get
 			{
@@ -220,9 +281,6 @@ namespace Cereal
 			}
 		}
 		#endregion
-
-		public byte getByte() { return start[offset++]; }
-		public byte getByte(uint offs) { return start[offs]; }
 
 		public bool hasSpace(uint amount) { return (offset + amount) <= start.Length; }
 
@@ -240,7 +298,7 @@ namespace Cereal
 			return true;
 		}
 
-		bool readFile(string filepath)
+		public bool readFile(string filepath)
 		{
 			if(start != null)
 			{

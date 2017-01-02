@@ -17,6 +17,7 @@
 using Cereal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using static Cereal.Global;
 
 namespace Cereal
@@ -51,11 +52,11 @@ namespace Cereal
 		{
 			if (!buffer.hasSpace(Size)) return false;
 
-			//assert(fields.size() < 65536);
-			//assert(arrays.size() < 65536);
+			Debug.Assert(fields.Count < 65536);
+			Debug.Assert(arrays.Count < 65536);
 
 			buffer.writeBytes<byte>((byte)DataType.DATA_OBJECT);
-			buffer.writeBytes<string>(name);
+			buffer.writeBytes(name);
 
 			buffer.writeBytes<ushort>((ushort)fields.Count);
 
@@ -91,13 +92,13 @@ namespace Cereal
 
 		public void read(ref Buffer buffer)
 		{
-			byte type = buffer.readBytes<byte>();
+			byte type = buffer.readBytesByte();
 
-			//assert(type == DataType::DATA_OBJECT);
+			Debug.Assert(type == (byte)Global.DataType.DATA_OBJECT);
 
-			name = buffer.readBytes<string>();
+			name = buffer.readBytesString();
 
-			ushort fieldCount = buffer.readBytes<ushort>();
+			ushort fieldCount = (ushort)buffer.readBytesShort();
 
 			for (int i = 0; i < fieldCount; i++)
 			{
@@ -107,7 +108,7 @@ namespace Cereal
 				addField(field);
 			}
 
-			ushort arrayCount = buffer.readBytes<ushort>();
+			ushort arrayCount = (ushort)buffer.readBytesShort();
 
 			for (int i = 0; i < arrayCount; i++)
 			{
@@ -143,10 +144,34 @@ namespace Cereal
 				return ret;
 			}
 		}
-		#endregion
 
-		List<Field> getFields() { return fields; }
-		List<Array> getArrays() { return arrays; }
+		public List<Field> Fields
+		{
+			get
+			{
+				return fields;
+			}
+
+			set
+			{
+				fields = value;
+			}
+		}
+
+		public List<Array> Arrays
+		{
+			get
+			{
+				return arrays;
+			}
+
+			set
+			{
+				arrays = value;
+			}
+		}
+
+		#endregion
 	};
 
 }
