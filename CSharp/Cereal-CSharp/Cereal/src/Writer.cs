@@ -18,7 +18,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Cereal
 {
@@ -51,11 +50,25 @@ namespace Cereal
 
 			byte[] src = ms.ToArray();
 
-			for(int i = 0; i < size; i++)
+			if (size == 8)
 			{
-				dest[pointer + i] = src[size - 1 - i];
-			}
+				for (int i = 0; i < 4; i++)
+				{
+					dest[pointer + i] = src[3 - i];
+				}
 
+				for (int i = 0; i < 4; i++)
+				{
+					dest[pointer + 4 + i] = src[7 - i];
+				}
+			}
+			else
+			{
+				for (int i = 0; i < size; i++)
+				{
+					dest[pointer + i] = src[size - 1 - i];
+				}
+			}
 			return pointer + (uint)size;
 		}
 

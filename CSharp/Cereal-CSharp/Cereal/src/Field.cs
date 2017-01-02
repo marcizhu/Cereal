@@ -44,6 +44,40 @@ namespace Cereal
 			Writer.writeBytes<T>(data, 0, value);
 		}
 
+		private void setData(DataType type, float value, string fName)
+		{
+			dataType = type;
+			name = fName;
+
+			if (data != null)
+			{
+				data = null;
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+			}
+
+			//Setting the data
+			data = new byte[sizeof(float)];
+			Writer.writeBytes(data, 0, value);
+		}
+
+		private void setData(DataType type, double value, string fName)
+		{
+			dataType = type;
+			name = fName;
+
+			if (data != null)
+			{
+				data = null;
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+			}
+
+			//Setting the data
+			data = new byte[sizeof(double)];
+			Writer.writeBytes(data, 0, value);
+		}
+
 		private void setData(DataType type, string value, string fName)
 		{
 			dataType = type;
@@ -57,7 +91,7 @@ namespace Cereal
 				GC.WaitForPendingFinalizers();
 			}
 
-			data = new byte[value.Length + 2];
+			data = new byte[value.Length + sizeof(short)];
 
 			uint ptr = Writer.writeBytes<ushort>(data, 0, (ushort)value.Length);
 
@@ -80,9 +114,9 @@ namespace Cereal
 		public Field(string name, char value) { setData<char>(DataType.DATA_CHAR, value, name); }
 		public Field(string name, short value) { setData<short>(DataType.DATA_SHORT, value, name); }
 		public Field(string name, int value) { setData<int>(DataType.DATA_INT, value, name); }
-		public Field(string name, float value) { setData<float>(DataType.DATA_FLOAT, value, name); }
 		public Field(string name, UInt64 value) { setData<UInt64>(DataType.DATA_LONG_LONG, value, name); }
-		public Field(string name, double value) { setData<double>(DataType.DATA_DOUBLE, value, name); }
+		public Field(string name, float value) { setData(DataType.DATA_FLOAT, value, name); }
+		public Field(string name, double value) { setData(DataType.DATA_DOUBLE, value, name); }
 		public Field(string name, string value) { setData(DataType.DATA_STRING, value, name); }
 
 		~Field()
@@ -141,8 +175,8 @@ namespace Cereal
 				case DataType.DATA_SHORT: setData<short>(dataType, buffer.readBytesShort(), sname); break;
 				case DataType.DATA_INT: setData<int>(dataType, buffer.readBytesInt32(), sname); break;
 				case DataType.DATA_LONG_LONG: setData<UInt64> (dataType, (ulong)buffer.readBytesInt64(), sname); break;
-				case DataType.DATA_FLOAT: setData<float>(dataType, buffer.readBytesFloat(), sname); break;
-				case DataType.DATA_DOUBLE: setData<double>(dataType, buffer.readBytesDouble(), sname); break;
+				case DataType.DATA_FLOAT: setData(dataType, buffer.readBytesFloat(), sname); break;
+				case DataType.DATA_DOUBLE: setData(dataType, buffer.readBytesDouble(), sname); break;
 				case DataType.DATA_STRING: setData(dataType, buffer.readBytesString(), sname); break;
 				default: throw new ArgumentException();
 			}

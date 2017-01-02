@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using static Cereal.Global;
 
 namespace Cereal
 {

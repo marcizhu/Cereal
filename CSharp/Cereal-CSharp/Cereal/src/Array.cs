@@ -176,18 +176,19 @@ namespace Cereal
 
 		public List<T> getArray<T>()
 		{
-			List<T> ret = new List<T>();
+			/*List<T> ret = new List<T>();
 
 			uint pointer = 0;
 
 			for (int i = 0; i < count; i++)
 			{
-				//ret.Add(Reader.readBytes<T>(data, pointer));
+				ret.Add(Reader.readBytes<T>(data, pointer));
 
 				pointer += (uint)Marshal.SizeOf(typeof(T));
 			}
 
-			return ret;
+			return ret;*/
+			throw new NotImplementedException();
 		}
 
 		public List<string> getArray()
@@ -207,24 +208,124 @@ namespace Cereal
 		}
 
 		// This returns the data in little endian (necessary for >1 byte data types like shorts or ints)
-		/*public T[] getRawArray<T>(T[] mem)
+		#region getRawArray()
+		public bool[] getRawBool(bool[] mem)
 		{
 			uint pointer = 0;
 
 			for (uint i = 0; i < count; i++)
 			{
-				mem[i] = Reader.readBytes<T>(data, pointer);
+				mem[i] = Reader.readBytesBool(data, pointer);
 
-				pointer += (uint)Marshal.SizeOf(typeof(T));
+				pointer += (uint)sizeof(bool);
 			}
 
 			return mem;
-		}*/
+		}
+
+		public byte[] getRawByte(byte[] mem)
+		{
+			uint pointer = 0;
+
+			for (uint i = 0; i < count; i++)
+			{
+				mem[i] = Reader.readBytesByte(data, pointer);
+
+				pointer += (uint)sizeof(byte);
+			}
+
+			return mem;
+		}
+
+		public char[] getRawChar(char[] mem)
+		{
+			uint pointer = 0;
+
+			for (uint i = 0; i < count; i++)
+			{
+				mem[i] = Reader.readBytesChar(data, pointer);
+
+				pointer += (uint)sizeof(char);
+			}
+
+			return mem;
+		}
+
+		public short[] getRawShort(short[] mem)
+		{
+			uint pointer = 0;
+
+			for (uint i = 0; i < count; i++)
+			{
+				mem[i] = Reader.readBytesShort(data, pointer);
+
+				pointer += (uint)sizeof(short);
+			}
+
+			return mem;
+		}
+
+		public float[] getRawFloat(float[] mem)
+		{
+			uint pointer = 0;
+
+			for (uint i = 0; i < count; i++)
+			{
+				mem[i] = Reader.readBytesFloat(data, pointer);
+
+				pointer += (uint)sizeof(float);
+			}
+
+			return mem;
+		}
+
+		public double[] getRawDouble(double[] mem)
+		{
+			uint pointer = 0;
+
+			for (uint i = 0; i < count; i++)
+			{
+				mem[i] = Reader.readBytesDouble(data, pointer);
+
+				pointer += (uint)sizeof(double);
+			}
+
+			return mem;
+		}
+
+		public int[] getRawInt32(int[] mem)
+		{
+			uint pointer = 0;
+
+			for (uint i = 0; i < count; i++)
+			{
+				mem[i] = Reader.readBytesInt32(data, pointer);
+
+				pointer += (uint)sizeof(int);
+			}
+
+			return mem;
+		}
+
+		public Int64[] getRawInt64(Int64[] mem)
+		{
+			uint pointer = 0;
+
+			for (uint i = 0; i < count; i++)
+			{
+				mem[i] = Reader.readBytesInt64(data, pointer);
+
+				pointer += (uint)sizeof(UInt64);
+			}
+
+			return mem;
+		}
 
 		public string[] getRawArray(string[] mem)
 		{
 			throw new NotImplementedException();
 		}
+		#endregion
 
 		#region Properties
 		public string Name
