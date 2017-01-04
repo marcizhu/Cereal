@@ -80,7 +80,7 @@ namespace Cereal
 					}
 
 				default:
-					throw new ArgumentException();
+					throw new ArgumentOutOfRangeException("version", "Invalid database version!");
 			}
 		}
 
@@ -108,7 +108,7 @@ namespace Cereal
 				break;
 
 			default:
-				throw new ArgumentException();
+				throw new ArgumentOutOfRangeException("version", "Invalid database version!");
 			}
 
 			return true;
@@ -138,7 +138,7 @@ namespace Cereal
 				if (value <= Global.Version.VERSION_LATEST)
 					version = value;
 				else
-					throw new ArgumentException();
+					throw new ArgumentOutOfRangeException("version", "Invalid database version!");
 			}
 		}
 
@@ -147,6 +147,11 @@ namespace Cereal
 			get
 			{
 				return name;
+			}
+
+			set
+			{
+				if (value.Length > 0) name = value;
 			}
 		}
 
@@ -162,7 +167,7 @@ namespace Cereal
 						ret += sizeof(short) + (uint)name.Length + sizeof(int) + sizeof(short); break;
 
 					default:
-						throw new ArgumentException(); // Invalid version
+						throw new ArgumentOutOfRangeException("version", "Cannot calculate the database size with an unknown database version!"); // Invalid version
 				}
 
 				foreach (Object obj in objects)

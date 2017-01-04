@@ -57,6 +57,33 @@ namespace Cereal
 			}
 		}
 
+		private void setData(DataType type, bool[] value, string arrayName)
+		{
+			if (type == DataType.DATA_UNKNOWN) return;
+
+			name = arrayName;
+			count = (uint)value.Length;
+			dataType = type;
+
+			if (data != null)
+			{
+				data = null;
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+			}
+
+			data = new byte[count];
+
+			Debug.Assert(count < 4294967295); // Maximum item count (overflow of pointer and buffer)
+
+			uint pointer = 0;
+
+			for (uint i = 0; i < count; i++)
+			{
+				pointer = Writer.writeBytes(data, pointer, value[i]);
+			}
+		}
+
 		void setData(DataType type, string[] value, string name)
 		{
 			count = (uint)value.Length;
@@ -90,7 +117,7 @@ namespace Cereal
 		// public
 		public Array() { setData<byte>(DataType.DATA_UNKNOWN, null, ""); }
 		public Array(string name, byte[] value) { setData<byte>(DataType.DATA_CHAR, value, name); }
-		public Array(string name, bool[] value) { setData<bool>(DataType.DATA_BOOL, value, name); }
+		public Array(string name, bool[] value) { setData(DataType.DATA_BOOL, value, name); }
 		public Array(string name, char[] value) { setData<char>(DataType.DATA_CHAR, value, name); }
 		public Array(string name, short[] value) { setData<short>(DataType.DATA_SHORT, value, name); }
 		public Array(string name, int[] value) { setData<int>(DataType.DATA_INT, value, name); }
@@ -209,7 +236,7 @@ namespace Cereal
 
 		// This returns the data in little endian (necessary for >1 byte data types like shorts or ints)
 		#region getRawArray()
-		public bool[] getRawBool(bool[] mem)
+		public bool[] getRawArray(bool[] mem)
 		{
 			uint pointer = 0;
 
@@ -223,7 +250,7 @@ namespace Cereal
 			return mem;
 		}
 
-		public byte[] getRawByte(byte[] mem)
+		public byte[] getRawArray(byte[] mem)
 		{
 			uint pointer = 0;
 
@@ -237,7 +264,7 @@ namespace Cereal
 			return mem;
 		}
 
-		public char[] getRawChar(char[] mem)
+		public char[] getRawArray(char[] mem)
 		{
 			uint pointer = 0;
 
@@ -251,7 +278,7 @@ namespace Cereal
 			return mem;
 		}
 
-		public short[] getRawShort(short[] mem)
+		public short[] getRawArray(short[] mem)
 		{
 			uint pointer = 0;
 
@@ -265,7 +292,7 @@ namespace Cereal
 			return mem;
 		}
 
-		public float[] getRawFloat(float[] mem)
+		public float[] getRawArray(float[] mem)
 		{
 			uint pointer = 0;
 
@@ -279,7 +306,7 @@ namespace Cereal
 			return mem;
 		}
 
-		public double[] getRawDouble(double[] mem)
+		public double[] getRawArray(double[] mem)
 		{
 			uint pointer = 0;
 
@@ -293,7 +320,7 @@ namespace Cereal
 			return mem;
 		}
 
-		public int[] getRawInt32(int[] mem)
+		public int[] getRawArray(int[] mem)
 		{
 			uint pointer = 0;
 
@@ -307,7 +334,7 @@ namespace Cereal
 			return mem;
 		}
 
-		public Int64[] getRawInt64(Int64[] mem)
+		public Int64[] getRawArray(Int64[] mem)
 		{
 			uint pointer = 0;
 
@@ -333,6 +360,11 @@ namespace Cereal
 			get
 			{
 				return name;
+			}
+
+			set
+			{
+				if (value.Length > 0) name = value;
 			}
 		}
 

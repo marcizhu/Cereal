@@ -111,6 +111,7 @@ namespace Cereal
 				return databases;
 			}
 		}
+		#endregion
 
 		public Database getDatabase(string name)
 		{
@@ -119,7 +120,6 @@ namespace Cereal
 
 			return null;
 		}
-		#endregion
 	};
 
 }

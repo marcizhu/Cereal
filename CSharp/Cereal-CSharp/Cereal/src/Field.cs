@@ -44,6 +44,23 @@ namespace Cereal
 			Writer.writeBytes<T>(data, 0, value);
 		}
 
+		private void setData(DataType type, bool value, string fName)
+		{
+			dataType = type;
+			name = fName;
+
+			if (data != null)
+			{
+				data = null;
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+			}
+
+			//Setting the data
+			data = new byte[1];
+			Writer.writeBytes(data, 0, value);
+		}
+
 		private void setData(DataType type, float value, string fName)
 		{
 			dataType = type;
@@ -110,7 +127,7 @@ namespace Cereal
 		}
 
 		public Field(string name, byte value) { setData<byte>(DataType.DATA_CHAR /* | MOD_UNSIGNED*/, value, name); }
-		public Field(string name, bool value) { setData<bool>(DataType.DATA_BOOL, value, name); }
+		public Field(string name, bool value) { setData(DataType.DATA_BOOL, value, name); }
 		public Field(string name, char value) { setData<char>(DataType.DATA_CHAR, value, name); }
 		public Field(string name, short value) { setData<short>(DataType.DATA_SHORT, value, name); }
 		public Field(string name, int value) { setData<int>(DataType.DATA_INT, value, name); }
@@ -170,7 +187,7 @@ namespace Cereal
 
 			switch (dataType)
 			{
-				case DataType.DATA_BOOL: setData<bool>(dataType, buffer.readBytesBool(), sname); break;
+				case DataType.DATA_BOOL: setData(dataType, buffer.readBytesBool(), sname); break;
 				case DataType.DATA_CHAR: setData<byte>(dataType, buffer.readBytesByte(), sname); break;
 				case DataType.DATA_SHORT: setData<short>(dataType, buffer.readBytesShort(), sname); break;
 				case DataType.DATA_INT: setData<int>(dataType, buffer.readBytesInt32(), sname); break;
@@ -178,7 +195,7 @@ namespace Cereal
 				case DataType.DATA_FLOAT: setData(dataType, buffer.readBytesFloat(), sname); break;
 				case DataType.DATA_DOUBLE: setData(dataType, buffer.readBytesDouble(), sname); break;
 				case DataType.DATA_STRING: setData(dataType, buffer.readBytesString(), sname); break;
-				default: throw new ArgumentException();
+				default: throw new ArgumentOutOfRangeException("dataType", "Invalid data type!");
 			}
 		}
 
@@ -188,6 +205,11 @@ namespace Cereal
 			get
 			{
 				return name;
+			}
+
+			set
+			{
+				if (value.Length > 0) name = value;
 			}
 		}
 
@@ -212,14 +234,6 @@ namespace Cereal
 			}
 		}
 		#endregion
-
-		public byte Value
-		{
-			get
-			{
-				return Reader.readBytesByte(data, 0);
-			}
-		}
 
 		public byte getByte() { return Reader.readBytesByte(data, 0); }
 		public bool getBool() { return Reader.readBytesBool(data, 0); }

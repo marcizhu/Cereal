@@ -126,6 +126,11 @@ namespace Cereal
 			{
 				return name;
 			}
+
+			set
+			{
+				if (value.Length > 0) name = value;
+			}
 		}
 
 		public uint Size

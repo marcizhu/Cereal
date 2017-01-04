@@ -155,7 +155,7 @@ namespace Cereal
 		{
 			if(typeof(T) == typeof(string))
 			{
-				throw new Exception("Invalid call to Buffer::writeBytes<T>(...)");
+				throw new Exception("Invalid call to Buffer::writeBytes<T>(...)"); // debug exception. It will be removed once everything is tested properly
 			}
 
 			MemoryStream ms = new MemoryStream();
@@ -178,7 +178,7 @@ namespace Cereal
 					writer.Write(Convert.ToByte(value)); break;
 
 				default:
-					throw new Exception("Invalid call to Writer::writeBytes<T>");
+					throw new ArgumentOutOfRangeException("sizeof(value)", "Invalid call to Writer::writeBytes<T>");
 			}
 
 			byte[] src = ms.ToArray();

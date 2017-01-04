@@ -45,7 +45,7 @@ namespace Cereal
 					writer.Write(Convert.ToByte(value)); break;
 
 				default:
-					throw new Exception("Invalid call to Writer::writeBytes<T>");
+					throw new ArgumentOutOfRangeException("sizeof(value)", "Invalid call to Writer::writeBytes<T>");
 			}
 
 			byte[] src = ms.ToArray();
@@ -70,6 +70,13 @@ namespace Cereal
 				}
 			}
 			return pointer + (uint)size;
+		}
+
+		public static uint writeBytes(byte[] dest, uint pointer, bool value)
+		{
+			dest[pointer] = value != false ? (byte)1 : (byte)0;
+
+			return pointer + 1;
 		}
 
 		public static uint writeBytes(byte[] dest, uint pointer, string str)
