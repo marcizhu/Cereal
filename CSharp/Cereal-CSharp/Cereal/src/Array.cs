@@ -180,7 +180,7 @@ namespace Cereal
 			{
 				data = new byte[count * sizeOf(dataType)];
 
-				System.Array.Copy(buffer.Start, buffer.Position, data, 0, count * sizeOf(dataType));
+				System.Array.Copy(buffer.Data, buffer.Position, data, 0, count * sizeOf(dataType));
 
 				buffer.addOffset(count * sizeOf(dataType));
 			}
@@ -197,7 +197,7 @@ namespace Cereal
 
 				data = new byte[size];
 
-				System.Array.Copy(buffer.Start, start, data, 0, size);
+				System.Array.Copy(buffer.Data, start, data, 0, size);
 			}
 		}
 
@@ -357,23 +357,13 @@ namespace Cereal
 		#region Properties
 		public string Name
 		{
-			get
-			{
-				return name;
-			}
-
-			set
-			{
-				if (value.Length > 0) name = value;
-			}
+			get { return name; }
+			set { if (string.IsNullOrEmpty(value) == false) name = value; }
 		}
 
 		public uint ItemCount
 		{
-			get
-			{
-				return count;
-			}
+			get { return count; }
 		}
 
 		public uint Size
@@ -393,12 +383,8 @@ namespace Cereal
 
 		public DataType DataType
 		{
-			get
-			{
-				return dataType;
-			}
+			get { return dataType; }
 		}
 		#endregion
 	}
-
 }

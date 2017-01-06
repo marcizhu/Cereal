@@ -131,7 +131,7 @@ namespace Cereal
 		public Field(string name, char value) { setData<char>(DataType.DATA_CHAR, value, name); }
 		public Field(string name, short value) { setData<short>(DataType.DATA_SHORT, value, name); }
 		public Field(string name, int value) { setData<int>(DataType.DATA_INT, value, name); }
-		public Field(string name, UInt64 value) { setData<UInt64>(DataType.DATA_LONG_LONG, value, name); }
+		public Field(string name, Int64 value) { setData<Int64>(DataType.DATA_LONG_LONG, value, name); }
 		public Field(string name, float value) { setData(DataType.DATA_FLOAT, value, name); }
 		public Field(string name, double value) { setData(DataType.DATA_DOUBLE, value, name); }
 		public Field(string name, string value) { setData(DataType.DATA_STRING, value, name); }
@@ -191,7 +191,7 @@ namespace Cereal
 				case DataType.DATA_CHAR: setData<byte>(dataType, buffer.readBytesByte(), sname); break;
 				case DataType.DATA_SHORT: setData<short>(dataType, buffer.readBytesShort(), sname); break;
 				case DataType.DATA_INT: setData<int>(dataType, buffer.readBytesInt32(), sname); break;
-				case DataType.DATA_LONG_LONG: setData<UInt64> (dataType, (ulong)buffer.readBytesInt64(), sname); break;
+				case DataType.DATA_LONG_LONG: setData<Int64> (dataType, (long)buffer.readBytesInt64(), sname); break;
 				case DataType.DATA_FLOAT: setData(dataType, buffer.readBytesFloat(), sname); break;
 				case DataType.DATA_DOUBLE: setData(dataType, buffer.readBytesDouble(), sname); break;
 				case DataType.DATA_STRING: setData(dataType, buffer.readBytesString(), sname); break;
@@ -199,18 +199,21 @@ namespace Cereal
 			}
 		}
 
+		public byte getByte() { return Reader.readBytesByte(data, 0); }
+		public bool getBool() { return Reader.readBytesBool(data, 0); }
+		public char getChar() { return Reader.readBytesChar(data, 0); }
+		public short getShort() { return Reader.readBytesShort(data, 0); }
+		public int getInt32() { return Reader.readBytesInt32(data, 0); }
+		public float getFloat() { return Reader.readBytesFloat(data, 0); }
+		public Int64 getInt64() { return Reader.readBytesInt64(data, 0); }
+		public double getDouble() { return Reader.readBytesDouble(data, 0); }
+		public string getString() { return Reader.readBytesString(data, 0); }
+
 		#region Properties
 		public string Name
 		{
-			get
-			{
-				return name;
-			}
-
-			set
-			{
-				if (value.Length > 0) name = value;
-			}
+			get { return name; }
+			set { if (string.IsNullOrEmpty(value) == false) name = value; }
 		}
 
 		public uint Size
@@ -228,21 +231,8 @@ namespace Cereal
 
 		public DataType DataType
 		{
-			get
-			{
-				return DataType;
-			}
+			get { return DataType; }
 		}
 		#endregion
-
-		public byte getByte() { return Reader.readBytesByte(data, 0); }
-		public bool getBool() { return Reader.readBytesBool(data, 0); }
-		public char getChar() { return Reader.readBytesChar(data, 0); }
-		public short getShort() { return Reader.readBytesShort(data, 0); }
-		public int getInt32() { return Reader.readBytesInt32(data, 0); }
-		public float getFloat() { return Reader.readBytesFloat(data, 0); }
-		public Int64 getInt64() { return Reader.readBytesInt64(data, 0); }
-		public double getDouble() { return Reader.readBytesDouble(data, 0); }
-		public string getString() { return Reader.readBytesString(data, 0); }
 	};
 }

@@ -25,7 +25,11 @@ namespace Cereal
 			int hiByte = readBytesInt32(src, pointer);
 			int loByte = readBytesInt32(src, pointer + sizeof(int));
 
-			return (hiByte << sizeof(int) * 8) | loByte;
+			Int64 temp = (uint)hiByte;
+			temp = temp << (sizeof(int) * 8);
+			temp |= (uint)loByte;
+
+			return temp;
 		}
 
 		public static int readBytesInt32(byte[] src, uint pointer)

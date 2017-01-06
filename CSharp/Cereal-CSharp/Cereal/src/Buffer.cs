@@ -62,7 +62,11 @@ namespace Cereal
 			int hiByte = readBytesInt32();
 			int loByte = readBytesInt32();
 
-			return (hiByte << sizeof(int) * 8) | loByte;
+			Int64 temp = (uint)hiByte;
+			temp = temp << (sizeof(int) * 8);
+			temp |= (uint)loByte;
+
+			return temp;
 		}
 
 		public int readBytesInt32()
@@ -242,45 +246,6 @@ namespace Cereal
 			start = temp;
 		}
 
-		#region Properties
-		public uint FreeSpace
-		{
-			get
-			{
-				return (uint)start.Length - offset;
-			}
-		}
-
-		public uint Position
-		{
-			get
-			{
-				return offset;
-			}
-
-			set
-			{
-				if(value < start.Length) offset = value;
-			}
-		}
-
-		public uint Length
-		{
-			get
-			{
-				return (uint)start.Length;
-			}
-		}
-
-		public byte[] Start
-		{
-			get
-			{
-				return start;
-			}
-		}
-		#endregion
-
 		public bool hasSpace(uint amount) { return (offset + amount) <= start.Length; }
 
 		public void addOffset(uint offs) { offset += offs; }
@@ -319,6 +284,28 @@ namespace Cereal
 
 			return true;
 		}
-	};
 
+		#region Properties
+		public uint FreeSpace
+		{
+			get { return (uint)start.Length - offset; }
+		}
+
+		public uint Position
+		{
+			get { return offset; }
+			set { if (value < start.Length) offset = value; }
+		}
+
+		public uint Length
+		{
+			get { return (uint)start.Length; }
+		}
+
+		public byte[] Data
+		{
+			get { return start; }
+		}
+		#endregion
+	};
 }

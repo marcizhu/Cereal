@@ -123,16 +123,16 @@ namespace Cereal
 		}
 
 		public void addObject(Object obj) { objects.Add(obj); }
-		public List<Object> getObjects() { return objects; }
 
 		#region Properties
+		public List<Object> Objects
+		{
+			get { return objects; }
+		}
+
 		public Global.Version Version
 		{
-			get
-			{
-				return version;
-			}
-
+			get { return version; }
 			set
 			{
 				if (value <= Global.Version.VERSION_LATEST)
@@ -144,15 +144,8 @@ namespace Cereal
 
 		public string Name
 		{
-			get
-			{
-				return name;
-			}
-
-			set
-			{
-				if (value.Length > 0) name = value;
-			}
+			get { return name; }
+			set { if (string.IsNullOrEmpty(value) == false) name = value; }
 		}
 
 		public uint Size
@@ -177,7 +170,5 @@ namespace Cereal
 			}
 		}
 		#endregion
-
 	};
-
 }

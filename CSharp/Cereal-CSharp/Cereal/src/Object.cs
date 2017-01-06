@@ -118,19 +118,11 @@ namespace Cereal
 			}
 		}
 
-
 		#region Properties
 		public string Name
 		{
-			get
-			{
-				return name;
-			}
-
-			set
-			{
-				if (value.Length > 0) name = value;
-			}
+			get { return name; }
+			set { if (string.IsNullOrEmpty(value) == false) name = value; }
 		}
 
 		public uint Size
@@ -151,31 +143,15 @@ namespace Cereal
 
 		public List<Field> Fields
 		{
-			get
-			{
-				return fields;
-			}
-
-			set
-			{
-				fields = value;
-			}
+			get { return fields; }
+			set { fields = value; }
 		}
 
 		public List<Array> Arrays
 		{
-			get
-			{
-				return arrays;
-			}
-
-			set
-			{
-				arrays = value;
-			}
+			get { return arrays; }
+			set { arrays = value; }
 		}
-
 		#endregion
 	};
-
 }

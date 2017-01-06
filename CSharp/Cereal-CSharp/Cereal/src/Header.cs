@@ -90,6 +90,14 @@ namespace Cereal
 
 		public void addDatabase(Database db) { databases.Add(db); }
 
+		public Database getDatabase(string name)
+		{
+			foreach (Database db in databases)
+				if (db.Name == name) return db;
+
+			return null;
+		}
+
 		#region Properties
 		public uint Size
 		{
@@ -106,20 +114,8 @@ namespace Cereal
 
 		public List<Database> Databases
 		{
-			get
-			{
-				return databases;
-			}
+			get { return databases; }
 		}
 		#endregion
-
-		public Database getDatabase(string name)
-		{
-			foreach (Database db in databases)
-				if (db.Name == name) return db;
-
-			return null;
-		}
 	};
-
 }

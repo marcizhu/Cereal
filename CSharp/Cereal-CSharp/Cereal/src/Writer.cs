@@ -50,25 +50,11 @@ namespace Cereal
 
 			byte[] src = ms.ToArray();
 
-			if (size == 8)
+			for (int i = 0; i < size; i++)
 			{
-				for (int i = 0; i < 4; i++)
-				{
-					dest[pointer + i] = src[3 - i];
-				}
+				dest[pointer + i] = src[size - 1 - i];
+			}
 
-				for (int i = 0; i < 4; i++)
-				{
-					dest[pointer + 4 + i] = src[7 - i];
-				}
-			}
-			else
-			{
-				for (int i = 0; i < size; i++)
-				{
-					dest[pointer + i] = src[size - 1 - i];
-				}
-			}
 			return pointer + (uint)size;
 		}
 
