@@ -1,4 +1,4 @@
-# Cereal: A serialization library for C++ and C Sharp
+# Cereal: A serialization library for C++ and [C Sharp](https://github.com/marcizhu/Cereal-CSharp)
 ## What is Cereal?
 Cereal is a header-only library based on [TheCherno](https://github.com/thecherno/)'s
  serialization library for Java. This project is maintained by [raresica1234](https://github.com/raresica1234/) and [marcizhu](https://github.com/marcizhu/).
