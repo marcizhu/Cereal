@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <vector>
 #include <stdio.h>
+#include <sstream>
 
 #include <Cereal.h>
 
@@ -55,50 +56,98 @@ void dump(const void* object, unsigned int size, int color = 0x03)
 	setConsoleColor(0x07);
 }
 
+std::vector<std::string> splitString(const std::string& str, char delimiter)
+{
+	std::vector<std::string> split;
+	std::stringstream ss(str);
+	std::string item;
+
+	while (std::getline(ss, item, delimiter)) split.push_back(item);
+
+	return split;
+}
+
 int main()
 {
-	Cereal::Buffer dest(1024);
+	Cereal::Buffer dest(1024 * 1024 * 10);
 
-	std::string data[3] = { "test", "test2", "test of a longer but equally valid string" };
+	std::ifstream infile("words.txt", std::ifstream::binary);
 
-	Cereal::Database* db = new Cereal::Database("Database name");
-	Cereal::Database* db2 = new Cereal::Database("Second database");
+	printf("Reading file...");
 
-	db->addObject(new Cereal::Object("Object name"));
-	db2->addObject(new Cereal::Object("Test object"));
+	if (!infile.good()) return false;
 
-	db->getObject("Object name")->addArray(new Cereal::Array("Array name", data, 3));
-	db->getObject("Object name")->addField(new Cereal::Field("Field name", std::string("test!")));
-	db2->getObject("Test object")->addField(new Cereal::Field("xpos", 3.141592f));
+	infile.seekg(0, std::ios::end);
+	unsigned int size = (unsigned int)infile.tellg();
+	infile.seekg(0, std::ios::beg);
 
-	Cereal::Header* header = new Cereal::Header;
+	char* data = new char[size];
 
-	header->addDatabase(db);
-	header->addDatabase(db2);
-	header->write(dest);
+	infile.read((char*)data, size);
+	infile.close();
+
+	printf("OK!\nSeparating words...");
+
+	std::vector<std::string> words = splitString(std::string(data), '\n');
+
+	delete[] data;
+
+	printf("OK!\nCopying data...");
+
+	std::string* strs = new std::string[words.size()];
+
+	for (int i = 0; i < words.size(); i++)
+	{
+		strs[i] = words[i];
+	}
+
+	printf("OK!\nCreating database...");
+
+	Cereal::Database* db = new Cereal::Database("Dictionaries");
+
+	db->addObject(new Cereal::Object("English"));
+
+	db->getObject("English")->addArray(new Cereal::Array("words", strs, words.size()));
+
+	printf("OK!\nWriting...");
+
+	db->write(dest);
 
 	dest.shrink();
 
+	printf("OK!\nWriting to a file...");
+
+	dest.writeFile(std::string("dictionaries-english.db"));
+
+	printf("OK!\nFreeing memory...");
+
+	words.erase(words.begin(), words.end());
+
+	delete[] strs;
+	delete db;
+
+	printf("OK!\n\nJob done.");
+
 	dump(dest.getStart(), dest.getSize());
 
-	//dest.writeFile(std::string("test.db"));
+	/**Cereal::Buffer dest(0);
 
-	Cereal::Header* header2 = new Cereal::Header;
+	dest.readFile("dictionaries.db");
 
-	dest.setOffset(0);
+	Cereal::Database* db = new Cereal::Database;
 
-	header2->read(dest);
+	db->read(dest);
 
-	float retf = header2->getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
+	//float retf = header2->getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
 
-	std::string ret = header2->getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
+	//std::string ret = header2->getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
 
-	std::vector<std::string> array = header2->getDatabase("Database name")->getObject("Object name")->getArray("Array name")->getArray<std::string>();
+	std::vector<std::string> array = db->getObject("English")->getArray("words")->getArray<std::string>();
 
-	printf("%s\n%s\n%s", array[0].c_str(), array[1].c_str(), array[2].c_str());
+	printf("Done.");
 
-	delete header;
-	delete header2;
+	//delete header;
+	delete db;*/
 
 	while (1) { Sleep(1000); }
 
