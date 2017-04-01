@@ -32,7 +32,7 @@ namespace Cereal {
 
 			for (int i = 0; i < sizeof(T); i++)
 			{
-				value |= (src[pointer + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
+				value |= ((T)src[pointer + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
 			}
 
 			return value;
@@ -65,7 +65,7 @@ namespace Cereal {
 
 			for (int i = 0; i < (int) sizeof(double); i++)
 			{
-				value |= (src[pointer + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				value |= ((unsigned long long)src[pointer + i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 			}
 
 			double result;
