@@ -50,7 +50,7 @@ namespace Cereal {
 
 			float result;
 
-			memcpy_s(&result, sizeof(float), &value, sizeof(float));
+			memcpy(&result, &value, sizeof(float));
 
 			return result;
 		}
@@ -69,7 +69,7 @@ namespace Cereal {
 			}
 
 			double result;
-			memcpy_s(&result, sizeof(double), &value, sizeof(double));
+			memcpy(&result, &value, sizeof(double));
 
 			return result;
 		}

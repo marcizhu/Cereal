@@ -69,7 +69,7 @@ std::vector<std::string> splitString(const std::string& str, char delimiter)
 
 int main()
 {
-	Cereal::Buffer dest(1024 * 1024 * 10);
+	/*Cereal::Buffer dest(1024 * 1024 * 10);
 
 	std::ifstream infile("words.txt", std::ifstream::binary);
 
@@ -128,26 +128,29 @@ int main()
 
 	printf("OK!\n\nJob done.");
 
-	dump(dest.getStart(), dest.getSize());
+	dump(dest.getStart(), dest.getSize());*/
 
-	/**Cereal::Buffer dest(0);
+	Cereal::Buffer dest(0);
 
-	dest.readFile("dictionaries.db");
+	dest.readFile("test.db");
 
-	Cereal::Database* db = new Cereal::Database;
+	//Cereal::Database* db = new Cereal::Database;
 
-	db->read(dest);
+	Cereal::Header* header2 = new Cereal::Header();
+	header2->read(dest);
 
-	//float retf = header2->getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
+	//db->read(dest);
 
-	//std::string ret = header2->getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
+	float retf = header2->getDatabase("Second database")->getObject("Test object")->getField("xpos")->getValue<float>();
 
-	std::vector<std::string> array = db->getObject("English")->getArray("words")->getArray<std::string>();
+	std::string ret = header2->getDatabase("Database name")->getObject("Object name")->getField("Field name")->getValue<std::string>();
+
+	//std::vector<std::string> array = db->getObject("English")->getArray("words")->getArray<std::string>();
 
 	printf("Done.");
 
-	//delete header;
-	delete db;*/
+	delete header2;
+	//delete db;
 
 	while (1) { Sleep(1000); }
 

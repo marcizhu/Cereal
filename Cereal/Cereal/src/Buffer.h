@@ -73,7 +73,7 @@ namespace Cereal {
 
 			offset += sizeof(float);
 
-			memcpy_s(&result, 4, &value, 4);
+			memcpy(&result, &value, 4);
 
 			return result;
 		}
@@ -92,7 +92,7 @@ namespace Cereal {
 			}
 
 			double result;
-			memcpy_s(&result, 4, &value, 4);
+			memcpy(&result, &value, 4);
 
 			offset += sizeof(double);
 
