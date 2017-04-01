@@ -239,13 +239,13 @@ void testObjects()
 void testArrays()
 {
 	Cereal::Array* a = new Cereal::Array("array name", new int[4]{ 1, 2, 3, 4 }, 4);
-	Cereal::Array* a2 = new Cereal::Array("second", new std::string[2]{ "t1", "t2" }, 2);
+	Cereal::Array* a2 = new Cereal::Array("second", new std::string[2]{ "another string", "string no 2" }, 2);
 	int* ret = a->getRawArray(new int[a->getCount()]);
 
 	PT_ASSERT_STR_EQ(a->getName().c_str(), "array name");
 	PT_ASSERT_STR_EQ(a2->getName().c_str(), "second");
-	PT_ASSERT_STR_EQ(a2->getArray<std::string>()[0].c_str(), "t1");
-	PT_ASSERT_STR_EQ(a2->getArray<std::string>()[1].c_str(), "t2");
+	PT_ASSERT_STR_EQ(a2->getArray<std::string>()[0].c_str(), "another string");
+	PT_ASSERT_STR_EQ(a2->getArray<std::string>()[1].c_str(), "string no 2");
 
 	PT_ASSERT(a->getCount() == 4);
 	PT_ASSERT(ret[0] == 1);
@@ -285,9 +285,6 @@ void testFields()
 	PT_ASSERT(fint->getValue<int>() == 42);
 	PT_ASSERT(ffloat->getValue<float>() == 3.2f);
 	PT_ASSERT(flonglong->getValue<long long>() == 0x123456789ABCDEF0);
-
-	double ret = fdouble->getValue<double>();
-
 	PT_ASSERT(fdouble->getValue<double>() == 3.141592);
 	PT_ASSERT_STR_EQ(fstring->getValue<std::string>().c_str(), "test string");
 

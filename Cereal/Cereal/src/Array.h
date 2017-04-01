@@ -136,18 +136,18 @@ namespace Cereal {
 			}
 			else
 			{
-				unsigned int start = buffer.getOffset();
+				size = 0;
 
 				for (unsigned int i = 0; i < count; i++)
 				{
-					buffer.readBytes<std::string>();
+					size += Reader::readBytes<unsigned short>((byte*)buffer.getStart(), buffer.getOffset() + size) + sizeof(unsigned short);
 				}
-
-				size = buffer.getOffset() - start;
 
 				data = new byte[size];
 
-				memcpy(data, ((byte*)buffer.getStart() + start), size);
+				memcpy(data, ((byte*)buffer.getStart() + buffer.getOffset()), size);
+
+				buffer.addOffset(size);
 			}
 		}
 
