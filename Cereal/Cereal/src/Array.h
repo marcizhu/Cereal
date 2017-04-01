@@ -108,8 +108,7 @@ namespace Cereal {
 			else
 				s = size;
 
-			for (unsigned int i = 0; i < s; i++)
-				buffer.writeBytes<byte>(data[i]);
+			buffer.copy(data, s);
 
 			return true;
 		}

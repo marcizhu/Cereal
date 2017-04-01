@@ -110,7 +110,7 @@ void testCereal64()
 void testRead()
 {
 	Cereal::Buffer buffer(0);
-	bool ret = buffer.readFile("C:\\Users\\marci\\Documents\\Visual Studio 2015\\Projects\\Cereal\\Debug\\test-out.db");
+	bool ret = buffer.readFile("test-out.db");
 	PT_ASSERT(ret == true);
 
 	Cereal::Header* header = new Cereal::Header;

@@ -166,6 +166,15 @@ namespace Cereal {
 			return true;
 		}
 
+		bool copy(byte* data, unsigned int size)
+		{
+			memcpy((byte*)start + offset, data, size);
+
+			offset += size;
+
+			return true;
+		}
+
 		void shrink()
 		{
 			byte* temp = new byte[offset];
