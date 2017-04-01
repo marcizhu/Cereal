@@ -73,7 +73,7 @@ namespace Cereal {
 			}
 
 			default:
-				__debugbreak(); break;
+				throw new std::invalid_argument("The version is not valid!"); break;
 			}
 		}
 
@@ -101,7 +101,7 @@ namespace Cereal {
 				break;
 
 			default:
-				__debugbreak(); break;
+				throw new std::invalid_argument("The version is not valid!"); break;
 			}
 
 			return true;
@@ -117,7 +117,7 @@ namespace Cereal {
 				ret += sizeof(short) + name.length() + sizeof(int) + sizeof(short); break;
 
 			default:
-				__debugbreak(); break; // Invalid version
+				throw new std::invalid_argument("The version is not valid!"); break; // Invalid version
 			}
 
 			for (const Object* obj : objects)

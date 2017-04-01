@@ -80,7 +80,7 @@ namespace Cereal {
 			buffer.writeBytes<unsigned short>(MAGIC_NUMBER);
 			buffer.writeBytes<byte>((byte)databases.size());
 
-			unsigned int offset = sizeof(short) + sizeof(byte) + (sizeof(unsigned int) * databases.size());
+			unsigned int offset = sizeof(unsigned short) + sizeof(byte) + (sizeof(unsigned int) * databases.size());
 
 			for (unsigned int i = 0; i < databases.size(); i++)
 			{

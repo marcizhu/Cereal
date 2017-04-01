@@ -125,7 +125,7 @@ namespace Cereal {
 				case DataType::DATA_FLOAT: setData<float>(dataType, buffer.readBytes<float>()); break;
 				case DataType::DATA_DOUBLE: setData<double>(dataType, buffer.readBytes<double>()); break;
 				case DataType::DATA_STRING: setData<std::string>(dataType, buffer.readBytes<std::string>()); break;
-				default: __debugbreak(); break;
+				default: throw new std::invalid_argument("The data type is not valid!"); break;
 			}
 		}
 
