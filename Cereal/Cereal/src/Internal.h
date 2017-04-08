@@ -39,8 +39,9 @@ namespace Cereal {
 	enum Version
 	{
 		VERSION_1_0		= 0x0100, // first byte = major version, second = minor (revision)
+		VERSION_2_0		= 0x0200,
 
-		VERSION_LATEST	= VERSION_1_0,
+		VERSION_LATEST	= VERSION_2_0,
 		VERSION_INVALID = 0xFFFF
 	};
 

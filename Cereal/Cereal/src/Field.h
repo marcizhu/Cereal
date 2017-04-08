@@ -109,7 +109,9 @@ namespace Cereal {
 		{
 			byte type = buffer.readBytes<byte>();
 
-			assert(type == DataType::DATA_FIELD);
+#ifndef CEREAL_RELEASE
+			if(type != DataType::DATA_FIELD) throw new std::invalid_argument("Invalid field!");
+#endif
 
 			this->name = buffer.readBytes<std::string>();
 
@@ -125,7 +127,7 @@ namespace Cereal {
 				case DataType::DATA_FLOAT: setData<float>(dataType, buffer.readBytes<float>()); break;
 				case DataType::DATA_DOUBLE: setData<double>(dataType, buffer.readBytes<double>()); break;
 				case DataType::DATA_STRING: setData<std::string>(dataType, buffer.readBytes<std::string>()); break;
-				default: throw new std::invalid_argument("The data type is not valid!"); break;
+				default: throw new std::invalid_argument("Invalid data type!"); break;
 			}
 		}
 
