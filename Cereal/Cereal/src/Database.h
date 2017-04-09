@@ -70,8 +70,8 @@ namespace Cereal {
 		{
 			this->version = (Version)buffer.readBytes<unsigned short>();
 
-			if (version == Version::VERSION_INVALID) throw new std::invalid_argument("Invalid database version!");
-			if (version > Version::VERSION_LATEST) throw new std::invalid_argument("Unsupported version!");
+			if (version == Version::VERSION_INVALID) throw std::invalid_argument("Invalid database version!");
+			if (version > Version::VERSION_LATEST) throw std::invalid_argument("Unsupported version!");
 
 			switch (version)
 			{
@@ -103,7 +103,7 @@ namespace Cereal {
 				unsigned int p = buffer.getOffset();
 				unsigned int size = buffer.readBytes<unsigned int>() - sizeof(short) - sizeof(short) - (unsigned int)name.length() - sizeof(unsigned int);
 
-				if(crc32((byte*)buffer.getStart() + p, size) != checksum) throw new std::logic_error("Checksum mismatch!");
+				if(crc32((byte*)buffer.getStart() + p, size) != checksum) throw std::logic_error("Checksum mismatch!");
 
 				unsigned short objectCount = buffer.readBytes<unsigned short>();
 
@@ -119,7 +119,7 @@ namespace Cereal {
 			}
 
 			default:
-				throw new std::invalid_argument("Invalid database version!"); break;
+				throw std::invalid_argument("Invalid database version!"); break;
 			}
 		}
 
@@ -129,13 +129,13 @@ namespace Cereal {
 
 			buffer.writeBytes<unsigned short>(version);
 
-			if(version == Version::VERSION_INVALID) throw new std::invalid_argument("Invalid database version!");
+			if(version == Version::VERSION_INVALID) throw std::invalid_argument("Invalid database version!");
 
 			switch (version)
 			{
 			case Version::VERSION_1_0:
-				if(objects.size() > 65536) throw new std::overflow_error("Too many objects!");
-				if(this->getSize() > 4294967296) throw new std::overflow_error("Database size is too big!"); // 2^32, maximum database size
+				if(objects.size() > 65536) throw std::overflow_error("Too many objects!");
+				if(this->getSize() > 4294967296) throw std::overflow_error("Database size is too big!"); // 2^32, maximum database size
 
 				buffer.writeBytes<std::string>(name);
 				buffer.writeBytes<unsigned int>((unsigned int)this->getSize());
@@ -148,8 +148,8 @@ namespace Cereal {
 
 			case Version::VERSION_2_0:
 			{
-				if(objects.size() > 65536) throw new std::overflow_error("Too many objects!");
-				if(this->getSize() > 4294967296) throw new std::overflow_error("Database size is too big!"); // 2^32, maximum database size
+				if(objects.size() > 65536) throw std::overflow_error("Too many objects!");
+				if(this->getSize() > 4294967296) throw std::overflow_error("Database size is too big!"); // 2^32, maximum database size
 
 				buffer.writeBytes<std::string>(name);
 
@@ -176,7 +176,7 @@ namespace Cereal {
 			}
 
 			default:
-				throw new std::invalid_argument("Invalid database version!"); break;
+				throw std::invalid_argument("Invalid database version!"); break;
 			}
 
 			return true;
@@ -195,7 +195,7 @@ namespace Cereal {
 				ret += sizeof(short) + name.length() + sizeof(int) + sizeof(int) + sizeof(short); break;
 
 			default:
-				throw new std::invalid_argument("Invalid database version!"); break; // Invalid version
+				throw std::invalid_argument("Invalid database version!"); break; // Invalid version
 			}
 
 			for (const Object* obj : objects)

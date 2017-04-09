@@ -18,10 +18,10 @@
 
 #include <vector>
 #include <string>
+#include <assert.h>
 
 #include "Buffer.h"
 #include "Internal.h"
-
 #include "Field.h"
 #include "Array.h"
 
@@ -51,8 +51,8 @@ namespace Cereal {
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
-			if(fields.size() > 65536) throw new std::overflow_error("Too many fields!");
-			if(arrays.size() > 65536) throw new std::overflow_error("Too many arrays!");
+			if(fields.size() > 65536) throw std::overflow_error("Too many fields!");
+			if(arrays.size() > 65536) throw std::overflow_error("Too many arrays!");
 
 			buffer.writeBytes<byte>(DataType::DATA_OBJECT);
 			buffer.writeBytes<std::string>(name);
@@ -89,11 +89,11 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		void read(Buffer& buffer)
+		void read(Buffer& buffer) noexcept
 		{
 			byte type = buffer.readBytes<byte>();
 
-			if(type != DataType::DATA_OBJECT) throw new std::invalid_argument("Invalid object ID!");
+			assert(type == DataType::DATA_OBJECT);
 
 			this->name = buffer.readBytes<std::string>();
 

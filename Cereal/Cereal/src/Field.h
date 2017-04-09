@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <assert.h>
 
 #include "Buffer.h"
 #include "Reader.h" // Because of the internal buffer. Do we change it to be a Buffer class?
@@ -109,7 +110,7 @@ namespace Cereal {
 		{
 			byte type = buffer.readBytes<byte>();
 
-			if(type != DataType::DATA_FIELD) throw new std::logic_error("Invalid field ID!");
+			assert(type == DataType::DATA_FIELD);
 
 			this->name = buffer.readBytes<std::string>();
 
@@ -125,7 +126,7 @@ namespace Cereal {
 				case DataType::DATA_FLOAT: setData<float>(dataType, buffer.readBytes<float>()); break;
 				case DataType::DATA_DOUBLE: setData<double>(dataType, buffer.readBytes<double>()); break;
 				case DataType::DATA_STRING: setData<std::string>(dataType, buffer.readBytes<std::string>()); break;
-				default: throw new std::logic_error("Invalid data type!"); break;
+				default: throw std::logic_error("Invalid data type!"); break;
 			}
 		}
 

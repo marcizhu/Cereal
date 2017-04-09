@@ -18,6 +18,7 @@
 
 #include <string>
 #include <vector>
+#include <assert.h>
 
 #include "Buffer.h"
 #include "Reader.h"
@@ -46,7 +47,7 @@ namespace Cereal {
 
 			data = new byte[sizeof(T) * count];
 
-			if((count * sizeof(T)) > 4294967296) throw new std::overflow_error("Array size is too big!"); // Maximum item count (overflow of pointer and buffer)
+			if((count * sizeof(T)) > 4294967296) throw std::overflow_error("Array size is too big!"); // Maximum item count (overflow of pointer and buffer)
 
 			unsigned int pointer = 0;
 
@@ -113,11 +114,11 @@ namespace Cereal {
 			return true;
 		}
 
-		void read(Buffer& buffer)
+		void read(Buffer& buffer) noexcept
 		{
 			DataType type = (DataType)buffer.readBytes<byte>();
 
-			if(type != DataType::DATA_ARRAY) throw new std::logic_error("Invalid array ID!");
+			assert(type == DataType::DATA_ARRAY);
 
 			this->name = buffer.readBytes<std::string>();
 			this->dataType = (DataType)buffer.readBytes<byte>();

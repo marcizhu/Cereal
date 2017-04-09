@@ -18,6 +18,7 @@
 
 #include <string>
 #include <vector>
+#include <assert.h>
 
 #include "Internal.h"
 #include "Database.h"
@@ -41,11 +42,11 @@ namespace Cereal {
 				delete databases[i];
 		}
 
-		void read(Buffer& buffer)
+		void read(Buffer& buffer) noexcept
 		{
 			unsigned short magic = buffer.readBytes<unsigned short>();
 
-			if (magic != MAGIC_NUMBER) throw new std::invalid_argument("Invalid header magic number");
+			assert(magic == MAGIC_NUMBER);
 
 			byte count = buffer.readBytes<byte>();
 
@@ -58,7 +59,7 @@ namespace Cereal {
 
 			for (unsigned int offs : offsets)
 			{
-				if(buffer.getOffset() != offs) throw new std::logic_error("Database offset mismatch");
+				assert(buffer.getOffset() == offs); // database offset mismatch
 
 				buffer.setOffset(offs);
 
@@ -73,7 +74,7 @@ namespace Cereal {
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
-			if(databases.size() > 256) throw new std::overflow_error("Too many databases!");
+			if(databases.size() > 256) throw std::overflow_error("Too many databases!");
 
 			buffer.writeBytes<unsigned short>(MAGIC_NUMBER);
 			buffer.writeBytes<byte>((byte)databases.size());
