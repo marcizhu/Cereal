@@ -109,9 +109,7 @@ namespace Cereal {
 		{
 			byte type = buffer.readBytes<byte>();
 
-#ifndef CEREAL_RELEASE
 			if(type != DataType::DATA_FIELD) throw new std::invalid_argument("Invalid field!");
-#endif
 
 			this->name = buffer.readBytes<std::string>();
 

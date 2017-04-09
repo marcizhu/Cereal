@@ -46,9 +46,7 @@ namespace Cereal {
 
 			data = new byte[sizeof(T) * count];
 
-#ifndef CEREAL_RELEASE
 			if((count * sizeof(T)) > 4294967296) throw new std::out_of_range("Array size is too big!"); // Maximum item count (overflow of pointer and buffer)
-#endif
 
 			unsigned int pointer = 0;
 
@@ -119,12 +117,9 @@ namespace Cereal {
 		{
 			DataType type = (DataType)buffer.readBytes<byte>();
 
-#ifndef CEREAL_RELEASE
 			if(type != DataType::DATA_ARRAY) throw new std::invalid_argument("Invalid array!");
-#endif
 
 			this->name = buffer.readBytes<std::string>();
-
 			this->dataType = (DataType)buffer.readBytes<byte>();
 			this->count = buffer.readBytes<unsigned int>();
 

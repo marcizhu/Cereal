@@ -14,10 +14,10 @@ void testCereal64()
 void testRead()
 {
 	Cereal::Buffer buffer(0);
-	bool ret = buffer.readFile("test-out.db");
-	PT_ASSERT(ret == true);
-
 	Cereal::Header* header = new Cereal::Header;
+
+	PT_ASSERT(buffer.readFile("test-out.db") == true);
+
 	header->read(buffer);
 
 	Cereal::Database* db1 = header->getDatabase("Test");
@@ -82,8 +82,8 @@ void testWrite()
 
 	Cereal::Buffer buffer(myHeader->getSize());
 
-	myHeader->write(buffer);
-	buffer.writeFile("test-out.db");
+	PT_ASSERT(myHeader->write(buffer) == true);
+	PT_ASSERT(buffer.writeFile("test-out.db") == true);
 
 	PT_ASSERT((size_t)2 == obj->getFields().size());
 	PT_ASSERT((size_t)1 == obj->getArrays().size());
@@ -222,9 +222,12 @@ int main()
 	pt_add_suite(testUnits);
 	pt_add_suite(testLib);
 
-	pt_run();
+	if (pt_run())
+	{
+		while (1) { Sleep(1000); }
+	}
 
-	while (1) { Sleep(1000); }
+	Sleep(5000);
 
     return 0;
 }

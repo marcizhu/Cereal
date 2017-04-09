@@ -70,10 +70,8 @@ namespace Cereal {
 		{
 			this->version = (Version)buffer.readBytes<unsigned short>();
 
-#ifndef CEREAL_RELEASE
 			if (version == Version::VERSION_INVALID) throw new std::invalid_argument("Invalid database version!");
 			if (version > Version::VERSION_LATEST) throw new std::invalid_argument("Unsupported version!");
-#endif
 
 			switch (version)
 			{
@@ -131,17 +129,13 @@ namespace Cereal {
 
 			buffer.writeBytes<unsigned short>(version);
 
-#ifndef CEREAL_RELEASE
 			if(version == Version::VERSION_INVALID) throw new std::invalid_argument("Invalid database version!");
-#endif
 
 			switch (version)
 			{
 			case Version::VERSION_1_0:
-#ifndef CEREAL_RELEASE
 				if(objects.size() > 65536) throw new std::out_of_range("Too many objects!");
 				if(this->getSize() > 4294967296) throw new std::overflow_error("Database size is too big!"); // 2^32, maximum database size
-#endif
 
 				buffer.writeBytes<std::string>(name);
 				buffer.writeBytes<unsigned int>((unsigned int)this->getSize());
@@ -154,18 +148,15 @@ namespace Cereal {
 
 			case Version::VERSION_2_0:
 			{
-#ifndef CEREAL_RELEASE
 				if(objects.size() > 65536) throw new std::out_of_range("Too many objects!");
 				if(this->getSize() > 4294967296) throw new std::overflow_error("Database size is too big!"); // 2^32, maximum database size
-#endif
 
 				buffer.writeBytes<std::string>(name);
 
 				unsigned int chkoffs = buffer.getOffset();
-				unsigned int size = (unsigned int)this->getSize();
 
 				buffer.addOffset(sizeof(unsigned int)); // checksum
-				buffer.writeBytes<unsigned int>(size);
+				buffer.writeBytes<unsigned int>((unsigned int)this->getSize());
 				buffer.writeBytes<unsigned short>((unsigned short)objects.size());
 
 				for (const Object* obj : objects)
@@ -175,9 +166,7 @@ namespace Cereal {
 
 				buffer.setOffset(chkoffs);
 
-				// first short IS THE VERSION
-				size = size - sizeof(short) - sizeof(short) - (unsigned int)name.length() - sizeof(unsigned int);
-
+				unsigned int size = (unsigned int)this->getSize() - sizeof(short) - sizeof(short) - (unsigned int)name.length() - sizeof(unsigned int);
 				unsigned int checksum = crc32((byte*)buffer.getStart() + chkoffs + sizeof(unsigned int), size);
 
 				buffer.writeBytes<unsigned int>(checksum);
@@ -203,10 +192,10 @@ namespace Cereal {
 				ret += sizeof(short) + name.length() + sizeof(int) + sizeof(short); break;
 
 			case Version::VERSION_2_0:
-				ret += sizeof(short) + name.length() + sizeof(unsigned int) + sizeof(int) + sizeof(short); break;
+				ret += sizeof(short) + name.length() + sizeof(int) + sizeof(int) + sizeof(short); break;
 
 			default:
-				throw new std::invalid_argument("The version is not valid!"); break; // Invalid version
+				throw new std::invalid_argument("Invalid version!"); break; // Invalid version
 			}
 
 			for (const Object* obj : objects)
