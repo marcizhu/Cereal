@@ -36,7 +36,7 @@ namespace Cereal {
 		byte* data;
 
 		template<class T>
-		void setData(DataType type, T* value, unsigned int count)
+		void setData(DataType type, T* value, unsigned int count) noexcept
 		{
 			this->count = count;
 			this->dataType = type;
@@ -46,7 +46,7 @@ namespace Cereal {
 
 			data = new byte[sizeof(T) * count];
 
-			if((count * sizeof(T)) > 4294967296) throw new std::out_of_range("Array size is too big!"); // Maximum item count (overflow of pointer and buffer)
+			if((count * sizeof(T)) > 4294967296) throw new std::overflow_error("Array size is too big!"); // Maximum item count (overflow of pointer and buffer)
 
 			unsigned int pointer = 0;
 
@@ -55,7 +55,7 @@ namespace Cereal {
 		}
 
 		template<>
-		void setData<std::string>(DataType type, std::string* value, unsigned int count)
+		void setData<std::string>(DataType type, std::string* value, unsigned int count) noexcept
 		{
 			this->count = count;
 			this->dataType = type;
@@ -92,7 +92,7 @@ namespace Cereal {
 		Array(std::string name, std::string* value, unsigned int count) : name(name), data(nullptr) { setData<std::string>(DataType::DATA_STRING, value, count); }
 		~Array() { if (data) delete[] data; }
 
-		bool write(Buffer& buffer) const
+		bool write(Buffer& buffer) const noexcept
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
@@ -117,7 +117,7 @@ namespace Cereal {
 		{
 			DataType type = (DataType)buffer.readBytes<byte>();
 
-			if(type != DataType::DATA_ARRAY) throw new std::invalid_argument("Invalid array!");
+			if(type != DataType::DATA_ARRAY) throw new std::logic_error("Invalid array ID!");
 
 			this->name = buffer.readBytes<std::string>();
 			this->dataType = (DataType)buffer.readBytes<byte>();
@@ -150,12 +150,12 @@ namespace Cereal {
 			}
 		}
 
-		inline unsigned int getCount() const { return count; }
-		inline DataType getDataType() const { return dataType; }
-		inline const std::string& getName() const { return name; }
+		inline unsigned int getCount() const noexcept { return count; }
+		inline DataType getDataType() const noexcept { return dataType; }
+		inline const std::string& getName() const noexcept { return name; }
 
 		template<class T>
-		inline std::vector<T> getArray() const
+		inline std::vector<T> getArray() const noexcept
 		{
 			std::vector<T> ret;
 
@@ -172,7 +172,7 @@ namespace Cereal {
 		}
 
 		template<>
-		inline std::vector<std::string> getArray() const
+		inline std::vector<std::string> getArray() const noexcept
 		{
 			std::vector<std::string> ret;
 
@@ -190,7 +190,7 @@ namespace Cereal {
 
 		// This returns the data in little endian (necessary for >1 byte data types like shorts or ints)
 		template<typename T>
-		inline T* getRawArray(T* mem) const
+		inline T* getRawArray(T* mem) const noexcept
 		{
 			unsigned int pointer = 0;
 
@@ -204,7 +204,7 @@ namespace Cereal {
 			return mem;
 		}
 
-		inline unsigned int getSize() const
+		inline unsigned int getSize() const noexcept
 		{
 			if(dataType != DataType::DATA_STRING)
 				return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType);

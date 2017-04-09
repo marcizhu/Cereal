@@ -17,7 +17,6 @@
 #pragma once
 
 #include <string>
-#include <assert.h>
 
 #include "Internal.h"
 
@@ -27,7 +26,7 @@ namespace Cereal {
 	{
 	public:
 		template<typename T>
-		static unsigned int writeBytes(byte* dest, unsigned int pointer, T value)
+		static unsigned int writeBytes(byte* dest, unsigned int pointer, T value) noexcept
 		{
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
@@ -38,11 +37,11 @@ namespace Cereal {
 		}
 
 		template<>
-		static unsigned int writeBytes<std::string>(byte* dest, unsigned int pointer, std::string string)
+		static unsigned int writeBytes<std::string>(byte* dest, unsigned int pointer, std::string string) noexcept
 		{
 			const unsigned short size = (unsigned short)string.length();
 
-			assert(size <= 65535);
+			if(size > 65535) throw new std::overflow_error("String is too long!");
 
 			pointer = writeBytes<unsigned short>(dest, pointer, size);
 
@@ -55,7 +54,7 @@ namespace Cereal {
 		}
 
 		template<>
-		static unsigned int writeBytes<float>(byte* dest, unsigned int pointer, float data)
+		static unsigned int writeBytes<float>(byte* dest, unsigned int pointer, float data) noexcept
 		{
 			unsigned int x;
 
@@ -65,7 +64,7 @@ namespace Cereal {
 		}
 
 		template<>
-		static unsigned int writeBytes<double>(byte* dest, unsigned int pointer, double data)
+		static unsigned int writeBytes<double>(byte* dest, unsigned int pointer, double data) noexcept
 		{
 			unsigned long long x;
 

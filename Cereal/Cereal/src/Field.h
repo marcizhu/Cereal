@@ -33,7 +33,7 @@ namespace Cereal {
 		byte* data = nullptr;
 
 		template<class T>
-		void setData(DataType type, T value)
+		void setData(DataType type, T value) noexcept
 		{
 			dataType = type;
 
@@ -45,7 +45,7 @@ namespace Cereal {
 		}
 
 		template<>
-		void setData<std::string>(DataType type, std::string value)
+		void setData<std::string>(DataType type, std::string value) noexcept
 		{
 			dataType = type;
 
@@ -77,7 +77,7 @@ namespace Cereal {
 
 		~Field() { if(data) delete[] data; }
 
-		bool write(Buffer& buffer) const
+		bool write(Buffer& buffer) const noexcept
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
@@ -109,7 +109,7 @@ namespace Cereal {
 		{
 			byte type = buffer.readBytes<byte>();
 
-			if(type != DataType::DATA_FIELD) throw new std::invalid_argument("Invalid field!");
+			if(type != DataType::DATA_FIELD) throw new std::logic_error("Invalid field ID!");
 
 			this->name = buffer.readBytes<std::string>();
 
@@ -125,17 +125,17 @@ namespace Cereal {
 				case DataType::DATA_FLOAT: setData<float>(dataType, buffer.readBytes<float>()); break;
 				case DataType::DATA_DOUBLE: setData<double>(dataType, buffer.readBytes<double>()); break;
 				case DataType::DATA_STRING: setData<std::string>(dataType, buffer.readBytes<std::string>()); break;
-				default: throw new std::invalid_argument("Invalid data type!"); break;
+				default: throw new std::logic_error("Invalid data type!"); break;
 			}
 		}
 
 		template<class T>
-		inline T getValue() const { return Reader::readBytes<T>(data, 0); }
+		inline T getValue() const noexcept { return Reader::readBytes<T>(data, 0); }
 
-		inline const std::string& getName() const { return name; }
-		inline DataType getDataType() const { return dataType; }
+		inline const std::string& getName() const noexcept { return name; }
+		inline DataType getDataType() const noexcept { return dataType; }
 
-		inline unsigned int getSize() const
+		inline unsigned int getSize() const noexcept
 		{
 			if (dataType == DataType::DATA_STRING)
 			{

@@ -64,7 +64,7 @@ namespace Cereal {
 		MOD_UNSIGNED	= (1 << 4) // unsigned modifier
 	};
 
-	inline unsigned short sizeOf(byte type)
+	inline unsigned short sizeOf(byte type) noexcept
 	{
 		switch (type)
 		{

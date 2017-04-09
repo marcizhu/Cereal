@@ -26,7 +26,7 @@ namespace Cereal {
 	{
 	public:
 		template<typename T>
-		static T readBytes(byte* src, unsigned int pointer)
+		static T readBytes(byte* src, unsigned int pointer) noexcept
 		{
 			T value = 0;
 
@@ -39,7 +39,7 @@ namespace Cereal {
 		}
 
 		template<>
-		static float readBytes<float>(byte* src, unsigned int pointer)
+		static float readBytes<float>(byte* src, unsigned int pointer) noexcept
 		{
 			unsigned int value = 0;
 
@@ -56,10 +56,10 @@ namespace Cereal {
 		}
 
 		template<>
-		static bool readBytes<bool>(byte* src, unsigned int pointer) { return src[pointer] != 0; }
+		static bool readBytes<bool>(byte* src, unsigned int pointer) noexcept { return src[pointer] != 0; }
 
 		template<>
-		static double readBytes<double>(byte* src, unsigned int pointer)
+		static double readBytes<double>(byte* src, unsigned int pointer) noexcept
 		{
 			unsigned long long value = src[pointer] << (sizeof(int) * 8 - 8);
 
@@ -75,7 +75,7 @@ namespace Cereal {
 		}
 
 		template<>
-		static std::string readBytes<std::string>(byte* src, unsigned int pointer)
+		static std::string readBytes<std::string>(byte* src, unsigned int pointer) noexcept
 		{
 			std::string value = "";
 

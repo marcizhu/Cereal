@@ -51,8 +51,8 @@ namespace Cereal {
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
-			assert(fields.size() < 65536);
-			assert(arrays.size() < 65536);
+			if(fields.size() > 65536) throw new std::overflow_error("Too many fields!");
+			if(arrays.size() > 65536) throw new std::overflow_error("Too many arrays!");
 
 			buffer.writeBytes<byte>(DataType::DATA_OBJECT);
 			buffer.writeBytes<std::string>(name);
@@ -70,10 +70,10 @@ namespace Cereal {
 			return true;
 		}
 
-		inline void addField(Field* field) { fields.push_back(field); }
-		inline void addArray(Array* array) { arrays.push_back(array); }
+		inline void addField(Field* field) noexcept { fields.push_back(field); }
+		inline void addArray(Array* array) noexcept { arrays.push_back(array); }
 
-		inline Field* getField(std::string name) const
+		inline Field* getField(std::string name) const noexcept
 		{
 			for (Field* field : fields)
 				if (field->getName() == name) return field;
@@ -81,7 +81,7 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		inline Array* getArray(std::string name) const
+		inline Array* getArray(std::string name) const noexcept
 		{
 			for (Array* array : arrays)
 				if (array->getName() == name) return array;
@@ -93,7 +93,7 @@ namespace Cereal {
 		{
 			byte type = buffer.readBytes<byte>();
 
-			assert(type == DataType::DATA_OBJECT);
+			if(type != DataType::DATA_OBJECT) throw new std::invalid_argument("Invalid object ID!");
 
 			this->name = buffer.readBytes<std::string>();
 
@@ -118,9 +118,9 @@ namespace Cereal {
 			}
 		}
 
-		inline const std::string& getName() const { return name; }
+		inline const std::string& getName() const noexcept { return name; }
 
-		inline unsigned int getSize() const
+		inline unsigned int getSize() const noexcept
 		{
 			unsigned int ret = sizeof(byte) + sizeof(short) + name.length() + sizeof(short) + sizeof(short);
 
@@ -133,8 +133,8 @@ namespace Cereal {
 			return ret;
 		}
 
-		const std::vector<Field*>& getFields() { return fields; }
-		const std::vector<Array*>& getArrays() { return arrays; }
+		const std::vector<Field*>& getFields() const noexcept { return fields; }
+		const std::vector<Array*>& getArrays() const noexcept { return arrays; }
 	};
 
 }

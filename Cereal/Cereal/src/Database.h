@@ -33,7 +33,7 @@ namespace Cereal {
 		std::vector<Object*> objects;
 
 	public:
-		unsigned int crc32(const byte* message, unsigned int len) const
+		unsigned int crc32(const byte* message, unsigned int len) const noexcept
 		{
 			unsigned int byte, mask;
 			signed int crc;
@@ -103,7 +103,7 @@ namespace Cereal {
 				unsigned int p = buffer.getOffset();
 				unsigned int size = buffer.readBytes<unsigned int>() - sizeof(short) - sizeof(short) - (unsigned int)name.length() - sizeof(unsigned int);
 
-				if(crc32((byte*)buffer.getStart() + p, size) != checksum) throw new std::invalid_argument("Checksum mismatch!");
+				if(crc32((byte*)buffer.getStart() + p, size) != checksum) throw new std::logic_error("Checksum mismatch!");
 
 				unsigned short objectCount = buffer.readBytes<unsigned short>();
 
@@ -119,7 +119,7 @@ namespace Cereal {
 			}
 
 			default:
-				throw new std::invalid_argument("The version is not valid!"); break;
+				throw new std::invalid_argument("Invalid database version!"); break;
 			}
 		}
 
@@ -134,7 +134,7 @@ namespace Cereal {
 			switch (version)
 			{
 			case Version::VERSION_1_0:
-				if(objects.size() > 65536) throw new std::out_of_range("Too many objects!");
+				if(objects.size() > 65536) throw new std::overflow_error("Too many objects!");
 				if(this->getSize() > 4294967296) throw new std::overflow_error("Database size is too big!"); // 2^32, maximum database size
 
 				buffer.writeBytes<std::string>(name);
@@ -148,7 +148,7 @@ namespace Cereal {
 
 			case Version::VERSION_2_0:
 			{
-				if(objects.size() > 65536) throw new std::out_of_range("Too many objects!");
+				if(objects.size() > 65536) throw new std::overflow_error("Too many objects!");
 				if(this->getSize() > 4294967296) throw new std::overflow_error("Database size is too big!"); // 2^32, maximum database size
 
 				buffer.writeBytes<std::string>(name);
@@ -176,7 +176,7 @@ namespace Cereal {
 			}
 
 			default:
-				throw new std::invalid_argument("The version is not valid!"); break;
+				throw new std::invalid_argument("Invalid database version!"); break;
 			}
 
 			return true;
@@ -195,7 +195,7 @@ namespace Cereal {
 				ret += sizeof(short) + name.length() + sizeof(int) + sizeof(int) + sizeof(short); break;
 
 			default:
-				throw new std::invalid_argument("Invalid version!"); break; // Invalid version
+				throw new std::invalid_argument("Invalid database version!"); break; // Invalid version
 			}
 
 			for (const Object* obj : objects)
@@ -204,7 +204,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		Object* getObject(std::string name) const
+		Object* getObject(std::string name) const noexcept
 		{
 			for (Object* obj : objects)
 				if (obj->getName() == name) return obj;
@@ -212,10 +212,10 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		void addObject(Object* object) { objects.push_back(object); }
+		void addObject(Object* object) noexcept { objects.push_back(object); }
 
-		const std::string& getName() const { return name; }
-		const std::vector<Object*>& getObjects() { return objects; }
+		const std::string& getName() const noexcept { return name; }
+		const std::vector<Object*>& getObjects() const noexcept { return objects; }
 	};
 
 }

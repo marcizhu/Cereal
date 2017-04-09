@@ -58,7 +58,7 @@ namespace Cereal {
 
 			for (unsigned int offs : offsets)
 			{
-				if(buffer.getOffset() != offs) throw new std::runtime_error("Database offset mismatch");
+				if(buffer.getOffset() != offs) throw new std::logic_error("Database offset mismatch");
 
 				buffer.setOffset(offs);
 
@@ -93,7 +93,7 @@ namespace Cereal {
 			return true;
 		}
 
-		inline unsigned int getSize() const
+		inline unsigned int getSize() const noexcept
 		{
 			unsigned int ret = sizeof(short) + sizeof(byte) + (sizeof(unsigned int) * databases.size());
 
@@ -103,7 +103,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		Database* getDatabase(std::string name) const
+		Database* getDatabase(std::string name) const noexcept
 		{
 			for (Database* db : databases)
 				if (db->getName() == name) return db;
@@ -111,9 +111,9 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		void addDatabase(Database* db) { databases.push_back(db); }
+		void addDatabase(Database* db) noexcept { databases.push_back(db); }
 
-		const std::vector<Database*>& getDatabases() { return databases; }
+		const std::vector<Database*>& getDatabases() const noexcept { return databases; }
 	};
 
 }

@@ -18,7 +18,6 @@
 
 #include <fstream>
 #include <string>
-#include <assert.h>
 
 #include "Internal.h"
 
@@ -42,10 +41,10 @@ namespace Cereal {
 			offset = size = 0;
 		}
 
-		void clean() { memset(start, 0, size); offset = 0; }
+		void clean() noexcept { memset(start, 0, size); offset = 0; }
 
 		template<typename T>
-		T readBytes()
+		T readBytes() noexcept
 		{
 			T value = 0;
 
@@ -60,7 +59,7 @@ namespace Cereal {
 		}
 
 		template<>
-		float readBytes<float>()
+		float readBytes<float>() noexcept
 		{
 			unsigned int value = 0;
 
@@ -79,10 +78,10 @@ namespace Cereal {
 		}
 
 		template<>
-		bool readBytes<bool>() { return start[offset++] != 0; }
+		bool readBytes<bool>() noexcept  { return start[offset++] != 0; }
 
 		template<>
-		double readBytes<double>()
+		double readBytes<double>() noexcept
 		{
 			unsigned long long value = start[offset] << (sizeof(int) * 8 - 8);
 
@@ -100,7 +99,7 @@ namespace Cereal {
 		}
 
 		template<>
-		std::string readBytes<std::string>()
+		std::string readBytes<std::string>() noexcept
 		{
 			std::string value = "";
 
@@ -115,7 +114,7 @@ namespace Cereal {
 		}
 
 		template<typename T>
-		bool writeBytes(T value)
+		bool writeBytes(T value) noexcept
 		{
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
@@ -126,11 +125,11 @@ namespace Cereal {
 		}
 
 		template<>
-		bool writeBytes<std::string>(std::string string)
+		bool writeBytes<std::string>(std::string string) noexcept
 		{
 			const unsigned short size = (unsigned short)string.length();
 
-			assert(size <= 65535);
+			if(size > 65535) throw new std::overflow_error("String is too long!");
 
 			writeBytes<unsigned short>(size);
 
@@ -143,7 +142,7 @@ namespace Cereal {
 		}
 
 		template<>
-		bool writeBytes<float>(float data)
+		bool writeBytes<float>(float data) noexcept
 		{
 			unsigned int x;
 
@@ -155,7 +154,7 @@ namespace Cereal {
 		}
 
 		template<>
-		bool writeBytes<double>(double data)
+		bool writeBytes<double>(double data) noexcept
 		{
 			unsigned long long x;
 
@@ -166,7 +165,7 @@ namespace Cereal {
 			return true;
 		}
 
-		bool copy(byte* data, unsigned int size)
+		bool copy(byte* data, unsigned int size) noexcept
 		{
 			memcpy((byte*)start + offset, data, size);
 
@@ -175,7 +174,7 @@ namespace Cereal {
 			return true;
 		}
 
-		void shrink()
+		void shrink() noexcept
 		{
 			byte* temp = new byte[offset];
 
@@ -187,20 +186,20 @@ namespace Cereal {
 			size = offset;
 		}
 
-		void setOffset(unsigned int off) { offset = off; }
+		void setOffset(unsigned int off) noexcept  { offset = off; }
 
-		unsigned int getFreeSpace() const { return size - offset; }
-		unsigned int getOffset() const { return offset; }
-		unsigned int getSize() const { return size; }
-		const void* getStart() const { return start; }
+		unsigned int getFreeSpace() const noexcept  { return size - offset; }
+		unsigned int getOffset() const noexcept { return offset; }
+		unsigned int getSize() const noexcept { return size; }
+		const void* getStart() const noexcept { return start; }
 		byte getByte() { return start[offset++]; }
-		byte getByte(unsigned int offs) const { return start[offs]; }
+		byte getByte(unsigned int offs) const noexcept { return start[offs]; }
 
-		bool hasSpace(unsigned int amount) const { return (offset + amount) <= size; }
+		bool hasSpace(unsigned int amount) const noexcept { return (offset + amount) <= size; }
 
-		void addOffset(unsigned int offs) { offset += offs; }
+		void addOffset(unsigned int offs) noexcept { offset += offs; }
 
-		bool writeFile(const std::string& filepath)
+		bool writeFile(const std::string& filepath) noexcept
 		{
 			std::ofstream outfile(filepath, std::ofstream::binary);
 
@@ -212,7 +211,7 @@ namespace Cereal {
 			return true;
 		}
 
-		bool readFile(const std::string& filepath)
+		bool readFile(const std::string& filepath) noexcept
 		{
 			std::ifstream infile(filepath, std::ifstream::binary);
 
