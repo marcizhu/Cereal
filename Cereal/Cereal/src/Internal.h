@@ -64,7 +64,7 @@ namespace Cereal {
 		MOD_UNSIGNED	= (1 << 4) // unsigned modifier
 	};
 
-	inline unsigned short sizeOf(byte type) noexcept
+	inline unsigned short sizeOf(byte type)
 	{
 		switch (type)
 		{
@@ -76,7 +76,8 @@ namespace Cereal {
 		case DataType::DATA_LONG_LONG: return sizeof(long long); break;
 		case DataType::DATA_DOUBLE: return sizeof(double); break;
 
-		default: return 0; break;
+		default:
+			throw std::invalid_argument("Invalid input data type!"); break;
 		}
 	}
 

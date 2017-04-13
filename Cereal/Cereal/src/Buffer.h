@@ -125,7 +125,7 @@ namespace Cereal {
 		}
 
 		template<>
-		bool writeBytes<std::string>(std::string string) noexcept
+		bool writeBytes<std::string>(std::string string)
 		{
 			const unsigned short size = (unsigned short)string.length();
 
@@ -186,7 +186,7 @@ namespace Cereal {
 			size = offset;
 		}
 
-		void setOffset(unsigned int off) noexcept  { offset = off; }
+		void setOffset(unsigned int off) { if (off > size) throw std::domain_error("Offset value is too large"); offset = off; }
 
 		unsigned int getFreeSpace() const noexcept  { return size - offset; }
 		unsigned int getOffset() const noexcept { return offset; }
@@ -197,7 +197,7 @@ namespace Cereal {
 
 		bool hasSpace(unsigned int amount) const noexcept { return (offset + amount) <= size; }
 
-		void addOffset(unsigned int offs) noexcept { offset += offs; }
+		void addOffset(unsigned int offs) { if ((offs + offset) > size) throw std::domain_error("Offset value is too large"); offset += offs; }
 
 		bool writeFile(const std::string& filepath) noexcept
 		{

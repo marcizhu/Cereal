@@ -40,7 +40,7 @@ namespace Cereal {
 
 			crc = 0xFFFFFFFF;
 
-			for (int i = 0; i < len; i++)
+			for (unsigned int i = 0; i < len; i++)
 			{
 				byte = message[i]; // Get next byte.
 				crc = crc ^ byte;

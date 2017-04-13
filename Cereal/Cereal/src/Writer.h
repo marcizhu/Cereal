@@ -37,7 +37,7 @@ namespace Cereal {
 		}
 
 		template<>
-		static unsigned int writeBytes<std::string>(byte* dest, unsigned int pointer, std::string string) noexcept
+		static unsigned int writeBytes<std::string>(byte* dest, unsigned int pointer, std::string string)
 		{
 			const unsigned short size = (unsigned short)string.length();
 

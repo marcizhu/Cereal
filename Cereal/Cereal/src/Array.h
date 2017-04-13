@@ -37,7 +37,7 @@ namespace Cereal {
 		byte* data;
 
 		template<class T>
-		void setData(DataType type, T* value, unsigned int count) noexcept
+		void setData(DataType type, T* value, unsigned int count)
 		{
 			this->count = count;
 			this->dataType = type;
@@ -162,7 +162,7 @@ namespace Cereal {
 
 			unsigned int pointer = 0;
 
-			for (int i = 0; i < count; i++)
+			for (unsigned int i = 0; i < count; i++)
 			{
 				ret.push_back(Reader::readBytes<T>(data, pointer));
 
@@ -179,7 +179,7 @@ namespace Cereal {
 
 			unsigned int pointer = 0;
 
-			for (int i = 0; i < count; i++)
+			for (unsigned int i = 0; i < count; i++)
 			{
 				ret.push_back(Reader::readBytes<std::string>(data, pointer));
 

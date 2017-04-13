@@ -81,7 +81,7 @@ namespace Cereal {
 
 			unsigned short size = readBytes<unsigned short>(src, pointer);
 
-			for (int i = pointer + 2; i < pointer + size + 2; i++)
+			for (unsigned int i = pointer + 2; i < pointer + size + 2; i++)
 			{
 				value += readBytes<char>(src, i);
 			}
