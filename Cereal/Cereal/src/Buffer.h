@@ -18,6 +18,7 @@
 
 #include <fstream>
 #include <string>
+#include <cstring>
 
 #include "Internal.h"
 
@@ -41,10 +42,10 @@ namespace Cereal {
 			offset = size = 0;
 		}
 
-		void clean() noexcept { memset(start, 0, size); offset = 0; }
+		void clean() { memset(start, 0, size); offset = 0; }
 
 		template<typename T>
-		T readBytes() noexcept
+		T readBytes()
 		{
 			T value = 0;
 
@@ -58,8 +59,9 @@ namespace Cereal {
 			return value;
 		}
 
+#ifdef COMPILER_MSVC
 		template<>
-		float readBytes<float>() noexcept
+		float readBytes<float>()
 		{
 			unsigned int value = 0;
 
@@ -78,10 +80,10 @@ namespace Cereal {
 		}
 
 		template<>
-		bool readBytes<bool>() noexcept  { return start[offset++] != 0; }
+		bool readBytes<bool>() { return start[offset++] != 0; }
 
 		template<>
-		double readBytes<double>() noexcept
+		double readBytes<double>()
 		{
 			unsigned long long value = start[offset] << (sizeof(int) * 8 - 8);
 
@@ -99,7 +101,7 @@ namespace Cereal {
 		}
 
 		template<>
-		std::string readBytes<std::string>() noexcept
+		std::string readBytes<std::string>()
 		{
 			std::string value = "";
 
@@ -112,9 +114,10 @@ namespace Cereal {
 
 			return value;
 		}
+#endif
 
 		template<typename T>
-		bool writeBytes(T value) noexcept
+		bool writeBytes(T value)
 		{
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
@@ -124,6 +127,7 @@ namespace Cereal {
 			return true;
 		}
 
+#ifdef COMPILER_MSVC
 		template<>
 		bool writeBytes<std::string>(std::string string)
 		{
@@ -142,7 +146,7 @@ namespace Cereal {
 		}
 
 		template<>
-		bool writeBytes<float>(float data) noexcept
+		bool writeBytes<float>(float data)
 		{
 			unsigned int x;
 
@@ -154,7 +158,7 @@ namespace Cereal {
 		}
 
 		template<>
-		bool writeBytes<double>(double data) noexcept
+		bool writeBytes<double>(double data)
 		{
 			unsigned long long x;
 
@@ -164,8 +168,9 @@ namespace Cereal {
 
 			return true;
 		}
+#endif
 
-		bool copy(byte* data, unsigned int size) noexcept
+		bool copy(byte* data, unsigned int size)
 		{
 			memcpy((byte*)start + offset, data, size);
 
@@ -188,18 +193,18 @@ namespace Cereal {
 
 		void setOffset(unsigned int off) { if (off > size) throw std::domain_error("Offset value is too large"); offset = off; }
 
-		unsigned int getFreeSpace() const noexcept  { return size - offset; }
-		unsigned int getOffset() const noexcept { return offset; }
-		unsigned int getSize() const noexcept { return size; }
-		const void* getStart() const noexcept { return start; }
+		unsigned int getFreeSpace() const  { return size - offset; }
+		unsigned int getOffset() const { return offset; }
+		unsigned int getSize() const { return size; }
+		const void* getStart() const { return start; }
 		byte getByte() { return start[offset++]; }
-		byte getByte(unsigned int offs) const noexcept { return start[offs]; }
+		byte getByte(unsigned int offs) const { return start[offs]; }
 
-		bool hasSpace(unsigned int amount) const noexcept { return (offset + amount) <= size; }
+		bool hasSpace(unsigned int amount) const { return (offset + amount) <= size; }
 
 		void addOffset(unsigned int offs) { if ((offs + offset) > size) throw std::domain_error("Offset value is too large"); offset += offs; }
 
-		bool writeFile(const std::string& filepath) noexcept
+		bool writeFile(const std::string& filepath)
 		{
 			std::ofstream outfile(filepath, std::ofstream::binary);
 
@@ -211,7 +216,7 @@ namespace Cereal {
 			return true;
 		}
 
-		bool readFile(const std::string& filepath) noexcept
+		bool readFile(const std::string& filepath)
 		{
 			std::ifstream infile(filepath, std::ifstream::binary);
 
@@ -233,5 +238,103 @@ namespace Cereal {
 			return true;
 		}
 	};
+
+#ifdef COMPILER_GCC
+    template<>
+    float Buffer::readBytes<float>()
+	{
+		unsigned int value = 0;
+
+		for (int i = 0; i < (int) sizeof(float); i++)
+		{
+			value |= (start[offset + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+		}
+
+		float result;
+
+		offset += sizeof(float);
+
+		memcpy(&result, &value, 4);
+
+		return result;
+	}
+
+	template<>
+	bool Buffer::readBytes<bool>()  { return start[offset++] != 0; }
+
+	template<>
+	double Buffer::readBytes<double>()
+	{
+		unsigned long long value = start[offset] << (sizeof(int) * 8 - 8);
+
+		for (int i = offset; i < (int)offset + (int)sizeof(float); i++)
+		{
+			value |= (start[i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+		}
+
+		double result;
+		memcpy(&result, &value, 4);
+
+		offset += sizeof(double);
+
+		return result;
+	}
+
+	template<>
+	std::string Buffer::readBytes<std::string>()
+	{
+		std::string value = "";
+
+		unsigned short size = readBytes<unsigned short>();
+
+		for (int i = 0; i < size; i++)
+		{
+			value += readBytes<char>();
+		}
+
+		return value;
+	}
+
+	template<>
+	bool Buffer::writeBytes<std::string>(std::string string)
+	{
+		const unsigned short size = (unsigned short)string.length();
+
+		if(size > 65535) throw std::overflow_error("String is too long!");
+
+		writeBytes<unsigned short>(size);
+
+		for (unsigned short i = 0; i < size; i++)
+		{
+			writeBytes<char>(string[i]);
+		}
+
+		return true;
+	}
+
+	template<>
+	bool Buffer::writeBytes<float>(float data)
+	{
+		unsigned int x;
+
+		*(unsigned int*)&x = *(unsigned int*)&data;
+
+		writeBytes<unsigned int>(x);
+
+		return true;
+	}
+
+	template<>
+	bool Buffer::writeBytes<double>(double data)
+	{
+		unsigned long long x;
+
+		*(unsigned long long*)&x = *(unsigned long long*)&data;
+
+		writeBytes<unsigned long long>(x);
+
+		return true;
+	}
+#endif
 
 }

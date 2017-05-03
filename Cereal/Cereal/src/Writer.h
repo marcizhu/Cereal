@@ -26,7 +26,7 @@ namespace Cereal {
 	{
 	public:
 		template<typename T>
-		static unsigned int writeBytes(byte* dest, unsigned int pointer, T value) noexcept
+		static unsigned int writeBytes(byte* dest, unsigned int pointer, T value)
 		{
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
@@ -36,6 +36,7 @@ namespace Cereal {
 			return pointer;
 		}
 
+#ifdef COMPILER_MSVC
 		template<>
 		static unsigned int writeBytes<std::string>(byte* dest, unsigned int pointer, std::string string)
 		{
@@ -54,7 +55,7 @@ namespace Cereal {
 		}
 
 		template<>
-		static unsigned int writeBytes<float>(byte* dest, unsigned int pointer, float data) noexcept
+		static unsigned int writeBytes<float>(byte* dest, unsigned int pointer, float data)
 		{
 			unsigned int x;
 
@@ -64,7 +65,7 @@ namespace Cereal {
 		}
 
 		template<>
-		static unsigned int writeBytes<double>(byte* dest, unsigned int pointer, double data) noexcept
+		static unsigned int writeBytes<double>(byte* dest, unsigned int pointer, double data)
 		{
 			unsigned long long x;
 
@@ -72,7 +73,47 @@ namespace Cereal {
 
 			return writeBytes<unsigned long long>(dest, pointer, x);
 		}
+#endif
 
 	};
+
+#ifdef COMPILER_GCC
+    template<>
+	unsigned int Writer::writeBytes<std::string>(byte* dest, unsigned int pointer, std::string string)
+	{
+		const unsigned short size = (unsigned short)string.length();
+
+		if(size > 65535) throw std::overflow_error("String is too long!");
+
+		pointer = writeBytes<unsigned short>(dest, pointer, size);
+
+		for (unsigned short i = 0; i < size; i++)
+		{
+			pointer = writeBytes<char>(dest, pointer, string[i]);
+		}
+
+		return pointer;
+	}
+
+	template<>
+	unsigned int Writer::writeBytes<float>(byte* dest, unsigned int pointer, float data)
+	{
+		unsigned int x;
+
+		*(unsigned int*)&x = *(unsigned int*)&data;
+
+		return writeBytes<unsigned int>(dest, pointer, x);
+	}
+
+	template<>
+	unsigned int Writer::writeBytes<double>(byte* dest, unsigned int pointer, double data)
+	{
+		unsigned long long x;
+
+		*(unsigned long long*)&x = *(unsigned long long*)&data;
+
+		return writeBytes<unsigned long long>(dest, pointer, x);
+	}
+#endif
 
 }

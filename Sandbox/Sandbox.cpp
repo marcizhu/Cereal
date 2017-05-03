@@ -2,10 +2,11 @@
 //
 
 #include <Cereal.h>
-#include <Windows.h>
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
+
+typedef unsigned char byte;
 
 TEST_CASE("Testing preconditions", "[pre]")
 {

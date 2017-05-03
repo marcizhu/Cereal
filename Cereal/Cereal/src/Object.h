@@ -70,10 +70,10 @@ namespace Cereal {
 			return true;
 		}
 
-		inline void addField(Field* field) noexcept { fields.push_back(field); }
-		inline void addArray(Array* array) noexcept { arrays.push_back(array); }
+		inline void addField(Field* field) { fields.push_back(field); }
+		inline void addArray(Array* array) { arrays.push_back(array); }
 
-		inline Field* getField(std::string name) const noexcept
+		inline Field* getField(std::string name) const
 		{
 			for (Field* field : fields)
 				if (field->getName() == name) return field;
@@ -81,7 +81,7 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		inline Array* getArray(std::string name) const noexcept
+		inline Array* getArray(std::string name) const
 		{
 			for (Array* array : arrays)
 				if (array->getName() == name) return array;
@@ -89,7 +89,7 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		void read(Buffer& buffer) noexcept
+		void read(Buffer& buffer)
 		{
 			byte type = buffer.readBytes<byte>();
 
@@ -118,9 +118,9 @@ namespace Cereal {
 			}
 		}
 
-		inline const std::string& getName() const noexcept { return name; }
+		inline const std::string& getName() const { return name; }
 
-		inline unsigned int getSize() const noexcept
+		inline unsigned int getSize() const
 		{
 			unsigned int ret = sizeof(byte) + sizeof(short) + name.length() + sizeof(short) + sizeof(short);
 
@@ -133,8 +133,8 @@ namespace Cereal {
 			return ret;
 		}
 
-		const std::vector<Field*>& getFields() const noexcept { return fields; }
-		const std::vector<Array*>& getArrays() const noexcept { return arrays; }
+		const std::vector<Field*>& getFields() const { return fields; }
+		const std::vector<Array*>& getArrays() const { return arrays; }
 	};
 
 }

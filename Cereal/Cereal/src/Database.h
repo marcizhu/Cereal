@@ -33,7 +33,7 @@ namespace Cereal {
 		std::vector<Object*> objects;
 
 	public:
-		unsigned int crc32(const byte* message, unsigned int len) const noexcept
+		unsigned int crc32(const byte* message, unsigned int len) const
 		{
 			unsigned int byte, mask;
 			signed int crc;
@@ -204,7 +204,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		Object* getObject(std::string name) const noexcept
+		Object* getObject(std::string name) const
 		{
 			for (Object* obj : objects)
 				if (obj->getName() == name) return obj;
@@ -212,10 +212,10 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		void addObject(Object* object) noexcept { objects.push_back(object); }
+		void addObject(Object* object) { objects.push_back(object); }
 
-		const std::string& getName() const noexcept { return name; }
-		const std::vector<Object*>& getObjects() const noexcept { return objects; }
+		const std::string& getName() const { return name; }
+		const std::vector<Object*>& getObjects() const { return objects; }
 	};
 
 }

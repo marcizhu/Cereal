@@ -55,8 +55,12 @@ namespace Cereal {
 				pointer = Writer::writeBytes<T>(data, pointer, value[i]);
 		}
 
+#ifdef COMPILER_MSVC
 		template<>
-		void setData<std::string>(DataType type, std::string* value, unsigned int count) noexcept
+		void setData<std::string>(DataType type, std::string* value, unsigned int count)
+#elif defined COMPILER_GCC
+        void setDataString(DataType type, std::string* value, unsigned int count)
+#endif
 		{
 			this->count = count;
 			this->dataType = type;
@@ -90,10 +94,14 @@ namespace Cereal {
 		Array(std::string name, float* value, unsigned int count) : name(name), data(nullptr) { setData<float>(DataType::DATA_FLOAT, value, count); }
 		Array(std::string name, long long* value, unsigned int count) : name(name), data(nullptr) { setData<long long>(DataType::DATA_LONG_LONG, value, count); }
 		Array(std::string name, double* value, unsigned int count) : name(name), data(nullptr) { setData<double>(DataType::DATA_DOUBLE, value, count); }
+#ifdef COMPILER_MSVC
 		Array(std::string name, std::string* value, unsigned int count) : name(name), data(nullptr) { setData<std::string>(DataType::DATA_STRING, value, count); }
+#elif defined COMPILER_GCC
+        Array(std::string name, std::string* value, unsigned int count) : name(name), data(nullptr) { setDataString(DataType::DATA_STRING, value, count); }
+#endif
 		~Array() { if (data) delete[] data; }
 
-		bool write(Buffer& buffer) const noexcept
+		bool write(Buffer& buffer) const
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
@@ -114,7 +122,7 @@ namespace Cereal {
 			return true;
 		}
 
-		void read(Buffer& buffer) noexcept
+		void read(Buffer& buffer)
 		{
 			DataType type = (DataType)buffer.readBytes<byte>();
 
@@ -151,12 +159,12 @@ namespace Cereal {
 			}
 		}
 
-		inline unsigned int getCount() const noexcept { return count; }
-		inline DataType getDataType() const noexcept { return dataType; }
-		inline const std::string& getName() const noexcept { return name; }
+		inline unsigned int getCount() const { return count; }
+		inline DataType getDataType() const { return dataType; }
+		inline const std::string& getName() const { return name; }
 
 		template<class T>
-		inline std::vector<T> getArray() const noexcept
+		inline std::vector<T> getArray() const
 		{
 			std::vector<T> ret;
 
@@ -172,8 +180,9 @@ namespace Cereal {
 			return ret;
 		}
 
+#ifdef COMPILER_MSVC
 		template<>
-		inline std::vector<std::string> getArray() const noexcept
+		inline std::vector<std::string> getArray() const
 		{
 			std::vector<std::string> ret;
 
@@ -188,10 +197,11 @@ namespace Cereal {
 
 			return ret;
 		}
+#endif
 
 		// This returns the data in little endian (necessary for >1 byte data types like shorts or ints)
 		template<typename T>
-		inline T* getRawArray(T* mem) const noexcept
+		inline T* getRawArray(T* mem) const
 		{
 			unsigned int pointer = 0;
 
@@ -205,7 +215,7 @@ namespace Cereal {
 			return mem;
 		}
 
-		inline unsigned int getSize() const noexcept
+		inline unsigned int getSize() const
 		{
 			if(dataType != DataType::DATA_STRING)
 				return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType);
@@ -213,5 +223,24 @@ namespace Cereal {
 				return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + size;
 		}
 	};
+
+#ifdef COMPILER_GCC
+    template<>
+	inline std::vector<std::string> Array::getArray() const
+	{
+		std::vector<std::string> ret;
+
+		unsigned int pointer = 0;
+
+		for (unsigned int i = 0; i < count; i++)
+		{
+			ret.push_back(Reader::readBytes<std::string>(data, pointer));
+
+			pointer += Reader::readBytes<unsigned short>(data, pointer) + sizeof(unsigned short);
+		}
+
+		return ret;
+	}
+#endif
 
 }

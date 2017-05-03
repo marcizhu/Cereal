@@ -34,7 +34,7 @@ namespace Cereal {
 		byte* data = nullptr;
 
 		template<class T>
-		void setData(DataType type, T value) noexcept
+		void setData(DataType type, T value)
 		{
 			dataType = type;
 
@@ -45,8 +45,12 @@ namespace Cereal {
 			Writer::writeBytes<T>(data, 0, value);
 		}
 
+#ifdef COMPILER_MSVC
 		template<>
-		void setData<std::string>(DataType type, std::string value) noexcept
+		void setData<std::string>(DataType type, std::string value)
+#elif defined COMPILER_GCC
+        void setDataString(DataType type, std::string value)
+#endif
 		{
 			dataType = type;
 
@@ -74,11 +78,15 @@ namespace Cereal {
 		Field(std::string name, float value) : name(name) { setData<float>(DataType::DATA_FLOAT, value); }
 		Field(std::string name, long long value) : name(name) { setData<long long>(DataType::DATA_LONG_LONG, value); }
 		Field(std::string name, double value) : name(name) { setData<double>(DataType::DATA_DOUBLE, value); }
+#ifdef COMPILER_MSVC
 		Field(std::string name, std::string value) : name(name) { setData<std::string>(DataType::DATA_STRING, value); }
+#elif defined COMPILER_GCC
+        Field(std::string name, std::string value) : name(name) { setDataString(DataType::DATA_STRING, value); }
+#endif
 
 		~Field() { if(data) delete[] data; }
 
-		bool write(Buffer& buffer) const noexcept
+		bool write(Buffer& buffer) const
 		{
 			if (!buffer.hasSpace(this->getSize())) return false;
 
@@ -125,18 +133,22 @@ namespace Cereal {
 				case DataType::DATA_LONG_LONG: setData<long long>(dataType, buffer.readBytes<long long>()); break;
 				case DataType::DATA_FLOAT: setData<float>(dataType, buffer.readBytes<float>()); break;
 				case DataType::DATA_DOUBLE: setData<double>(dataType, buffer.readBytes<double>()); break;
+#ifdef COMPILER_MSVC
 				case DataType::DATA_STRING: setData<std::string>(dataType, buffer.readBytes<std::string>()); break;
+#elif defined COMPILER_GCC
+                case DataType::DATA_STRING: setDataString(dataType, buffer.readBytes<std::string>()); break;
+#endif
 				default: throw std::logic_error("Invalid data type!"); break;
 			}
 		}
 
 		template<class T>
-		inline T getValue() const noexcept { return Reader::readBytes<T>(data, 0); }
+		inline T getValue() const { return Reader::readBytes<T>(data, 0); }
 
-		inline const std::string& getName() const noexcept { return name; }
-		inline DataType getDataType() const noexcept { return dataType; }
+		inline const std::string& getName() const { return name; }
+		inline DataType getDataType() const { return dataType; }
 
-		inline unsigned int getSize() const noexcept
+		inline unsigned int getSize() const
 		{
 			if (dataType == DataType::DATA_STRING)
 			{
