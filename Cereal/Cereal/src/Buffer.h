@@ -49,7 +49,7 @@ namespace Cereal {
 		{
 			T value = 0;
 
-			for (int i = 0; i < sizeof(T); i++)
+			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
 				value |= (start[offset + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
 			}

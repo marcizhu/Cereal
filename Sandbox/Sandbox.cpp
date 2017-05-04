@@ -84,7 +84,7 @@ TEST_CASE("Testing serialization units", "[lib][units]")
 		CHECK(Cereal::Writer::writeBytes<double>(buff, 20, 3.141592) == 28);
 		CHECK(Cereal::Writer::writeBytes<std::string>(buff, 28, "string") == 36);
 
-		CHECK(buff[0] == true);
+		CHECK(buff[0] == (byte)true);
 		CHECK(buff[1] == 'A');
 		CHECK(buff[2] == 0x01);
 		CHECK(buff[3] == 0x02);

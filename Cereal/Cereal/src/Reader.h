@@ -30,7 +30,7 @@ namespace Cereal {
 		{
 			T value = 0;
 
-			for (int i = 0; i < sizeof(T); i++)
+			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
 				value |= ((T)src[pointer + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
 			}
