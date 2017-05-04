@@ -27,7 +27,6 @@ TEST_CASE("Testing preconditions", "[pre]")
 		REQUIRE(sizeof(char) == 1);
 		REQUIRE(sizeof(short) == 2);
 		REQUIRE(sizeof(int) == 4);
-		REQUIRE(sizeof(long) == 4);
 		REQUIRE(sizeof(float) == 4);
 		REQUIRE(sizeof(long long) == 8);
 		REQUIRE(sizeof(double) == 8);
@@ -35,7 +34,6 @@ TEST_CASE("Testing preconditions", "[pre]")
 		REQUIRE(sizeof(unsigned char) == 1);
 		REQUIRE(sizeof(unsigned short) == 2);
 		REQUIRE(sizeof(unsigned int) == 4);
-		REQUIRE(sizeof(unsigned long) == 4);
 		REQUIRE(sizeof(unsigned long long) == 8);
 	}
 }
