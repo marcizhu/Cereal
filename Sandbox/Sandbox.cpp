@@ -69,7 +69,7 @@ TEST_CASE("Test serialization units", "[lib][units]")
 		CHECK(buff->getOffset() == 100);
 	}
 
-	SECTION("Read/Write")
+	SECTION("Reader/Writer")
 	{
 		byte buff[8];
 

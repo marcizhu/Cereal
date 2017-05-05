@@ -59,7 +59,7 @@ namespace Cereal {
 		template<>
 		void setData<std::string>(DataType type, std::string* value, unsigned int count)
 #elif defined COMPILER_GCC
-        void setDataString(DataType type, std::string* value, unsigned int count)
+		void setDataString(DataType type, std::string* value, unsigned int count)
 #endif
 		{
 			this->count = count;
@@ -97,7 +97,7 @@ namespace Cereal {
 #ifdef COMPILER_MSVC
 		Array(std::string name, std::string* value, unsigned int count) : name(name), data(nullptr) { setData<std::string>(DataType::DATA_STRING, value, count); }
 #elif defined COMPILER_GCC
-        Array(std::string name, std::string* value, unsigned int count) : name(name), data(nullptr) { setDataString(DataType::DATA_STRING, value, count); }
+		Array(std::string name, std::string* value, unsigned int count) : name(name), data(nullptr) { setDataString(DataType::DATA_STRING, value, count); }
 #endif
 		~Array() { if (data) delete[] data; }
 
@@ -225,7 +225,7 @@ namespace Cereal {
 	};
 
 #ifdef COMPILER_GCC
-    template<>
+	template<>
 	inline std::vector<std::string> Array::getArray() const
 	{
 		std::vector<std::string> ret;
