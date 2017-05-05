@@ -17,11 +17,11 @@
 #pragma once
 
 #ifdef __GNUC__
-#   define COMPILER_GCC
+#	define COMPILER_GCC
 #elif defined _MSC_VER
-#   define COMPILER_MSVC
+#	define COMPILER_MSVC
 #else
-#   error Unknown compiler!
+#	error Unknown compiler!
 #endif
 
 namespace Cereal {

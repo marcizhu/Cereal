@@ -240,8 +240,8 @@ namespace Cereal {
 	};
 
 #ifdef COMPILER_GCC
-    template<>
-    float Buffer::readBytes<float>()
+	template<>
+	float Buffer::readBytes<float>()
 	{
 		unsigned int value = 0;
 
@@ -260,7 +260,7 @@ namespace Cereal {
 	}
 
 	template<>
-	bool Buffer::readBytes<bool>()  { return start[offset++] != 0; }
+	bool Buffer::readBytes<bool>() { return start[offset++] != 0; }
 
 	template<>
 	double Buffer::readBytes<double>()

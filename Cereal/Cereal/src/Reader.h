@@ -93,7 +93,7 @@ namespace Cereal {
 	};
 
 #ifdef COMPILER_GCC
-    template<>
+	template<>
 	float Reader::readBytes<float>(byte* src, unsigned int pointer)
 	{
 		unsigned int value = 0;

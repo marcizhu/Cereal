@@ -8,7 +8,7 @@
 
 typedef unsigned char byte;
 
-TEST_CASE("Testing preconditions", "[pre]")
+TEST_CASE("Test preconditions", "[pre]")
 {
 	SECTION("endian")
 	{
@@ -17,7 +17,7 @@ TEST_CASE("Testing preconditions", "[pre]")
 			char c[4];
 		} bint = { 0x01020304 };
 
-		REQUIRE(bint.c[0] == 4); // CPU is big endian
+		REQUIRE(bint.c[0] == 4); // CPU is little endian
 	}
 
 	SECTION("datatypes")
@@ -38,7 +38,7 @@ TEST_CASE("Testing preconditions", "[pre]")
 	}
 }
 
-TEST_CASE("Testing core functions", "[core]")
+TEST_CASE("Test core functions", "[core]")
 {
 	CHECK(sizeOf(Cereal::DataType::DATA_BOOL) == 1);
 	CHECK(sizeOf(Cereal::DataType::DATA_CHAR) == 1);
@@ -54,7 +54,7 @@ TEST_CASE("Testing core functions", "[core]")
 	CHECK_THROWS(sizeOf(Cereal::DataType::DATA_UNKNOWN));
 }
 
-TEST_CASE("Testing serialization units", "[lib][units]")
+TEST_CASE("Test serialization units", "[lib][units]")
 {
 	SECTION("Buffer")
 	{
@@ -69,77 +69,72 @@ TEST_CASE("Testing serialization units", "[lib][units]")
 		CHECK(buff->getOffset() == 100);
 	}
 
-	SECTION("Writer")
+	SECTION("Read/Write")
 	{
-		byte* buff = new byte[36];
+		byte buff[8];
 
-		CHECK(Cereal::Writer::writeBytes<bool>(buff, 0, true) == 1);
-		CHECK(Cereal::Writer::writeBytes<char>(buff, 1, 'A') == 2);
-		CHECK(Cereal::Writer::writeBytes<short>(buff, 2, 0x0102) == 4);
-		CHECK(Cereal::Writer::writeBytes<int>(buff, 4, 0x12345678) == 8);
-		CHECK(Cereal::Writer::writeBytes<float>(buff, 8, 3.2f) == 12);
-		CHECK(Cereal::Writer::writeBytes<long long>(buff, 12, 0x123456789ABCDEF0) == 20);
-		CHECK(Cereal::Writer::writeBytes<double>(buff, 20, 3.141592) == 28);
-		CHECK(Cereal::Writer::writeBytes<std::string>(buff, 28, "string") == 36);
+		buff[0] = false;
+		buff[1] = true;
 
-		CHECK(buff[0] == (byte)true);
-		CHECK(buff[1] == 'A');
-		CHECK(buff[2] == 0x01);
-		CHECK(buff[3] == 0x02);
-		CHECK(buff[4] == 0x12);
-		CHECK(buff[5] == 0x34);
-		CHECK(buff[6] == 0x56);
-		CHECK(buff[7] == 0x78);
-		CHECK(buff[8] == 0x40);
-		CHECK(buff[9] == 0x4C);
-		CHECK(buff[10] == 0xCC);
-		CHECK(buff[11] == 0xCD);
-		CHECK(buff[12] == 0x12);
-		CHECK(buff[13] == 0x34);
-		CHECK(buff[14] == 0x56);
-		CHECK(buff[15] == 0x78);
-		CHECK(buff[16] == 0x9A);
-		CHECK(buff[17] == 0xBC);
-		CHECK(buff[18] == 0xDE);
-		CHECK(buff[19] == 0xF0);
-		CHECK(buff[20] == 0x40);
-		CHECK(buff[21] == 0x09);
-		CHECK(buff[22] == 0x21);
-		CHECK(buff[23] == 0xFA);
-		CHECK(buff[24] == 0xFC);
-		CHECK(buff[25] == 0x8B);
-		CHECK(buff[26] == 0x00);
-		CHECK(buff[27] == 0x7A);
-		CHECK(buff[28] == 0x00);
-		CHECK(buff[29] == 0x06);
-		CHECK(buff[30] == 's');
-		CHECK(buff[31] == 't');
-		CHECK(buff[32] == 'r');
-		CHECK(buff[33] == 'i');
-		CHECK(buff[34] == 'n');
-		CHECK(buff[35] == 'g');
+		//bool
+		CHECK(Cereal::Reader::readBytes<bool>(&buff[0], 0) == false);
+		CHECK(Cereal::Reader::readBytes<bool>(&buff[1], 0) == true);
 
-		delete[] buff;
-	}
+		//string
+		Cereal::Writer::writeBytes<std::string>(&buff[0], 0, "asdf");
+		CHECK(Cereal::Reader::readBytes<std::string>(&buff[0], 0) == "asdf");
 
-	SECTION("Reader")
-	{
-		byte data[36] =
+		//float
+		Cereal::Writer::writeBytes<float>(&buff[0], 0, 3.2f);
+		CHECK(Cereal::Reader::readBytes<float>(&buff[0], 0) == 3.2f);
+
+		//double
+		Cereal::Writer::writeBytes<double>(&buff[0], 0, 3.141592);
+		CHECK(Cereal::Reader::readBytes<double>(&buff[0], 0) == 3.141592);
+
+		//char
+		for(unsigned int i = 0; i < 127; i++)
 		{
-			0x01,  'A', 0x01, 0x02, 0x12, 0x34, 0x56, 0x78, 0x40, 0x4c,
-			0xcc, 0xcd, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0,
-			0x40, 0x09, 0x21, 0xfa, 0xfc, 0x8b, 0x00, 0x7a, 0x00, 0x06,
-			 's',  't',  'r',  'i',  'n',  'g'
-		};
+			Cereal::Writer::writeBytes<char>(&buff[0], 0, (char)i);
+			CHECK(Cereal::Reader::readBytes<char>(&buff[0], 0) == i);
+		}
 
-		CHECK(Cereal::Reader::readBytes<bool>(data, 0) == true);
-		CHECK(Cereal::Reader::readBytes<char>(data, 1) == 'A');
-		CHECK(Cereal::Reader::readBytes<short>(data, 2) == 0x0102);
-		CHECK(Cereal::Reader::readBytes<int>(data, 4) == 0x12345678);
-		CHECK(Cereal::Reader::readBytes<float>(data, 8) == 3.2f);
-		CHECK(Cereal::Reader::readBytes<long long>(data, 12) == 0x123456789ABCDEF0);
-		CHECK(Cereal::Reader::readBytes<double>(data, 20) == 3.141592);
-		CHECK(Cereal::Reader::readBytes<std::string>(data, 28) == "string");
+		//byte
+		for(unsigned int i = 0; i < 256; i++)
+		{
+			Cereal::Writer::writeBytes<byte>(&buff[0], 0, (byte)i);
+			CHECK(Cereal::Reader::readBytes<byte>(&buff[0], 0) == i);
+		}
+
+		//short
+		for(unsigned int j = 0; j < 2; j++)
+		{
+			for(unsigned int i = 0; i < 256; i++)
+			{
+				Cereal::Writer::writeBytes<unsigned short>(&buff[0], 0, (short)i << (8 * j));
+				CHECK(Cereal::Reader::readBytes<unsigned short>(&buff[0], 0) == i << (8 * j));
+			}
+		}
+
+		//int
+		for(unsigned int j = 0; j < 4; j++)
+		{
+			for(unsigned int i = 0; i < 256; i++)
+			{
+				Cereal::Writer::writeBytes<unsigned int>(&buff[0], 0, i << (8 * j));
+				CHECK(Cereal::Reader::readBytes<unsigned int>(&buff[0], 0) == i << (8 * j));
+			}
+		}
+
+		//long long
+		for(unsigned int j = 0; j < 8; j++)
+		{
+			for(unsigned int i = 0; i < 256; i++)
+			{
+				Cereal::Writer::writeBytes<unsigned long long>(&buff[0], 0, i << (8 * j));
+				CHECK(Cereal::Reader::readBytes<unsigned long long>(&buff[0], 0) == i << (8 * j));
+			}
+		}
 	}
 
 	SECTION("Fields")
@@ -250,7 +245,7 @@ TEST_CASE("Testing serialization units", "[lib][units]")
 	}
 }
 
-TEST_CASE("Testing Cereal library", "[lib]")
+TEST_CASE("Test Cereal library", "[lib]")
 {
 	SECTION("Writing")
 	{

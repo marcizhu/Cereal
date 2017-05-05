@@ -78,7 +78,7 @@ namespace Cereal {
 	};
 
 #ifdef COMPILER_GCC
-    template<>
+	template<>
 	unsigned int Writer::writeBytes<std::string>(byte* dest, unsigned int pointer, std::string string)
 	{
 		const unsigned short size = (unsigned short)string.length();

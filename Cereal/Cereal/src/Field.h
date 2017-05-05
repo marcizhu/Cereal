@@ -49,7 +49,7 @@ namespace Cereal {
 		template<>
 		void setData<std::string>(DataType type, std::string value)
 #elif defined COMPILER_GCC
-        void setDataString(DataType type, std::string value)
+		void setDataString(DataType type, std::string value)
 #endif
 		{
 			dataType = type;
@@ -81,7 +81,7 @@ namespace Cereal {
 #ifdef COMPILER_MSVC
 		Field(std::string name, std::string value) : name(name) { setData<std::string>(DataType::DATA_STRING, value); }
 #elif defined COMPILER_GCC
-        Field(std::string name, std::string value) : name(name) { setDataString(DataType::DATA_STRING, value); }
+		Field(std::string name, std::string value) : name(name) { setDataString(DataType::DATA_STRING, value); }
 #endif
 
 		~Field() { if(data) delete[] data; }
@@ -136,7 +136,7 @@ namespace Cereal {
 #ifdef COMPILER_MSVC
 				case DataType::DATA_STRING: setData<std::string>(dataType, buffer.readBytes<std::string>()); break;
 #elif defined COMPILER_GCC
-                case DataType::DATA_STRING: setDataString(dataType, buffer.readBytes<std::string>()); break;
+				case DataType::DATA_STRING: setDataString(dataType, buffer.readBytes<std::string>()); break;
 #endif
 				default: throw std::logic_error("Invalid data type!"); break;
 			}
