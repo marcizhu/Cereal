@@ -122,7 +122,7 @@ namespace Cereal {
 
 		inline unsigned int getSize() const
 		{
-			unsigned int ret = sizeof(byte) + sizeof(short) + name.length() + sizeof(short) + sizeof(short);
+			unsigned int ret = sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(short) + sizeof(short);
 
 			for (const Field* field : fields)
 				ret += field->getSize();

@@ -152,10 +152,10 @@ namespace Cereal {
 		{
 			if (dataType == DataType::DATA_STRING)
 			{
-				return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(short) + Reader::readBytes<unsigned short>(data, 0);
+				return sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(byte) + sizeof(short) + Reader::readBytes<unsigned short>(data, 0);
 			}
 
-			return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeOf(dataType);
+			return sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(byte) + sizeOf(dataType);
 		}
 	};
 

@@ -79,7 +79,7 @@ namespace Cereal {
 			buffer.writeBytes<unsigned short>(MAGIC_NUMBER);
 			buffer.writeBytes<byte>((byte)databases.size());
 
-			unsigned int offset = sizeof(unsigned short) + sizeof(byte) + (sizeof(unsigned int) * databases.size());
+			unsigned int offset = sizeof(unsigned short) + sizeof(byte) + (sizeof(unsigned int) * (unsigned int)databases.size());
 
 			for (unsigned int i = 0; i < databases.size(); i++)
 			{
@@ -96,7 +96,7 @@ namespace Cereal {
 
 		inline unsigned int getSize() const noexcept
 		{
-			unsigned int ret = sizeof(short) + sizeof(byte) + (sizeof(unsigned int) * databases.size());
+			unsigned int ret = sizeof(short) + sizeof(byte) + (sizeof(unsigned int) * (unsigned int)databases.size());
 
 			for (const Database* db : databases)
 				ret += (unsigned int)db->getSize();

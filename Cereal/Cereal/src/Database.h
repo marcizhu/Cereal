@@ -35,15 +35,14 @@ namespace Cereal {
 	public:
 		unsigned int crc32(const byte* message, unsigned int len) const
 		{
-			unsigned int byte, mask;
+			unsigned int mask;
 			signed int crc;
 
 			crc = 0xFFFFFFFF;
 
 			for (unsigned int i = 0; i < len; i++)
 			{
-				byte = message[i]; // Get next byte.
-				crc = crc ^ byte;
+				crc = crc ^  message[i];
 
 				for (int j = 7; j >= 0; j--)
 				{
@@ -151,26 +150,24 @@ namespace Cereal {
 				if(objects.size() > 65536) throw std::overflow_error("Too many objects!");
 				if(this->getSize() > 4294967296) throw std::overflow_error("Database size is too big!"); // 2^32, maximum database size
 
+				unsigned int size = (unsigned int)this->getSize() - sizeof(short) - sizeof(short) - (unsigned int)name.length() - sizeof(unsigned int);
+
+				Buffer* tempBuffer = new Buffer(size);
+
 				buffer.writeBytes<std::string>(name);
 
-				unsigned int chkoffs = buffer.getOffset();
-
-				buffer.addOffset(sizeof(unsigned int)); // checksum
-				buffer.writeBytes<unsigned int>((unsigned int)this->getSize());
-				buffer.writeBytes<unsigned short>((unsigned short)objects.size());
+				tempBuffer->writeBytes<unsigned int>((unsigned int)this->getSize());
+				tempBuffer->writeBytes<unsigned short>((unsigned short)objects.size());
 
 				for (const Object* obj : objects)
-					obj->write(buffer);
+					obj->write(*tempBuffer);
 
-				unsigned int temp = buffer.getOffset(); // end
-
-				buffer.setOffset(chkoffs);
-
-				unsigned int size = (unsigned int)this->getSize() - sizeof(short) - sizeof(short) - (unsigned int)name.length() - sizeof(unsigned int);
-				unsigned int checksum = crc32((byte*)buffer.getStart() + chkoffs + sizeof(unsigned int), size);
+				unsigned int checksum = crc32((byte*)tempBuffer->getStart(), size);
 
 				buffer.writeBytes<unsigned int>(checksum);
-				buffer.setOffset(temp);
+				buffer.copy(tempBuffer);
+
+				delete tempBuffer;
 
 				break;
 			}
@@ -189,10 +186,10 @@ namespace Cereal {
 			switch (version)
 			{
 			case Version::VERSION_1_0:
-				ret += sizeof(short) + name.length() + sizeof(int) + sizeof(short); break;
+				ret += sizeof(short) + (unsigned int)name.length() + sizeof(int) + sizeof(short); break;
 
 			case Version::VERSION_2_0:
-				ret += sizeof(short) + name.length() + sizeof(int) + sizeof(int) + sizeof(short); break;
+				ret += sizeof(short) + (unsigned int)name.length() + sizeof(int) + sizeof(int) + sizeof(short); break;
 
 			default:
 				throw std::invalid_argument("Invalid database version!"); break; // Invalid version

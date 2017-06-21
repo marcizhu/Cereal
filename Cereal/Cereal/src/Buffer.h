@@ -172,9 +172,22 @@ namespace Cereal {
 
 		bool copy(byte* data, unsigned int size)
 		{
+			if (!hasSpace(size)) return false;
+
 			memcpy((byte*)start + offset, data, size);
 
 			offset += size;
+
+			return true;
+		}
+
+		bool copy(const Buffer* buffer)
+		{
+			if (!hasSpace(buffer->offset)) return false;
+
+			memcpy((byte*)start + offset, buffer->start, buffer->offset);
+
+			offset += buffer->offset;
 
 			return true;
 		}

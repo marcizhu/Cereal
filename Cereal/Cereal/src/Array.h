@@ -73,7 +73,7 @@ namespace Cereal {
 			for (unsigned int i = 0; i < count; i++)
 			{
 				size += 2;
-				size += value[i].length();
+				size += (unsigned int)value[i].length();
 			}
 
 			data = new byte[size];
@@ -218,9 +218,9 @@ namespace Cereal {
 		inline unsigned int getSize() const
 		{
 			if(dataType != DataType::DATA_STRING)
-				return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType);
+				return sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType);
 			else
-				return sizeof(byte) + sizeof(short) + name.length() + sizeof(byte) + sizeof(int) + size;
+				return sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(byte) + sizeof(int) + size;
 		}
 	};
 
