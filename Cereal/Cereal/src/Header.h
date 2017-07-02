@@ -42,7 +42,7 @@ namespace Cereal {
 				delete databases[i];
 		}
 
-		void read(Buffer& buffer) noexcept
+		void read(Buffer& buffer)
 		{
 			unsigned short magic = buffer.readBytes<unsigned short>();
 
@@ -94,7 +94,7 @@ namespace Cereal {
 			return true;
 		}
 
-		inline unsigned int getSize() const noexcept
+		inline unsigned int getSize() const
 		{
 			unsigned int ret = sizeof(short) + sizeof(byte) + (sizeof(unsigned int) * (unsigned int)databases.size());
 
@@ -104,7 +104,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		Database* getDatabase(std::string name) const noexcept
+		Database* getDatabase(std::string name) const
 		{
 			for (Database* db : databases)
 				if (db->getName() == name) return db;
@@ -112,9 +112,9 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		void addDatabase(Database* db) noexcept { databases.push_back(db); }
+		void addDatabase(Database* db) { databases.push_back(db); }
 
-		const std::vector<Database*>& getDatabases() const noexcept { return databases; }
+		const std::vector<Database*>& getDatabases() const { return databases; }
 	};
 
 }

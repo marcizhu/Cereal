@@ -192,7 +192,7 @@ namespace Cereal {
 			return true;
 		}
 
-		void shrink() noexcept
+		void shrink()
 		{
 			byte* temp = new byte[offset];
 
