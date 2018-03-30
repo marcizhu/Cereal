@@ -45,7 +45,7 @@ namespace Cereal {
 		void clean() { memset(start, 0, size); offset = 0; }
 
 		template<typename T>
-		T readBytes()
+		inline T readBytes()
 		{
 			T value = 0;
 
@@ -117,7 +117,7 @@ namespace Cereal {
 #endif
 
 		template<typename T>
-		bool writeBytes(T value)
+		inline bool writeBytes(T value)
 		{
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
@@ -254,7 +254,7 @@ namespace Cereal {
 
 #ifdef COMPILER_GCC
 	template<>
-	float Buffer::readBytes<float>()
+	inline float Buffer::readBytes<float>()
 	{
 		unsigned int value = 0;
 
@@ -273,10 +273,10 @@ namespace Cereal {
 	}
 
 	template<>
-	bool Buffer::readBytes<bool>() { return start[offset++] != 0; }
+	inline bool Buffer::readBytes<bool>() { return start[offset++] != 0; }
 
 	template<>
-	double Buffer::readBytes<double>()
+	inline double Buffer::readBytes<double>()
 	{
 		unsigned long long value = start[offset] << (sizeof(int) * 8 - 8);
 
@@ -294,7 +294,7 @@ namespace Cereal {
 	}
 
 	template<>
-	std::string Buffer::readBytes<std::string>()
+	inline std::string Buffer::readBytes<std::string>()
 	{
 		std::string value = "";
 
@@ -309,7 +309,7 @@ namespace Cereal {
 	}
 
 	template<>
-	bool Buffer::writeBytes<std::string>(std::string string)
+	inline bool Buffer::writeBytes<std::string>(std::string string)
 	{
 		const unsigned short size = (unsigned short)string.length();
 
@@ -326,7 +326,7 @@ namespace Cereal {
 	}
 
 	template<>
-	bool Buffer::writeBytes<float>(float data)
+	inline bool Buffer::writeBytes<float>(float data)
 	{
 		unsigned int x;
 
@@ -338,7 +338,7 @@ namespace Cereal {
 	}
 
 	template<>
-	bool Buffer::writeBytes<double>(double data)
+	inline bool Buffer::writeBytes<double>(double data)
 	{
 		unsigned long long x;
 

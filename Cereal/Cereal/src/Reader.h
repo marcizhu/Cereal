@@ -26,7 +26,7 @@ namespace Cereal {
 	{
 	public:
 		template<typename T>
-		static T readBytes(byte* src, unsigned int pointer)
+		inline static T readBytes(byte* src, unsigned int pointer)
 		{
 			T value = 0;
 
@@ -94,7 +94,7 @@ namespace Cereal {
 
 #ifdef COMPILER_GCC
 	template<>
-	float Reader::readBytes<float>(byte* src, unsigned int pointer)
+	inline float Reader::readBytes<float>(byte* src, unsigned int pointer)
 	{
 		unsigned int value = 0;
 
@@ -111,10 +111,10 @@ namespace Cereal {
 	}
 
 	template<>
-	bool Reader::readBytes<bool>(byte* src, unsigned int pointer) { return src[pointer] != 0; }
+	inline bool Reader::readBytes<bool>(byte* src, unsigned int pointer) { return src[pointer] != 0; }
 
 	template<>
-	double Reader::readBytes<double>(byte* src, unsigned int pointer)
+	inline double Reader::readBytes<double>(byte* src, unsigned int pointer)
 	{
 		unsigned long long value = src[pointer] << (sizeof(int) * 8 - 8);
 
@@ -130,7 +130,7 @@ namespace Cereal {
 	}
 
 	template<>
-	std::string Reader::readBytes<std::string>(byte* src, unsigned int pointer)
+	inline std::string Reader::readBytes<std::string>(byte* src, unsigned int pointer)
 	{
 		std::string value = "";
 

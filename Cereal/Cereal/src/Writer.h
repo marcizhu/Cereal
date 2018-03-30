@@ -26,7 +26,7 @@ namespace Cereal {
 	{
 	public:
 		template<typename T>
-		static unsigned int writeBytes(byte* dest, unsigned int pointer, T value)
+		inline static unsigned int writeBytes(byte* dest, unsigned int pointer, T value)
 		{
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
@@ -79,7 +79,7 @@ namespace Cereal {
 
 #ifdef COMPILER_GCC
 	template<>
-	unsigned int Writer::writeBytes<std::string>(byte* dest, unsigned int pointer, std::string string)
+	inline unsigned int Writer::writeBytes<std::string>(byte* dest, unsigned int pointer, std::string string)
 	{
 		const unsigned short size = (unsigned short)string.length();
 
@@ -96,7 +96,7 @@ namespace Cereal {
 	}
 
 	template<>
-	unsigned int Writer::writeBytes<float>(byte* dest, unsigned int pointer, float data)
+	inline unsigned int Writer::writeBytes<float>(byte* dest, unsigned int pointer, float data)
 	{
 		unsigned int x;
 
@@ -106,7 +106,7 @@ namespace Cereal {
 	}
 
 	template<>
-	unsigned int Writer::writeBytes<double>(byte* dest, unsigned int pointer, double data)
+	inline unsigned int Writer::writeBytes<double>(byte* dest, unsigned int pointer, double data)
 	{
 		unsigned long long x;
 
