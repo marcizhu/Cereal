@@ -2,6 +2,7 @@
 //
 
 #include <Cereal.h>
+#include <random>
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
@@ -85,12 +86,19 @@ TEST_CASE("Test serialization units", "[lib][units]")
 		CHECK(Cereal::Reader::readBytes<std::string>(&buff[0], 0) == "asdf");
 
 		//float
-		Cereal::Writer::writeBytes<float>(&buff[0], 0, 3.2f);
-		CHECK(Cereal::Reader::readBytes<float>(&buff[0], 0) == 3.2f);
+		srand(time(NULL));
+		float val = rand() / (float)RAND_MAX;
+
+		Cereal::Writer::writeBytes<float>(&buff[0], 0, val);
+		CHECK(Cereal::Reader::readBytes<float>(&buff[0], 0) == val);
 
 		//double
-		Cereal::Writer::writeBytes<double>(&buff[0], 0, 3.141592);
-		CHECK(Cereal::Reader::readBytes<double>(&buff[0], 0) == 3.141592);
+		double doub = rand() / (double)RAND_MAX;
+
+		Approx target = Approx(doub).epsilon(0.000001);
+
+		Cereal::Writer::writeBytes<double>(&buff[0], 0, doub);
+		CHECK(Cereal::Reader::readBytes<double>(&buff[0], 0) == target);
 
 		//char
 		for(unsigned int i = 0; i < 127; i++)
@@ -139,12 +147,18 @@ TEST_CASE("Test serialization units", "[lib][units]")
 
 	SECTION("Fields")
 	{
+		char		r0 = rand() & 0x00FF;
+		short		r1 = rand() & 0xFFFF;
+		int			r2 = rand();
+		float		r3 = rand() / (float)RAND_MAX;
+		long long	r4 = ((long long)rand() << 32) | rand();
+
 		Cereal::Field* fbool = new Cereal::Field("field bool", (bool)true);
-		Cereal::Field* fchar = new Cereal::Field("field char", (char)'M');
-		Cereal::Field* fshort = new Cereal::Field("field short", (short)9000);
-		Cereal::Field* fint = new Cereal::Field("field int", (int)42);
-		Cereal::Field* ffloat = new Cereal::Field("field float", 3.2f);
-		Cereal::Field* flonglong = new Cereal::Field("field long long", (long long)0x123456789ABCDEF0);
+		Cereal::Field* fchar = new Cereal::Field("field char", r0);
+		Cereal::Field* fshort = new Cereal::Field("field short", r1);
+		Cereal::Field* fint = new Cereal::Field("field int", r2);
+		Cereal::Field* ffloat = new Cereal::Field("field float", r3);
+		Cereal::Field* flonglong = new Cereal::Field("field long long", r4);
 		Cereal::Field* fdouble = new Cereal::Field("field double", (double)3.141592);
 		Cereal::Field* fstring = new Cereal::Field("field string", std::string("test string"));
 
@@ -158,11 +172,11 @@ TEST_CASE("Test serialization units", "[lib][units]")
 		CHECK(fstring->getName() == "field string");
 
 		CHECK(fbool->getValue<bool>() == true);
-		CHECK(fchar->getValue<char>() == 'M');
-		CHECK(fshort->getValue<short>() == 9000);
-		CHECK(fint->getValue<int>() == 42);
-		CHECK(ffloat->getValue<float>() == 3.2f);
-		CHECK(flonglong->getValue<long long>() == 0x123456789ABCDEF0);
+		CHECK(fchar->getValue<char>() == r0);
+		CHECK(fshort->getValue<short>() == r1);
+		CHECK(fint->getValue<int>() == r2);
+		CHECK(ffloat->getValue<float>() == r3);
+		CHECK(flonglong->getValue<long long>() == r4);
 		CHECK(fdouble->getValue<double>() == 3.141592);
 		CHECK(fstring->getValue<std::string>() == "test string");
 

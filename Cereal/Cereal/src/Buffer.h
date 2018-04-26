@@ -204,7 +204,7 @@ namespace Cereal {
 			size = offset;
 		}
 
-		void setOffset(unsigned int off) { if (off > size) throw std::domain_error("Offset value is too large"); offset = off; }
+		void setOffset(unsigned int off) { if (off > size) throw std::domain_error("Offset value is too large"); else offset = off; }
 
 		unsigned int getFreeSpace() const  { return size - offset; }
 		unsigned int getOffset() const { return offset; }
