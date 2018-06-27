@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: debian:stretch
+      - image: gcc:latest
     steps:
       - checkout
       - run: g++ Sandbox/Sandbox.cpp -ICereal/Cereal -o bin/Sandbox -std=c++11
