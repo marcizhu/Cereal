@@ -5,5 +5,5 @@ jobs:
       - image: gcc:latest
     steps:
       - checkout
-      - run: g++ Sandbox/Sandbox.cpp -ICereal/Cereal -o bin/Sandbox -std=c++11
-      - run: ./bin/Sandbox
+      - run: g++ Sandbox/Sandbox.cpp -ICereal/Cereal -O2 -o test -std=c++11
+      - run: ./test
