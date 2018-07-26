@@ -36,7 +36,7 @@ namespace Cereal {
 		unsigned int crc32(const byte* message, unsigned int len) const
 		{
 			unsigned int mask;
-			signed int crc;
+			unsigned int crc;
 
 			crc = 0xFFFFFFFF;
 
