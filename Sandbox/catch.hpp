@@ -442,7 +442,6 @@ namespace Catch {
     };
 
     struct SourceLineInfo {
-
         SourceLineInfo();
         SourceLineInfo( char const* _file, std::size_t _line );
 #  ifdef CATCH_CONFIG_CPP11_GENERATED_METHODS
@@ -601,7 +600,6 @@ namespace Catch {
 
     template<typename T = IShared>
     struct SharedImpl : T {
-
         SharedImpl() : m_rc( 0 ){}
 
         virtual void addRef() const {
@@ -693,7 +691,6 @@ namespace Catch {
 
 template<typename C>
 class MethodTestCase : public SharedImpl<ITestCase> {
-
 public:
     MethodTestCase( void (C::*method)() ) : m_method( method ) {}
 
@@ -726,7 +723,6 @@ void registerTestCase
         SourceLineInfo const& lineInfo );
 
 struct AutoReg {
-
     AutoReg
         (   TestFunction function,
             SourceLineInfo const& lineInfo,
@@ -738,7 +734,6 @@ struct AutoReg {
             char const* className,
             NameAndDesc const& nameAndDesc,
             SourceLineInfo const& lineInfo ) {
-
         registerTestCase
             (   new MethodTestCase<C>( method ),
                 className,
@@ -865,7 +860,6 @@ namespace Catch {
         DidntThrowException = Exception | 2,
 
         FatalErrorCondition = 0x200 | FailureBit
-
     }; };
 
     inline bool isOk( ResultWas::OfType resultType ) {
@@ -1050,7 +1044,6 @@ namespace Matchers {
 
         template<typename ObjectT, typename ComparatorT = ObjectT>
         struct MatcherBase : MatcherUntypedBase, MatcherMethod<ObjectT> {
-
             MatchAllOf<ComparatorT> operator && ( MatcherBase const& other ) const;
             MatchAnyOf<ComparatorT> operator || ( MatcherBase const& other ) const;
             MatchNotOf<ComparatorT> operator ! () const;
@@ -1087,7 +1080,6 @@ namespace Matchers {
         };
         template<typename ArgT>
         struct MatchAnyOf : MatcherBase<ArgT> {
-
             virtual bool match( ArgT const& arg ) const CATCH_OVERRIDE {
                 for( std::size_t i = 0; i < m_matchers.size(); ++i ) {
                     if (m_matchers[i]->match(arg))
@@ -1095,6 +1087,7 @@ namespace Matchers {
                 }
                 return false;
             }
+
             virtual std::string describe() const CATCH_OVERRIDE {
                 std::string description;
                 description.reserve( 4 + m_matchers.size()*32 );
@@ -1178,7 +1171,6 @@ using Matchers::Impl::MatcherBase;
 } // namespace Catch
 
 namespace Catch {
-
     struct TestFailureException{};
 
     template<typename T> class ExpressionLhs;
@@ -1732,7 +1724,6 @@ namespace TupleDetail {
 
 template<typename ...Types>
 struct StringMaker<std::tuple<Types...>> {
-
     static std::string convert( const std::tuple<Types...>& tuple )
     {
         std::ostringstream os;
@@ -2034,7 +2025,6 @@ namespace Catch {
     struct Counts;
 
     struct IResultCapture {
-
         virtual ~IResultCapture();
 
         virtual void assertionEnded( AssertionResult const& result ) = 0;
@@ -2337,7 +2327,6 @@ namespace Catch {
     };
 
     struct Totals {
-
         Totals operator - ( Totals const& other ) const {
             Totals diff;
             diff.assertions = assertions - other.assertions;
@@ -2480,7 +2469,6 @@ public:
     }
 
 private:
-
     T m_from;
     T m_to;
 };
@@ -2564,7 +2552,6 @@ public:
     }
 
 private:
-
     void move( CompositeGenerator& other ) {
         m_composed.insert( m_composed.end(), other.m_composed.begin(), other.m_composed.end() );
         m_totalSize += other.m_totalSize;
@@ -3205,7 +3192,6 @@ namespace Catch {
 
     class TestCase : public TestCaseInfo {
     public:
-
         TestCase( ITestCase* testCase, TestCaseInfo const& info );
         TestCase( TestCase const& other );
 

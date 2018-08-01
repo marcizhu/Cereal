@@ -74,7 +74,6 @@ namespace Cereal {
 			return writeBytes<unsigned long long>(dest, pointer, x);
 		}
 #endif
-
 	};
 
 #ifdef COMPILER_GCC
@@ -115,5 +114,4 @@ namespace Cereal {
 		return writeBytes<unsigned long long>(dest, pointer, x);
 	}
 #endif
-
 }
