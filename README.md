@@ -67,7 +67,7 @@ Finally, to compile your file (say `main.cpp`) with Cereal, just include the `-I
 g++ main.cpp -Ipath/to/Cereal -std=c++11 -o output_file
 ```
 
-### Microsoft Visual Studio 2015/2017
+### Microsoft Visual Studio 2015/2017 (Windows)
 To compile a file with Cereal using visual studio, just add the Cereal folder to the include path. This is done in _Project Settings_ > _Project paths_ > _Include paths_.
 
 Once this is done, your project should compile without any problems!
@@ -91,7 +91,7 @@ This project is currently maintained by:
 - [@raresica1234](https://github.com/raresica1234)
 
 ## Contribute
-Pull requests and suggestions are accepted. If you have any questions, feel free to open an [issue](https://github.com/marcizhu/Cereal/issues) and we will reply as soon as possible :)
+Pull requests and suggestions are always accepted. If you have any question, feel free to open an [issue](https://github.com/marcizhu/Cereal/issues) and we will reply as soon as possible :)
 
 Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
