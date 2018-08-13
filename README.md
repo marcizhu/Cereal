@@ -72,15 +72,20 @@ To compile a file with Cereal using visual studio, just add the Cereal folder to
 
 Once this is done, your project should compile without any problems!
 
+## Status
+This library is actively maintained. We are basically testing the library, improving its features and making sure everything works as intended. More than **4,000 tests** make sure this library is stable and that no new bugs are introduced.
+
+Right now, the library is ready to be used in any application. As far as we know, it is 100% bug free and fully cross-platform, compiling in Microsoft Windows Vista/7/8/8.1/10, Linux Debian/Ubuntu/Mint/Kali, and MacOS High Sierra.
+
 ## API
 This library contains different classes. Each class can be used to serialized a different kind of data:
 
- - [Fields](https://github.com/marcizhu/Cereal/wiki/Fields): A field just stores a simple data type, like an `int` or a `short`
- - [Arrays](https://github.com/marcizhu/Cereal/wiki/Arrays): An array is a collection of simple data types, for example you can have 10 `floats` stored
- - [Objects](https://github.com/marcizhu/Cereal/wiki/Objects): Each object contains a name (like all the other data structures) but also it stores fields and arrays (up to 65536 fields plus 65536 arrays)
- - [Databases](https://github.com/marcizhu/Cereal/wiki/Databases): A database is a collection of objects, each with its own fields and arrays
- - [Headers](https://github.com/marcizhu/Cereal/wiki/Headers): Headers are optional, but really useful if you want to store more than one database per file. With headers you can have up to 255 databases in a single file!
- - [Buffers](https://github.com/marcizhu/Cereal/wiki/Buffers): Buffers are just a helper class that holds serialized data. They can be really useful when reading and writing files.
+ - [Cereal::Field](https://github.com/marcizhu/Cereal/wiki/Fields): A field just stores a simple data type, like an `int` or a `short`
+ - [Cereal::Array](https://github.com/marcizhu/Cereal/wiki/Arrays): An array is a collection of simple data types, for example you can have 10 `floats` stored
+ - [Cereal::Object](https://github.com/marcizhu/Cereal/wiki/Objects): Each object contains a name (like all the other data structures) but also it stores fields and arrays (up to 65536 fields plus 65536 arrays)
+ - [Cereal::Database](https://github.com/marcizhu/Cereal/wiki/Databases): A database is a collection of objects, each with its own fields and arrays
+ - [Cereal::Header](https://github.com/marcizhu/Cereal/wiki/Headers): Headers are optional, but really useful if you want to store more than one database per file. With headers you can have up to 255 databases in a single file!
+ - [Cereal::Buffer](https://github.com/marcizhu/Cereal/wiki/Buffers): Buffers are just a helper class that holds serialized data. They can be really useful when reading and writing files.
  
 For more information, check out the [wiki page](https://github.com/marcizhu/Cereal/wiki)
 
@@ -93,7 +98,9 @@ This project is currently maintained by:
 ## Contribute
 Pull requests and suggestions are always accepted. If you have any question, feel free to open an [issue](https://github.com/marcizhu/Cereal/issues) and we will reply as soon as possible :)
 
+For support and other questions, you can also send me an e-mail at marcizhu@gmail.com.
+
 Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
 ## License
-This project is licensed under the GNU General Public License v3.0. Copyright © 2018 The Cereal Team
+This project is licensed under the [GNU General Public License v3.0](https://github.com/marcizhu/Cereal/blob/master/LICENSE.txt). Copyright © 2016-2018 The Cereal Team
