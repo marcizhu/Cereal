@@ -24,7 +24,7 @@ jobs:
         - run:
             name: Build Cereal
             command: |
-              g++ Sandbox/Sandbox.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -o test -pthread -std=c++11
+              g++ Sandbox/Sandbox.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o test -pthread -std=c++11
         - run:
             name: Run unit tests
             command: |

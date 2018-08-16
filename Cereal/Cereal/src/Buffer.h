@@ -51,7 +51,7 @@ namespace Cereal {
 
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
-				value |= (start[offset + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
+				value |= ((T)start[offset + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
 			}
 
 			offset += sizeof(T);
@@ -67,7 +67,7 @@ namespace Cereal {
 
 			for (int i = 0; i < (int) sizeof(float); i++)
 			{
-				value |= (start[offset + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				value |= ((unsigned int)start[offset + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
 			}
 
 			float result;
@@ -85,11 +85,11 @@ namespace Cereal {
 		template<>
 		double readBytes<double>()
 		{
-			unsigned long long value = start[offset] << (sizeof(int) * 8 - 8);
+			unsigned long long value = 0;
 
 			for (int i = offset; i < (int)offset + (int)sizeof(float); i++)
 			{
-				value |= (start[i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				value |= ((unsigned long long)start[i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 			}
 
 			double result;
@@ -278,15 +278,15 @@ namespace Cereal {
 	template<>
 	inline double Buffer::readBytes<double>()
 	{
-		unsigned long long value = start[offset] << (sizeof(int) * 8 - 8);
+		unsigned long long value = 0;
 
-		for (int i = offset; i < (int)offset + (int)sizeof(float); i++)
+		for (int i = offset; i < (int)offset + (int)sizeof(double); i++)
 		{
-			value |= (start[i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+			value |= ((unsigned long long)start[i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 		}
 
 		double result;
-		memcpy(&result, &value, 4);
+		memcpy(&result, &value, sizeof(double));
 
 		offset += sizeof(double);
 

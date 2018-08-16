@@ -62,9 +62,9 @@ namespace Cereal {
 		template<>
 		static double readBytes<double>(byte* src, unsigned int pointer)
 		{
-			unsigned long long value = src[pointer] << (sizeof(int) * 8 - 8);
+			unsigned long long value = 0;
 
-			for (int i = 0; i < (int) sizeof(double); i++)
+			for (int i = 0; i < (int)sizeof(double); i++)
 			{
 				value |= ((unsigned long long)src[pointer + i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 			}
@@ -116,9 +116,9 @@ namespace Cereal {
 	template<>
 	inline double Reader::readBytes<double>(byte* src, unsigned int pointer)
 	{
-		unsigned long long value = src[pointer] << (sizeof(int) * 8 - 8);
+		unsigned long long value = 0;
 
-		for (int i = 0; i < (int) sizeof(double); i++)
+		for (int i = 0; i < (int)sizeof(double); i++)
 		{
 			value |= ((unsigned long long)src[pointer + i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 		}
@@ -144,5 +144,4 @@ namespace Cereal {
 		return value;
 	}
 #endif
-
 }
