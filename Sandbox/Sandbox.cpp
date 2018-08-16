@@ -90,7 +90,7 @@ TEST(SerializationUnits, ReaderWriter)
 	double doub = rand() / (double)RAND_MAX;
 
 	Cereal::Writer::writeBytes<double>(&buff[0], 0, doub);
-	EXPECT_DOUBLE_EQ(Cereal::Reader::readBytes<double>(&buff[0], 0), doub);
+	EXPECT_NEAR(Cereal::Reader::readBytes<double>(&buff[0], 0), doub, 0.0000001);
 
 	//char
 	for(unsigned int i = 0; i < 127; i++)
