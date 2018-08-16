@@ -4,344 +4,332 @@
 #include <Cereal.h>
 #include <random>
 
-#define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include <gtest/gtest.h>
 
 typedef unsigned char byte;
 
-TEST_CASE("Test preconditions", "[pre]")
+TEST(Preconditions, endian)
 {
-	SECTION("endian")
-	{
-		union {
-			uint32_t i;
-			char c[4];
-		} bint = { 0x01020304 };
+	union {
+		uint32_t i;
+		char c[4];
+	} bint = { 0x01020304 };
 
-		REQUIRE(bint.c[0] == 4); // CPU is little endian
-	}
-
-	SECTION("datatypes")
-	{
-		REQUIRE(sizeof(byte) == 1);
-
-		REQUIRE(sizeof(char) == 1);
-		REQUIRE(sizeof(short) == 2);
-		REQUIRE(sizeof(int) == 4);
-		REQUIRE(sizeof(float) == 4);
-		REQUIRE(sizeof(long long) == 8);
-		REQUIRE(sizeof(double) == 8);
-
-		REQUIRE(sizeof(unsigned char) == 1);
-		REQUIRE(sizeof(unsigned short) == 2);
-		REQUIRE(sizeof(unsigned int) == 4);
-		REQUIRE(sizeof(unsigned long long) == 8);
-	}
+	ASSERT_EQ(bint.c[0], 4); // CPU is little endian
 }
 
-TEST_CASE("Test core functions", "[core]")
+TEST(Preconditions, datatypes)
 {
-	CHECK(sizeOf(Cereal::DataType::DATA_BOOL) == 1);
-	CHECK(sizeOf(Cereal::DataType::DATA_CHAR) == 1);
-	CHECK(sizeOf(Cereal::DataType::DATA_SHORT) == 2);
-	CHECK(sizeOf(Cereal::DataType::DATA_INT) == 4);
-	CHECK(sizeOf(Cereal::DataType::DATA_FLOAT) == 4);
-	CHECK(sizeOf(Cereal::DataType::DATA_DOUBLE) == 8);
-	CHECK(sizeOf(Cereal::DataType::DATA_LONG_LONG) == 8);
-	CHECK_THROWS(sizeOf(Cereal::DataType::DATA_ARRAY));
-	CHECK_THROWS(sizeOf(Cereal::DataType::DATA_FIELD));
-	CHECK_THROWS(sizeOf(Cereal::DataType::DATA_OBJECT));
-	CHECK_THROWS(sizeOf(Cereal::DataType::DATA_STRING));
-	CHECK_THROWS(sizeOf(Cereal::DataType::DATA_UNKNOWN));
+	ASSERT_EQ(sizeof(byte), 1);
+
+	ASSERT_EQ(sizeof(char), 1);
+	ASSERT_EQ(sizeof(short), 2);
+	ASSERT_EQ(sizeof(int), 4);
+	ASSERT_EQ(sizeof(float), 4);
+	ASSERT_EQ(sizeof(long long), 8);
+	ASSERT_EQ(sizeof(double), 8);
+
+	ASSERT_EQ(sizeof(unsigned char), 1);
+	ASSERT_EQ(sizeof(unsigned short), 2);
+	ASSERT_EQ(sizeof(unsigned int), 4);
+	ASSERT_EQ(sizeof(unsigned long long), 8);
 }
 
-TEST_CASE("Test serialization units", "[lib][units]")
+TEST(Core, CoreFuncs)
 {
-	SECTION("Buffer")
+	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_BOOL), 1);
+	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_CHAR), 1);
+	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_SHORT), 2);
+	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_INT), 4);
+	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_FLOAT), 4);
+	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_DOUBLE), 8);
+	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_LONG_LONG), 8);
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_ARRAY), std::invalid_argument);
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_FIELD), std::invalid_argument);
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_OBJECT), std::invalid_argument);
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_STRING), std::invalid_argument);
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_UNKNOWN), std::invalid_argument);
+}
+
+TEST(SerializationUnits, Buffer)
+{
+	Cereal::Buffer* buff = new Cereal::Buffer(100);
+	buff->setOffset(0);
+	EXPECT_NO_THROW(buff->setOffset(100));
+	EXPECT_THROW(buff->setOffset(101), std::domain_error);
+	EXPECT_THROW(buff->addOffset(5), std::domain_error);
+	EXPECT_EQ(buff->getOffset(), 100);
+	EXPECT_THROW(buff->addOffset(95), std::domain_error);
+	EXPECT_THROW(buff->addOffset(96), std::domain_error);
+	EXPECT_EQ(buff->getOffset(), 100);
+}
+
+TEST(SerializationUnits, ReaderWriter)
+{
+	byte buff[8];
+
+	buff[0] = false;
+	buff[1] = true;
+
+	//bool
+	EXPECT_FALSE(Cereal::Reader::readBytes<bool>(&buff[0], 0));
+	EXPECT_TRUE(Cereal::Reader::readBytes<bool>(&buff[1], 0));
+
+	//string
+	Cereal::Writer::writeBytes<std::string>(&buff[0], 0, "asdf");
+	EXPECT_STREQ(Cereal::Reader::readBytes<std::string>(&buff[0], 0).c_str(), "asdf");
+
+	//float
+	srand(time(NULL));
+	float val = rand() / (float)RAND_MAX;
+
+	Cereal::Writer::writeBytes<float>(&buff[0], 0, val);
+	EXPECT_FLOAT_EQ(Cereal::Reader::readBytes<float>(&buff[0], 0), val);
+
+	//double
+	double doub = rand() / (double)RAND_MAX;
+
+	Cereal::Writer::writeBytes<double>(&buff[0], 0, doub);
+	EXPECT_DOUBLE_EQ(Cereal::Reader::readBytes<double>(&buff[0], 0), doub);
+
+	//char
+	for(unsigned int i = 0; i < 127; i++)
 	{
-		Cereal::Buffer* buff = new Cereal::Buffer(100);
-		buff->setOffset(0);
-		CHECK_NOTHROW(buff->setOffset(100));
-		CHECK_THROWS(buff->setOffset(101));
-		CHECK_THROWS(buff->addOffset(5));
-		CHECK(buff->getOffset() == 100);
-		CHECK_THROWS(buff->addOffset(95));
-		CHECK_THROWS(buff->addOffset(96));
-		CHECK(buff->getOffset() == 100);
+		Cereal::Writer::writeBytes<char>(&buff[0], 0, (char)i);
+		EXPECT_EQ(Cereal::Reader::readBytes<char>(&buff[0], 0), i);
 	}
 
-	SECTION("Reader/Writer")
+	//byte
+	for(unsigned int i = 0; i < 256; i++)
 	{
-		byte buff[8];
+		Cereal::Writer::writeBytes<byte>(&buff[0], 0, (byte)i);
+		EXPECT_EQ(Cereal::Reader::readBytes<byte>(&buff[0], 0), i);
+	}
 
-		buff[0] = false;
-		buff[1] = true;
-
-		//bool
-		CHECK(Cereal::Reader::readBytes<bool>(&buff[0], 0) == false);
-		CHECK(Cereal::Reader::readBytes<bool>(&buff[1], 0) == true);
-
-		//string
-		Cereal::Writer::writeBytes<std::string>(&buff[0], 0, "asdf");
-		CHECK(Cereal::Reader::readBytes<std::string>(&buff[0], 0) == "asdf");
-
-		//float
-		srand(time(NULL));
-		float val = rand() / (float)RAND_MAX;
-
-		Cereal::Writer::writeBytes<float>(&buff[0], 0, val);
-		CHECK(Cereal::Reader::readBytes<float>(&buff[0], 0) == val);
-
-		//double
-		double doub = rand() / (double)RAND_MAX;
-
-		Approx target = Approx(doub).epsilon(0.000001);
-
-		Cereal::Writer::writeBytes<double>(&buff[0], 0, doub);
-		CHECK(Cereal::Reader::readBytes<double>(&buff[0], 0) == target);
-
-		//char
-		for(unsigned int i = 0; i < 127; i++)
-		{
-			Cereal::Writer::writeBytes<char>(&buff[0], 0, (char)i);
-			CHECK(Cereal::Reader::readBytes<char>(&buff[0], 0) == i);
-		}
-
-		//byte
+	//short
+	for(unsigned int j = 0; j < 2; j++)
+	{
 		for(unsigned int i = 0; i < 256; i++)
 		{
-			Cereal::Writer::writeBytes<byte>(&buff[0], 0, (byte)i);
-			CHECK(Cereal::Reader::readBytes<byte>(&buff[0], 0) == i);
+			Cereal::Writer::writeBytes<unsigned short>(&buff[0], 0, (short)i << (8 * j));
+			EXPECT_EQ(Cereal::Reader::readBytes<unsigned short>(&buff[0], 0), i << (8 * j));
 		}
+	}
 
-		//short
-		for(unsigned int j = 0; j < 2; j++)
+	//int
+	for(unsigned int j = 0; j < 4; j++)
+	{
+		for(unsigned int i = 0; i < 256; i++)
 		{
-			for(unsigned int i = 0; i < 256; i++)
-			{
-				Cereal::Writer::writeBytes<unsigned short>(&buff[0], 0, (short)i << (8 * j));
-				CHECK(Cereal::Reader::readBytes<unsigned short>(&buff[0], 0) == i << (8 * j));
-			}
+			Cereal::Writer::writeBytes<unsigned int>(&buff[0], 0, i << (8 * j));
+			EXPECT_EQ(Cereal::Reader::readBytes<unsigned int>(&buff[0], 0), i << (8 * j));
 		}
+	}
 
-		//int
-		for(unsigned int j = 0; j < 4; j++)
+	//long long
+	for(unsigned int j = 0; j < 8; j++)
+	{
+		for(unsigned int i = 0; i < 256; i++)
 		{
-			for(unsigned int i = 0; i < 256; i++)
-			{
-				Cereal::Writer::writeBytes<unsigned int>(&buff[0], 0, i << (8 * j));
-				CHECK(Cereal::Reader::readBytes<unsigned int>(&buff[0], 0) == i << (8 * j));
-			}
+			Cereal::Writer::writeBytes<unsigned long long>(&buff[0], 0, i << (8 * j));
+			EXPECT_EQ(Cereal::Reader::readBytes<unsigned long long>(&buff[0], 0), i << (8 * j));
 		}
-
-		//long long
-		for(unsigned int j = 0; j < 8; j++)
-		{
-			for(unsigned int i = 0; i < 256; i++)
-			{
-				Cereal::Writer::writeBytes<unsigned long long>(&buff[0], 0, i << (8 * j));
-				CHECK(Cereal::Reader::readBytes<unsigned long long>(&buff[0], 0) == i << (8 * j));
-			}
-		}
-	}
-
-	SECTION("Fields")
-	{
-		char		r0 = rand() & 0x00FF;
-		short		r1 = rand() & 0xFFFF;
-		int			r2 = rand();
-		float		r3 = rand() / (float)RAND_MAX;
-		long long	r4 = ((long long)rand() << 32) | rand();
-
-		Cereal::Field* fbool = new Cereal::Field("field bool", (bool)true);
-		Cereal::Field* fchar = new Cereal::Field("field char", r0);
-		Cereal::Field* fshort = new Cereal::Field("field short", r1);
-		Cereal::Field* fint = new Cereal::Field("field int", r2);
-		Cereal::Field* ffloat = new Cereal::Field("field float", r3);
-		Cereal::Field* flonglong = new Cereal::Field("field long long", r4);
-		Cereal::Field* fdouble = new Cereal::Field("field double", (double)3.141592);
-		Cereal::Field* fstring = new Cereal::Field("field string", std::string("test string"));
-
-		CHECK(fbool->getName() == "field bool");
-		CHECK(fchar->getName() == "field char");
-		CHECK(fshort->getName() == "field short");
-		CHECK(fint->getName() == "field int");
-		CHECK(ffloat->getName() == "field float");
-		CHECK(flonglong->getName() == "field long long");
-		CHECK(fdouble->getName() == "field double");
-		CHECK(fstring->getName() == "field string");
-
-		CHECK(fbool->getValue<bool>() == true);
-		CHECK(fchar->getValue<char>() == r0);
-		CHECK(fshort->getValue<short>() == r1);
-		CHECK(fint->getValue<int>() == r2);
-		CHECK(ffloat->getValue<float>() == r3);
-		CHECK(flonglong->getValue<long long>() == r4);
-		CHECK(fdouble->getValue<double>() == 3.141592);
-		CHECK(fstring->getValue<std::string>() == "test string");
-
-		delete fbool;
-		delete fchar;
-		delete fshort;
-		delete fint;
-		delete ffloat;
-		delete flonglong;
-		delete fdouble;
-		delete fstring;
-	}
-
-	SECTION("Arrays")
-	{
-		Cereal::Array* a = new Cereal::Array("array name", new int[4]{ 1, 2, 3, 4 }, 4);
-		Cereal::Array* a2 = new Cereal::Array("second", new std::string[2]{ "another string", "string no 2" }, 2);
-		int* ret = a->getRawArray(new int[a->getCount()]);
-
-		CHECK(a->getName() == "array name");
-		CHECK(a2->getName() == "second");
-		CHECK(a2->getArray<std::string>()[0] == "another string");
-		CHECK(a2->getArray<std::string>()[1] == "string no 2");
-
-		CHECK(a->getCount() == 4);
-		CHECK(ret[0] == 1);
-		CHECK(ret[1] == 2);
-		CHECK(ret[2] == 3);
-		CHECK(ret[3] == 4);
-		CHECK(a->getArray<int>().size() == a->getCount());
-
-		delete a;
-		delete a2;
-		delete ret;
-	}
-
-	SECTION("Objects")
-	{
-		Cereal::Field* f = new Cereal::Field("f", 3);
-		Cereal::Array* a = new Cereal::Array("a", new int[2]{ 1, 2 }, 2);
-		Cereal::Object* obj = new Cereal::Object("object");
-
-		obj->addArray(a);
-		obj->addField(f);
-
-		CHECK(obj->getName() == "object");
-		CHECK(obj->getArrays().size() == 1);
-		CHECK(obj->getFields().size() == 1);
-		CHECK(obj->getField("f") != nullptr);
-		CHECK(obj->getArray("a") != nullptr);
-
-		delete obj;
-	}
-
-	SECTION("Databases")
-	{
-		Cereal::Object* obj = new Cereal::Object("obj name");
-		Cereal::Database* db = new Cereal::Database("db name");
-
-		db->addObject(obj);
-
-		CHECK(db->getName() == "db name");
-		CHECK(db->getObject("obj name") != nullptr);
-		CHECK(db->getObjects().size() == 1);
-
-		delete db;
-	}
-
-	SECTION("Headers")
-	{
-		Cereal::Database* db = new Cereal::Database("test");
-		Cereal::Header* header = new Cereal::Header;
-
-		header->addDatabase(db);
-
-		CHECK(header->getDatabase("test") != nullptr);
-		CHECK(header->getDatabases().size() == 1);
-
-		delete header;
 	}
 }
 
-TEST_CASE("Test Cereal library", "[lib]")
+TEST(SerializationUnits, Field)
 {
-	SECTION("Writing")
-	{
-		Cereal::Header* myHeader = new Cereal::Header();
-		Cereal::Database* db1 = new Cereal::Database("Test");
-		Cereal::Database* db2 = new Cereal::Database("Second database");
-		Cereal::Object* obj = new Cereal::Object("object");
-		Cereal::Object* second = new Cereal::Object("second object");
-		Cereal::Field* myField = new Cereal::Field("field", 3.14f);
-		Cereal::Field* other = new Cereal::Field("other", std::string("test string"));
-		Cereal::Array* arr = new Cereal::Array("array", new int[4]{ 1, 2, 3, 4 }, 4);
-		Cereal::Array* str = new Cereal::Array("arr2", new std::string[2]{ "t1", "t2" }, 2);
+	char		r0 = rand() & 0x00FF;
+	short		r1 = rand() & 0xFFFF;
+	int			r2 = rand();
+	float		r3 = rand() / (float)RAND_MAX;
+	long long	r4 = ((long long)rand() << 32) | rand();
 
-		obj->addArray(arr);
-		obj->addField(myField);
-		obj->addField(other);
+	Cereal::Field* fbool = new Cereal::Field("field bool", (bool)true);
+	Cereal::Field* fchar = new Cereal::Field("field char", r0);
+	Cereal::Field* fshort = new Cereal::Field("field short", r1);
+	Cereal::Field* fint = new Cereal::Field("field int", r2);
+	Cereal::Field* ffloat = new Cereal::Field("field float", r3);
+	Cereal::Field* flonglong = new Cereal::Field("field long long", r4);
+	Cereal::Field* fdouble = new Cereal::Field("field double", (double)3.141592);
+	Cereal::Field* fstring = new Cereal::Field("field string", std::string("test string"));
 
-		second->addArray(str);
+	EXPECT_STREQ(fbool->getName().c_str(), "field bool");
+	EXPECT_STREQ(fchar->getName().c_str(), "field char");
+	EXPECT_STREQ(fshort->getName().c_str(), "field short");
+	EXPECT_STREQ(fint->getName().c_str(), "field int");
+	EXPECT_STREQ(ffloat->getName().c_str(), "field float");
+	EXPECT_STREQ(flonglong->getName().c_str(), "field long long");
+	EXPECT_STREQ(fdouble->getName().c_str(), "field double");
+	EXPECT_STREQ(fstring->getName().c_str(), "field string");
 
-		db1->addObject(obj);
-		db2->addObject(second);
+	EXPECT_TRUE(fbool->getValue<bool>());
+	EXPECT_EQ(fchar->getValue<char>(), r0);
+	EXPECT_EQ(fshort->getValue<short>(), r1);
+	EXPECT_EQ(fint->getValue<int>(), r2);
+	EXPECT_FLOAT_EQ(ffloat->getValue<float>(), r3);
+	EXPECT_EQ(flonglong->getValue<long long>(), r4);
+	EXPECT_DOUBLE_EQ(fdouble->getValue<double>(), 3.141592);
+	EXPECT_STREQ(fstring->getValue<std::string>().c_str(), "test string");
 
-		myHeader->addDatabase(db1);
-		myHeader->addDatabase(db2);
+	delete fbool;
+	delete fchar;
+	delete fshort;
+	delete fint;
+	delete ffloat;
+	delete flonglong;
+	delete fdouble;
+	delete fstring;
+}
 
-		Cereal::Buffer buffer(myHeader->getSize());
+TEST(SerializationUnits, Array)
+{
+	Cereal::Array* a = new Cereal::Array("array name", new int[4]{ 1, 2, 3, 4 }, 4);
+	Cereal::Array* a2 = new Cereal::Array("second", new std::string[2]{ "another string", "string no 2" }, 2);
+	int* ret = a->getRawArray(new int[a->getCount()]);
 
-		CHECK(myHeader->write(buffer) == true);
-		CHECK(buffer.writeFile("test-out.db") == true);
+	EXPECT_STREQ(a->getName().c_str(), "array name");
+	EXPECT_STREQ(a2->getName().c_str(), "second");
+	EXPECT_STREQ(a2->getArray<std::string>()[0].c_str(), "another string");
+	EXPECT_STREQ(a2->getArray<std::string>()[1].c_str(), "string no 2");
 
-		CHECK((size_t)2 == obj->getFields().size());
-		CHECK((size_t)1 == obj->getArrays().size());
-		CHECK((size_t)1 == second->getArrays().size());
-		CHECK((size_t)1 == db1->getObjects().size());
-		CHECK((size_t)1 == db2->getObjects().size());
-		CHECK((size_t)2 == myHeader->getDatabases().size());
+	EXPECT_EQ(a->getCount(), 4);
+	EXPECT_EQ(ret[0], 1);
+	EXPECT_EQ(ret[1], 2);
+	EXPECT_EQ(ret[2], 3);
+	EXPECT_EQ(ret[3], 4);
+	EXPECT_EQ(a->getArray<int>().size(), a->getCount());
 
-		delete myHeader;
-	}
+	delete a;
+	delete a2;
+	delete ret;
+}
 
-	SECTION("Reading")
-	{
-		Cereal::Buffer buffer(0);
-		Cereal::Header* header = new Cereal::Header;
+TEST(SerializationUnits, Object)
+{
+	Cereal::Field* f = new Cereal::Field("f", 3);
+	Cereal::Array* a = new Cereal::Array("a", new int[2]{ 1, 2 }, 2);
+	Cereal::Object* obj = new Cereal::Object("object");
 
-		REQUIRE(buffer.readFile("test-out.db") == true);
+	obj->addArray(a);
+	obj->addField(f);
 
-		header->read(buffer);
+	EXPECT_STREQ(obj->getName().c_str(), "object");
+	EXPECT_EQ(obj->getArrays().size(), 1);
+	EXPECT_EQ(obj->getFields().size(), 1);
+	EXPECT_NE(obj->getField("f"), nullptr);
+	EXPECT_NE(obj->getArray("a"), nullptr);
 
-		Cereal::Database* db1 = header->getDatabase("Test");
-		Cereal::Database* db2 = header->getDatabase("Second database");
-		Cereal::Object* obj1 = db1->getObject("object");
-		Cereal::Object* obj2 = db2->getObject("second object");
-		Cereal::Field* f1 = obj1->getField("field");
-		Cereal::Field* f2 = obj1->getField("other");
-		Cereal::Array* arr1 = obj1->getArray("array");
-		Cereal::Array* arr2 = obj2->getArray("arr2");
+	delete obj;
+}
 
-		CHECK(db1 != nullptr);
-		CHECK(db2 != nullptr);
-		CHECK(obj1 != nullptr);
-		CHECK(obj2 != nullptr);
-		CHECK(f1 != nullptr);
-		CHECK(f2 != nullptr);
-		CHECK(arr1 != nullptr);
-		CHECK(arr2 != nullptr);
+TEST(SerializationUnits, Database)
+{
+	Cereal::Object* obj = new Cereal::Object("obj name");
+	Cereal::Database* db = new Cereal::Database("db name");
 
-		CHECK((size_t)2 == header->getDatabases().size());
-		CHECK((size_t)1 == db1->getObjects().size());
-		CHECK((size_t)1 == db2->getObjects().size());
-		CHECK((size_t)2 == obj1->getFields().size());
-		CHECK((size_t)1 == obj1->getArrays().size());
-		CHECK((size_t)0 == obj2->getFields().size());
-		CHECK((size_t)1 == obj2->getArrays().size());
-		CHECK(3.14f == f1->getValue<float>());
-		CHECK((unsigned int)4 == arr1->getCount());
-		CHECK((unsigned int)2 == arr2->getCount());
-		CHECK(3 == arr1->getArray<int>()[2]);
-		CHECK(std::string("test string") == f2->getValue<std::string>());
-		CHECK(std::string("t1") == arr2->getArray<std::string>()[0]);
-		CHECK(std::string("t2") == arr2->getArray<std::string>()[1]);
+	db->addObject(obj);
 
-		delete header;
-	}
+	EXPECT_STREQ(db->getName().c_str(), "db name");
+	EXPECT_NE(db->getObject("obj name"), nullptr);
+	EXPECT_EQ(db->getObjects().size(), 1);
+
+	delete db;
+}
+
+TEST(SerializationUnits, Header)
+{
+	Cereal::Database* db = new Cereal::Database("test");
+	Cereal::Header* header = new Cereal::Header;
+
+	header->addDatabase(db);
+
+	EXPECT_NE(header->getDatabase("test"), nullptr);
+	EXPECT_EQ(header->getDatabases().size(), 1);
+
+	delete header;
+}
+
+TEST(CerealLib, Writing)
+{
+	Cereal::Header* myHeader = new Cereal::Header();
+	Cereal::Database* db1 = new Cereal::Database("Test");
+	Cereal::Database* db2 = new Cereal::Database("Second database");
+	Cereal::Object* obj = new Cereal::Object("object");
+	Cereal::Object* second = new Cereal::Object("second object");
+	Cereal::Field* myField = new Cereal::Field("field", 3.14f);
+	Cereal::Field* other = new Cereal::Field("other", std::string("test string"));
+	Cereal::Array* arr = new Cereal::Array("array", new int[4]{ 1, 2, 3, 4 }, 4);
+	Cereal::Array* str = new Cereal::Array("arr2", new std::string[2]{ "t1", "t2" }, 2);
+
+	obj->addArray(arr);
+	obj->addField(myField);
+	obj->addField(other);
+
+	second->addArray(str);
+
+	db1->addObject(obj);
+	db2->addObject(second);
+
+	myHeader->addDatabase(db1);
+	myHeader->addDatabase(db2);
+
+	Cereal::Buffer buffer(myHeader->getSize());
+
+	EXPECT_TRUE(myHeader->write(buffer));
+	EXPECT_TRUE(buffer.writeFile("test-out.db"));
+
+	EXPECT_EQ((size_t)2, obj->getFields().size());
+	EXPECT_EQ((size_t)1, obj->getArrays().size());
+	EXPECT_EQ((size_t)1, second->getArrays().size());
+	EXPECT_EQ((size_t)1, db1->getObjects().size());
+	EXPECT_EQ((size_t)1, db2->getObjects().size());
+	EXPECT_EQ((size_t)2, myHeader->getDatabases().size());
+
+	delete myHeader;
+}
+
+TEST(CerealLib, Reading)
+{
+	Cereal::Buffer buffer(0);
+	Cereal::Header* header = new Cereal::Header;
+
+	ASSERT_TRUE(buffer.readFile("test-out.db"));
+
+	header->read(buffer);
+
+	Cereal::Database* db1 = header->getDatabase("Test");
+	Cereal::Database* db2 = header->getDatabase("Second database");
+	Cereal::Object* obj1 = db1->getObject("object");
+	Cereal::Object* obj2 = db2->getObject("second object");
+	Cereal::Field* f1 = obj1->getField("field");
+	Cereal::Field* f2 = obj1->getField("other");
+	Cereal::Array* arr1 = obj1->getArray("array");
+	Cereal::Array* arr2 = obj2->getArray("arr2");
+
+	EXPECT_NE(db1, nullptr);
+	EXPECT_NE(db2, nullptr);
+	EXPECT_NE(obj1, nullptr);
+	EXPECT_NE(obj2, nullptr);
+	EXPECT_NE(f1, nullptr);
+	EXPECT_NE(f2, nullptr);
+	EXPECT_NE(arr1, nullptr);
+	EXPECT_NE(arr2, nullptr);
+
+	EXPECT_EQ((size_t)2, header->getDatabases().size());
+	EXPECT_EQ((size_t)1, db1->getObjects().size());
+	EXPECT_EQ((size_t)1, db2->getObjects().size());
+	EXPECT_EQ((size_t)2, obj1->getFields().size());
+	EXPECT_EQ((size_t)1, obj1->getArrays().size());
+	EXPECT_EQ((size_t)0, obj2->getFields().size());
+	EXPECT_EQ((size_t)1, obj2->getArrays().size());
+	EXPECT_FLOAT_EQ(3.14f, f1->getValue<float>());
+	EXPECT_EQ((unsigned int)4, arr1->getCount());
+	EXPECT_EQ((unsigned int)2, arr2->getCount());
+	EXPECT_EQ(3, arr1->getArray<int>()[2]);
+	EXPECT_STREQ("test string", f2->getValue<std::string>().c_str());
+	EXPECT_STREQ("t1", arr2->getArray<std::string>()[0].c_str());
+	EXPECT_STREQ("t2", arr2->getArray<std::string>()[1].c_str());
+
+	delete header;
 }
