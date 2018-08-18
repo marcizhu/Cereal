@@ -73,7 +73,9 @@ To compile a file with Cereal using visual studio, just add the Cereal folder to
 Once this is done, your project should compile without any problems!
 
 ## Status
-This library is actively maintained. We are basically testing the library, improving its features and making sure everything works as intended. More than **4,000 tests** make sure this library is stable and that no new bugs are introduced.
+This library is actively maintained. We are basically testing the library, improving its features and making sure everything works as intended. More than **8,000 assertions** and 20 tests make sure this library is stable and that no new bugs are introduced.
+
+This tests are executed after each push commit, and the status is displayed as a green tick or red mark next to each commit. You can see the details for each test case.
 
 Right now, the library is ready to be used in any application. As far as we know, it is 100% bug free and fully cross-platform, compiling in Microsoft Windows Vista/7/8/8.1/10, Linux Debian/Ubuntu/Mint/Kali, and MacOS High Sierra.
 
