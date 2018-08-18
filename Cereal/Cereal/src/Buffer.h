@@ -119,6 +119,8 @@ namespace Cereal {
 		template<typename T>
 		inline bool writeBytes(T value)
 		{
+			if(!hasSpace(sizeof(T))) return false;
+
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
 				start[offset++] = (value >> ((sizeof(T) - 1) * 8 - i * 8)) & 0xFF;
@@ -133,7 +135,8 @@ namespace Cereal {
 		{
 			const unsigned short size = (unsigned short)string.length();
 
-			if(size > 65535) throw std::overflow_error("String is too long!");
+			if(size > 0xFFFF) throw std::overflow_error("String is too long!");
+			if(!hasSpace(size + sizeof(short))) return false;
 
 			writeBytes<unsigned short>(size);
 
@@ -152,9 +155,7 @@ namespace Cereal {
 
 			*(unsigned int*)&x = *(unsigned int*)&data;
 
-			writeBytes<unsigned int>(x);
-
-			return true;
+			return writeBytes<unsigned int>(x);
 		}
 
 		template<>
@@ -164,9 +165,7 @@ namespace Cereal {
 
 			*(unsigned long long*)&x = *(unsigned long long*)&data;
 
-			writeBytes<unsigned long long>(x);
-
-			return true;
+			return writeBytes<unsigned long long>(x);
 		}
 #endif
 
@@ -313,7 +312,8 @@ namespace Cereal {
 	{
 		const unsigned short size = (unsigned short)string.length();
 
-		if(size > 65535) throw std::overflow_error("String is too long!");
+		if(size > 0xFFFF) throw std::overflow_error("String is too long!");
+		if(!hasSpace(size + sizeof(short))) return false;
 
 		writeBytes<unsigned short>(size);
 
@@ -332,9 +332,7 @@ namespace Cereal {
 
 		*(unsigned int*)&x = *(unsigned int*)&data;
 
-		writeBytes<unsigned int>(x);
-
-		return true;
+		return writeBytes<unsigned int>(x);
 	}
 
 	template<>
@@ -344,9 +342,7 @@ namespace Cereal {
 
 		*(unsigned long long*)&x = *(unsigned long long*)&data;
 
-		writeBytes<unsigned long long>(x);
-
-		return true;
+		return writeBytes<unsigned long long>(x);
 	}
 #endif
 }
