@@ -35,7 +35,7 @@ jobs:
               g++ Sandbox/Headers.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o headers -pthread -std=c++11
 
         - save_cache:
-            key: test-{{ .Branch }}-{{ .BuildNum }}
+            key: test-{{ .Branch }}-{{ .Revision }}
             paths:
               - core
               - buffers
@@ -54,7 +54,7 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
         - restore_cache:
-            key: test-{{ .Branch }}-{{ .BuildNum }}
+            key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
             name: Test preconditions
@@ -74,7 +74,7 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
         - restore_cache:
-            key: test-{{ .Branch }}-{{ .BuildNum }}
+            key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
             name: Test preconditions
@@ -94,7 +94,7 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
         - restore_cache:
-            key: test-{{ .Branch }}-{{ .BuildNum }}
+            key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
             name: Test preconditions
@@ -114,7 +114,7 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
         - restore_cache:
-            key: test-{{ .Branch }}-{{ .BuildNum }}
+            key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
             name: Test preconditions
@@ -134,7 +134,7 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
         - restore_cache:
-            key: test-{{ .Branch }}-{{ .BuildNum }}
+            key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
             name: Test preconditions
@@ -154,7 +154,7 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
         - restore_cache:
-            key: test-{{ .Branch }}-{{ .BuildNum }}
+            key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
             name: Test preconditions
@@ -174,7 +174,7 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
         - restore_cache:
-            key: test-{{ .Branch }}-{{ .BuildNum }}
+            key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
             name: Test databases
@@ -194,7 +194,7 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
         - restore_cache:
-            key: test-{{ .Branch }}-{{ .BuildNum }}
+            key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
             name: Test headers
