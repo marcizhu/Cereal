@@ -85,7 +85,7 @@ namespace Cereal {
 		}
 
 	public:
-		Array() : dataType(DataType::DATA_UNKNOWN), data(nullptr), count(0), name("") { }
+		Array() : name(""), dataType(DataType::DATA_UNKNOWN), count(0), data(nullptr) { }
 		Array(std::string name, byte* value, unsigned int count) : name(name), data(nullptr) { setData<byte>(DataType::DATA_CHAR, value, count); }
 		Array(std::string name, bool* value, unsigned int count) : name(name), data(nullptr) { setData<bool>(DataType::DATA_BOOL, value, count); }
 		Array(std::string name, char* value, unsigned int count) : name(name), data(nullptr) { setData<char>(DataType::DATA_CHAR, value, count); }

@@ -69,7 +69,7 @@ namespace Cereal {
 
 	public:
 		//constructor for each field type
-		Field() : data(nullptr), dataType(DataType::DATA_UNKNOWN), name("") { }
+		Field() : name(""), dataType(DataType::DATA_UNKNOWN), data(nullptr) { }
 		Field(std::string name, byte value) : name(name) { setData<byte>(DataType::DATA_CHAR /* | MOD_UNSIGNED*/, value); }
 		Field(std::string name, bool value) : name(name) { setData<bool>(DataType::DATA_BOOL, value); }
 		Field(std::string name, char value) : name(name) { setData<char>(DataType::DATA_CHAR, value); }

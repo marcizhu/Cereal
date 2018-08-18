@@ -32,9 +32,9 @@ namespace Cereal {
 		unsigned int offset;
 
 	public:
-		Buffer(unsigned int size) : size(size), start(new byte[size]) { clean(); }
-		Buffer(byte* start, unsigned int size) : size(size), start(start) { clean(); }
-		Buffer(byte* start, unsigned int size, unsigned int offset, bool clean = false) : size(size), start(start), offset(offset) { if (clean) this->clean(); }
+		Buffer(unsigned int size) : start(new byte[size]), size(size) { clean(); }
+		Buffer(byte* start, unsigned int size) : start(start), size(size) { clean(); }
+		Buffer(byte* start, unsigned int size, unsigned int offset, bool clean = false) : start(start), size(size), offset(offset) { if (clean) this->clean(); }
 
 		~Buffer()
 		{
@@ -65,16 +65,16 @@ namespace Cereal {
 		{
 			unsigned int value = 0;
 
-			for (int i = 0; i < (int) sizeof(float); i++)
+			for (unsigned int i = 0; i < sizeof(float); i++)
 			{
-				value |= ((unsigned int)start[offset + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				value |= ((unsigned int)start[offset + i] << ((sizeof(unsigned int) * 8 - 8) - (i * 8)));
 			}
 
 			float result;
 
 			offset += sizeof(float);
 
-			memcpy(&result, &value, 4);
+			memcpy(&result, &value, sizeof(float));
 
 			return result;
 		}
@@ -87,13 +87,13 @@ namespace Cereal {
 		{
 			unsigned long long value = 0;
 
-			for (int i = offset; i < (int)offset + (int)sizeof(float); i++)
+			for (unsigned int i = 0; i < sizeof(double); i++)
 			{
-				value |= ((unsigned long long)start[i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
+				value |= ((unsigned long long)start[offset + i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 			}
 
 			double result;
-			memcpy(&result, &value, 4);
+			memcpy(&result, &value, sizeof(double));
 
 			offset += sizeof(double);
 
@@ -107,7 +107,7 @@ namespace Cereal {
 
 			unsigned short size = readBytes<unsigned short>();
 
-			for (int i = 0; i < size; i++)
+			for (unsigned int i = 0; i < size; i++)
 			{
 				value += readBytes<char>();
 			}
@@ -258,16 +258,16 @@ namespace Cereal {
 	{
 		unsigned int value = 0;
 
-		for (int i = 0; i < (int) sizeof(float); i++)
+		for (unsigned int i = 0; i < sizeof(float); i++)
 		{
-			value |= (start[offset + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+			value |= ((unsigned int)start[offset + i] << ((sizeof(unsigned int) * 8 - 8) - (i * 8)));
 		}
 
 		float result;
 
 		offset += sizeof(float);
 
-		memcpy(&result, &value, 4);
+		memcpy(&result, &value, sizeof(float));
 
 		return result;
 	}
@@ -280,9 +280,9 @@ namespace Cereal {
 	{
 		unsigned long long value = 0;
 
-		for (int i = offset; i < (int)offset + (int)sizeof(double); i++)
+		for (unsigned int i = 0; i < sizeof(double); i++)
 		{
-			value |= ((unsigned long long)start[i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
+			value |= ((unsigned long long)start[offset + i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 		}
 
 		double result;
@@ -300,7 +300,7 @@ namespace Cereal {
 
 		unsigned short size = readBytes<unsigned short>();
 
-		for (int i = 0; i < size; i++)
+		for (unsigned int i = 0; i < size; i++)
 		{
 			value += readBytes<char>();
 		}
@@ -349,5 +349,4 @@ namespace Cereal {
 		return true;
 	}
 #endif
-
 }

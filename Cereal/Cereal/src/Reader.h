@@ -44,9 +44,9 @@ namespace Cereal {
 		{
 			unsigned int value = 0;
 
-			for (int i = 0; i < (int) sizeof(float); i++)
+			for (unsigned int i = 0; i < sizeof(float); i++)
 			{
-				value |= (src[pointer + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				value |= ((unsigned int)src[pointer + i] << ((sizeof(unsigned int) * 8 - 8) - (i * 8)));
 			}
 
 			float result;
@@ -64,7 +64,7 @@ namespace Cereal {
 		{
 			unsigned long long value = 0;
 
-			for (int i = 0; i < (int)sizeof(double); i++)
+			for (unsigned int i = 0; i < sizeof(double); i++)
 			{
 				value |= ((unsigned long long)src[pointer + i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 			}
@@ -82,7 +82,7 @@ namespace Cereal {
 
 			unsigned short size = readBytes<unsigned short>(src, pointer);
 
-			for (unsigned int i = pointer + 2; i < pointer + size + 2; i++)
+			for (unsigned int i = pointer + 2; i < (pointer + size + 2); i++)
 			{
 				value += readBytes<char>(src, i);
 			}
@@ -98,9 +98,9 @@ namespace Cereal {
 	{
 		unsigned int value = 0;
 
-		for (int i = 0; i < (int) sizeof(float); i++)
+		for (unsigned int i = 0; i < sizeof(float); i++)
 		{
-			value |= (src[pointer + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+			value |= ((unsigned int)src[pointer + i] << ((sizeof(unsigned int) * 8 - 8) - (i * 8)));
 		}
 
 		float result;
@@ -118,7 +118,7 @@ namespace Cereal {
 	{
 		unsigned long long value = 0;
 
-		for (int i = 0; i < (int)sizeof(double); i++)
+		for (unsigned int i = 0; i < sizeof(double); i++)
 		{
 			value |= ((unsigned long long)src[pointer + i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 		}
@@ -136,7 +136,7 @@ namespace Cereal {
 
 		unsigned short size = readBytes<unsigned short>(src, pointer);
 
-		for (unsigned int i = pointer + 2; i < pointer + size + 2; i++)
+		for (unsigned int i = pointer + 2; i < (pointer + size + 2); i++)
 		{
 			value += readBytes<char>(src, i);
 		}

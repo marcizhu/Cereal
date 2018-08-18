@@ -55,9 +55,9 @@ namespace Cereal {
 		}
 
 	public:
-		Database() : name(""), version(Version::VERSION_INVALID) { }
-		Database(std::string name, Version ver) : name(name), version(ver) { }
-		Database(std::string name) : name(name), version(Version::VERSION_LATEST) { }
+		Database() : version(Version::VERSION_INVALID), name("") { }
+		Database(std::string name, Version ver) : version(ver), name(name) { }
+		Database(std::string name) : version(Version::VERSION_LATEST), name(name) { }
 
 		~Database()
 		{
