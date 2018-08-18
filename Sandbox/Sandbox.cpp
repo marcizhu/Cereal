@@ -8,17 +8,38 @@
 
 typedef unsigned char byte;
 
-TEST(Preconditions, endian)
+::testing::AssertionResult isLittleEndian()
 {
-	union {
-		uint32_t i;
-		char c[4];
-	} bint = { 0x01020304 };
+	short i = 1;
+	byte *p = (byte*) &i;
 
-	ASSERT_EQ(bint.c[0], 4); // CPU is little endian
+	if (p[0] == 1) return ::testing::AssertionSuccess() << "CPU is Little Endian";
+
+	return ::testing::AssertionFailure() << "CPU is Big Endian";
 }
 
-TEST(Preconditions, datatypes)
+class BufferTest: public ::testing::Test
+{
+protected:
+	Cereal::Buffer* buff;
+
+	BufferTest()
+	{
+	   buff = new Cereal::Buffer(16384); // doubles should work now
+	}
+
+	~BufferTest()
+	{
+		delete buff;
+	}
+};
+
+TEST(Preconditions, LittleEndian)
+{
+	ASSERT_TRUE(isLittleEndian());
+}
+
+TEST(Preconditions, DataTypes)
 {
 	ASSERT_EQ(sizeof(byte), 1);
 
@@ -37,6 +58,20 @@ TEST(Preconditions, datatypes)
 
 TEST(Core, CoreFuncs)
 {
+	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_BOOL));
+	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_CHAR));
+	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_SHORT));
+	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_INT));
+	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_FLOAT));
+	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_DOUBLE));
+	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_LONG_LONG));
+
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_ARRAY), std::invalid_argument);
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_FIELD), std::invalid_argument);
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_OBJECT), std::invalid_argument);
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_STRING), std::invalid_argument);
+	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_UNKNOWN), std::invalid_argument);
+
 	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_BOOL), 1);
 	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_CHAR), 1);
 	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_SHORT), 2);
@@ -44,17 +79,13 @@ TEST(Core, CoreFuncs)
 	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_FLOAT), 4);
 	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_DOUBLE), 8);
 	EXPECT_EQ(sizeOf(Cereal::DataType::DATA_LONG_LONG), 8);
-	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_ARRAY), std::invalid_argument);
-	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_FIELD), std::invalid_argument);
-	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_OBJECT), std::invalid_argument);
-	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_STRING), std::invalid_argument);
-	EXPECT_THROW(sizeOf(Cereal::DataType::DATA_UNKNOWN), std::invalid_argument);
 }
 
-TEST(SerializationUnits, Buffer)
+TEST(Buffer, Domain)
 {
 	Cereal::Buffer* buff = new Cereal::Buffer(100);
-	buff->setOffset(0);
+
+	ASSERT_EQ(buff->getOffset(), 0);
 	EXPECT_NO_THROW(buff->setOffset(100));
 	EXPECT_THROW(buff->setOffset(101), std::domain_error);
 	EXPECT_THROW(buff->addOffset(5), std::domain_error);
@@ -64,108 +95,149 @@ TEST(SerializationUnits, Buffer)
 	EXPECT_EQ(buff->getOffset(), 100);
 
 	delete buff;
+}
 
-	// TODO: Serialize all at once and then deserialize everything
+TEST_F(BufferTest, Bool)
+{
+	bool data[1000];
 
-	buff = new Cereal::Buffer(sizeof(unsigned long long) * 0xFF);
-
-	buff->writeBytes<bool>(false);
-	buff->writeBytes<bool>(true);
-
-	buff->setOffset(0);
-
-	//bool
-	EXPECT_FALSE(buff->readBytes<bool>());
-	EXPECT_TRUE(buff->readBytes<bool>());
+	for(int i = 0; i < 1000; i++)
+	{
+		data[i] = (rand() % 2) == 0;
+		ASSERT_TRUE(buff->writeBytes<bool>(data[i]));
+	}
 
 	buff->setOffset(0);
 
-	//string
-	buff->writeBytes<std::string>("asdf");
+	for(int i = 0; i < 1000; i++)
+		EXPECT_EQ(buff->readBytes<bool>(), data[i]);
+}
+
+TEST_F(BufferTest, String)
+{
+	// TODO: Add more string tests
+	ASSERT_TRUE(buff->writeBytes<std::string>("asdf"));
 	buff->setOffset(0);
 	EXPECT_STREQ(buff->readBytes<std::string>().c_str(), "asdf");
+}
 
-	buff->setOffset(0);
+TEST_F(BufferTest, Float)
+{
+	float fdata[1000];
 
-	//float
-	srand(time(NULL));
-	float val = rand() / (float)RAND_MAX;
-
-	buff->writeBytes<float>(val);
-	buff->setOffset(0);
-	EXPECT_FLOAT_EQ(buff->readBytes<float>(), val);
-
-	buff->setOffset(0);
-
-	//double
-	double doub = rand() / (double)RAND_MAX;
-
-	buff->writeBytes<double>(doub);
-	buff->setOffset(0);
-	EXPECT_DOUBLE_EQ(buff->readBytes<double>(), doub);
-
-	buff->setOffset(0);
-
-	//char
-	for(unsigned int i = 0; i < 127; i++)
+	for(int i = 0; i < 1000; i++)
 	{
-		buff->writeBytes<char>((char)i);
+		fdata[i] = (rand() / (float)RAND_MAX);
+		ASSERT_TRUE(buff->writeBytes<float>(fdata[i]));
 	}
 
 	buff->setOffset(0);
 
-	for(unsigned int i = 0; i < 127; i++)
+	for(int i = 0; i < 1000; i++)
+		EXPECT_FLOAT_EQ(buff->readBytes<float>(), fdata[i]);
+}
+
+TEST_F(BufferTest, Double)
+{
+	double data[1000];
+
+	for(int i = 0; i < 1000; i++)
 	{
+		data[i] = (rand() / (double)RAND_MAX);
+		ASSERT_TRUE(buff->writeBytes<double>(data[i]));
+	}
+
+	buff->setOffset(0);
+
+	for(int i = 0; i < 1000; i++)
+		EXPECT_DOUBLE_EQ(buff->readBytes<double>(), data[i]);
+}
+
+TEST_F(BufferTest, Char)
+{
+	for(unsigned int i = 0; i < 127; i++)
+		ASSERT_TRUE(buff->writeBytes<char>((char)i));
+
+	buff->setOffset(0);
+
+	for(unsigned int i = 0; i < 127; i++)
 		EXPECT_EQ(buff->readBytes<char>(), i);
-	}
+}
 
-	//byte
+TEST_F(BufferTest, Byte)
+{
 	for(unsigned int i = 0; i < 256; i++)
-	{
-		buff->setOffset(0);
-		buff->writeBytes<byte>((byte)i);
-		buff->setOffset(0);
-		EXPECT_EQ(buff->readBytes<byte>(), i);
-	}
+		ASSERT_TRUE(buff->writeBytes<byte>((byte)i));
 
-	//short
+	buff->setOffset(0);
+
+	for(unsigned int i = 0; i < 256; i++)
+		EXPECT_EQ(buff->readBytes<byte>(), i);
+}
+
+TEST_F(BufferTest, Short)
+{
 	for(unsigned int j = 0; j < 2; j++)
 	{
 		for(unsigned int i = 0; i < 256; i++)
 		{
-			buff->setOffset(0);
-			buff->writeBytes<unsigned short>((short)i << (8 * j));
-			buff->setOffset(0);
-			EXPECT_EQ(buff->readBytes<unsigned short>(), i << (8 * j));
+			ASSERT_TRUE(buff->writeBytes<unsigned short>((unsigned short)i << (8 * j)));
 		}
 	}
 
-	//int
+	buff->setOffset(0);
+
+	for(unsigned int j = 0; j < 2; j++)
+	{
+		for(unsigned int i = 0; i < 256; i++)
+		{
+			EXPECT_EQ(buff->readBytes<unsigned short>(), i << (8 * j));
+		}
+	}
+}
+
+TEST_F(BufferTest, Int32)
+{
 	for(unsigned int j = 0; j < 4; j++)
 	{
 		for(unsigned int i = 0; i < 256; i++)
 		{
-			buff->setOffset(0);
-			buff->writeBytes<unsigned int>(i << (8 * j));
-			buff->setOffset(0);
-			EXPECT_EQ(buff->readBytes<unsigned int>(), i << (8 * j));
+			ASSERT_TRUE(buff->writeBytes<unsigned int>(i << (8 * j)));
 		}
 	}
 
-	//long long
+	buff->setOffset(0);
+
+	for(unsigned int j = 0; j < 4; j++)
+	{
+		for(unsigned int i = 0; i < 256; i++)
+		{
+			EXPECT_EQ(buff->readBytes<unsigned int>(), i << (8 * j));
+		}
+	}
+}
+
+TEST_F(BufferTest, Int64)
+{
 	for(unsigned int j = 0; j < 8; j++)
 	{
 		for(unsigned int i = 0; i < 256; i++)
 		{
 			const unsigned long long n = i << (8 * j);
-			buff->setOffset(0);
-			buff->writeBytes<unsigned long long>(n);
-			buff->setOffset(0);
-			EXPECT_EQ(buff->readBytes<unsigned long long>(), n);
+			ASSERT_TRUE(buff->writeBytes<unsigned long long>(n));
 		}
 	}
 
-	delete buff;
+	buff->setOffset(0);
+
+	for(unsigned int j = 0; j < 8; j++)
+	{
+		for(unsigned int i = 0; i < 256; i++)
+		{
+			const unsigned long long n = i << (8 * j);
+			EXPECT_EQ(buff->readBytes<unsigned long long>(), n);
+		}
+	}
 }
 
 TEST(SerializationUnits, ReaderWriter)
@@ -256,7 +328,7 @@ TEST(SerializationUnits, Field)
 	Cereal::Field* fint = new Cereal::Field("field int", r2);
 	Cereal::Field* ffloat = new Cereal::Field("field float", r3);
 	Cereal::Field* flonglong = new Cereal::Field("field long long", r4);
-	Cereal::Field* fdouble = new Cereal::Field("field double", (double)3.141592);
+	Cereal::Field* fdouble = new Cereal::Field("field double", (double)3.14159265);
 	Cereal::Field* fstring = new Cereal::Field("field string", std::string("test string"));
 
 	EXPECT_STREQ(fbool->getName().c_str(), "field bool");
@@ -268,13 +340,22 @@ TEST(SerializationUnits, Field)
 	EXPECT_STREQ(fdouble->getName().c_str(), "field double");
 	EXPECT_STREQ(fstring->getName().c_str(), "field string");
 
+	EXPECT_EQ(fbool->getDataType(), Cereal::DataType::DATA_BOOL);
+	EXPECT_EQ(fchar->getDataType(), Cereal::DataType::DATA_CHAR);
+	EXPECT_EQ(fshort->getDataType(), Cereal::DataType::DATA_SHORT);
+	EXPECT_EQ(fint->getDataType(), Cereal::DataType::DATA_INT);
+	EXPECT_EQ(ffloat->getDataType(), Cereal::DataType::DATA_FLOAT);
+	EXPECT_EQ(flonglong->getDataType(), Cereal::DataType::DATA_LONG_LONG);
+	EXPECT_EQ(fdouble->getDataType(), Cereal::DataType::DATA_DOUBLE);
+	EXPECT_EQ(fstring->getDataType(), Cereal::DataType::DATA_STRING);
+
 	EXPECT_TRUE(fbool->getValue<bool>());
 	EXPECT_EQ(fchar->getValue<char>(), r0);
 	EXPECT_EQ(fshort->getValue<short>(), r1);
 	EXPECT_EQ(fint->getValue<int>(), r2);
 	EXPECT_FLOAT_EQ(ffloat->getValue<float>(), r3);
 	EXPECT_EQ(flonglong->getValue<long long>(), r4);
-	EXPECT_DOUBLE_EQ(fdouble->getValue<double>(), 3.141592);
+	EXPECT_DOUBLE_EQ(fdouble->getValue<double>(), 3.14159265);
 	EXPECT_STREQ(fstring->getValue<std::string>().c_str(), "test string");
 
 	delete fbool;
