@@ -57,7 +57,7 @@ jobs:
             key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
-            name: Test preconditions
+            name: Test core library
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
@@ -77,7 +77,7 @@ jobs:
             key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
-            name: Test preconditions
+            name: Test buffers
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
@@ -97,7 +97,7 @@ jobs:
             key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
-            name: Test preconditions
+            name: Test reader/writer
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
@@ -117,7 +117,7 @@ jobs:
             key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
-            name: Test preconditions
+            name: Test fields
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
@@ -137,7 +137,7 @@ jobs:
             key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
-            name: Test preconditions
+            name: Test arrays
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
@@ -157,7 +157,7 @@ jobs:
             key: test-{{ .Branch }}-{{ .Revision }}
 
         - run:
-            name: Test preconditions
+            name: Test objects
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
