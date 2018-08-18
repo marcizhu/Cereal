@@ -41,7 +41,6 @@ namespace Cereal {
 	static_assert(sizeof(unsigned int) == 4, "Invalid unsigned int size!");
 	static_assert(sizeof(unsigned long long) == 8, "Invalid unsigned long long size!");
 
-
 	enum Version
 	{
 		VERSION_1_0		= 0x0100, // first byte = major version, second = minor (revision)

@@ -32,9 +32,9 @@ namespace Cereal {
 		unsigned int offset;
 
 	public:
-		Buffer(unsigned int size) : size(size), start(new byte[size]) { clean(); }
-		Buffer(byte* start, unsigned int size) : size(size), start(start) { clean(); }
-		Buffer(byte* start, unsigned int size, unsigned int offset, bool clean = false) : size(size), start(start), offset(offset) { if (clean) this->clean(); }
+		Buffer(unsigned int size) : start(new byte[size]), size(size) { clean(); }
+		Buffer(byte* start, unsigned int size) : start(start), size(size) { clean(); }
+		Buffer(byte* start, unsigned int size, unsigned int offset, bool clean = false) : start(start), size(size), offset(offset) { if (clean) this->clean(); }
 
 		~Buffer()
 		{
@@ -51,7 +51,7 @@ namespace Cereal {
 
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
-				value |= (start[offset + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
+				value |= ((T)start[offset + i] << ((sizeof(T) * 8 - 8) - (i * 8)));
 			}
 
 			offset += sizeof(T);
@@ -65,16 +65,16 @@ namespace Cereal {
 		{
 			unsigned int value = 0;
 
-			for (int i = 0; i < (int) sizeof(float); i++)
+			for (unsigned int i = 0; i < sizeof(float); i++)
 			{
-				value |= (start[offset + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				value |= ((unsigned int)start[offset + i] << ((sizeof(unsigned int) * 8 - 8) - (i * 8)));
 			}
 
 			float result;
 
 			offset += sizeof(float);
 
-			memcpy(&result, &value, 4);
+			memcpy(&result, &value, sizeof(float));
 
 			return result;
 		}
@@ -85,15 +85,15 @@ namespace Cereal {
 		template<>
 		double readBytes<double>()
 		{
-			unsigned long long value = start[offset] << (sizeof(int) * 8 - 8);
+			unsigned long long value = 0;
 
-			for (int i = offset; i < (int)offset + (int)sizeof(float); i++)
+			for (unsigned int i = 0; i < sizeof(double); i++)
 			{
-				value |= (start[i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+				value |= ((unsigned long long)start[offset + i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 			}
 
 			double result;
-			memcpy(&result, &value, 4);
+			memcpy(&result, &value, sizeof(double));
 
 			offset += sizeof(double);
 
@@ -107,7 +107,7 @@ namespace Cereal {
 
 			unsigned short size = readBytes<unsigned short>();
 
-			for (int i = 0; i < size; i++)
+			for (unsigned int i = 0; i < size; i++)
 			{
 				value += readBytes<char>();
 			}
@@ -119,6 +119,8 @@ namespace Cereal {
 		template<typename T>
 		inline bool writeBytes(T value)
 		{
+			if(!hasSpace(sizeof(T))) return false;
+
 			for (unsigned int i = 0; i < sizeof(T); i++)
 			{
 				start[offset++] = (value >> ((sizeof(T) - 1) * 8 - i * 8)) & 0xFF;
@@ -133,7 +135,8 @@ namespace Cereal {
 		{
 			const unsigned short size = (unsigned short)string.length();
 
-			if(size > 65535) throw std::overflow_error("String is too long!");
+			if(size > 0xFFFF) throw std::overflow_error("String is too long!");
+			if(!hasSpace(size + sizeof(short))) return false;
 
 			writeBytes<unsigned short>(size);
 
@@ -152,9 +155,7 @@ namespace Cereal {
 
 			*(unsigned int*)&x = *(unsigned int*)&data;
 
-			writeBytes<unsigned int>(x);
-
-			return true;
+			return writeBytes<unsigned int>(x);
 		}
 
 		template<>
@@ -164,9 +165,7 @@ namespace Cereal {
 
 			*(unsigned long long*)&x = *(unsigned long long*)&data;
 
-			writeBytes<unsigned long long>(x);
-
-			return true;
+			return writeBytes<unsigned long long>(x);
 		}
 #endif
 
@@ -258,16 +257,16 @@ namespace Cereal {
 	{
 		unsigned int value = 0;
 
-		for (int i = 0; i < (int) sizeof(float); i++)
+		for (unsigned int i = 0; i < sizeof(float); i++)
 		{
-			value |= (start[offset + i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+			value |= ((unsigned int)start[offset + i] << ((sizeof(unsigned int) * 8 - 8) - (i * 8)));
 		}
 
 		float result;
 
 		offset += sizeof(float);
 
-		memcpy(&result, &value, 4);
+		memcpy(&result, &value, sizeof(float));
 
 		return result;
 	}
@@ -278,15 +277,15 @@ namespace Cereal {
 	template<>
 	inline double Buffer::readBytes<double>()
 	{
-		unsigned long long value = start[offset] << (sizeof(int) * 8 - 8);
+		unsigned long long value = 0;
 
-		for (int i = offset; i < (int)offset + (int)sizeof(float); i++)
+		for (unsigned int i = 0; i < sizeof(double); i++)
 		{
-			value |= (start[i] << ((sizeof(int) * 8 - 8) - (i * 8)));
+			value |= ((unsigned long long)start[offset + i] << ((sizeof(unsigned long long) * 8 - 8) - (i * 8)));
 		}
 
 		double result;
-		memcpy(&result, &value, 4);
+		memcpy(&result, &value, sizeof(double));
 
 		offset += sizeof(double);
 
@@ -300,7 +299,7 @@ namespace Cereal {
 
 		unsigned short size = readBytes<unsigned short>();
 
-		for (int i = 0; i < size; i++)
+		for (unsigned int i = 0; i < size; i++)
 		{
 			value += readBytes<char>();
 		}
@@ -313,7 +312,8 @@ namespace Cereal {
 	{
 		const unsigned short size = (unsigned short)string.length();
 
-		if(size > 65535) throw std::overflow_error("String is too long!");
+		if(size > 0xFFFF) throw std::overflow_error("String is too long!");
+		if(!hasSpace(size + sizeof(short))) return false;
 
 		writeBytes<unsigned short>(size);
 
@@ -332,9 +332,7 @@ namespace Cereal {
 
 		*(unsigned int*)&x = *(unsigned int*)&data;
 
-		writeBytes<unsigned int>(x);
-
-		return true;
+		return writeBytes<unsigned int>(x);
 	}
 
 	template<>
@@ -344,10 +342,7 @@ namespace Cereal {
 
 		*(unsigned long long*)&x = *(unsigned long long*)&data;
 
-		writeBytes<unsigned long long>(x);
-
-		return true;
+		return writeBytes<unsigned long long>(x);
 	}
 #endif
-
 }

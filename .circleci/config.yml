@@ -1,9 +1,244 @@
 version: 2.0
 jobs:
-  build:
+  build_tests:
     docker:
       - image: gcc:latest
+    working_directory: ~/cereal-build
     steps:
-      - checkout
-      - run: g++ Sandbox/Sandbox.cpp -ICereal/Cereal -O2 -o test -std=c++11
-      - run: ./test
+        - run:
+            name: Install CMake
+            command: |
+              apt-get -y -q update
+              apt-get -y -q install cmake
+
+        - checkout
+
+        - run:
+            name: Install Google Test
+            command: |
+              mkdir ~/googletest
+              cd ~/googletest
+              wget -qO - https://github.com/google/googletest/archive/release-1.8.0.tar.gz | tar -xz
+              cmake -D CMAKE_INSTALL_PREFIX:PATH=$HOME/googletest -D CMAKE_BUILD_TYPE=Release googletest-release-1.8.0
+              make install
+
+        - run:
+            name: Build Tests
+            command: |
+              g++ Sandbox/Core.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o core -pthread -std=c++11
+              g++ Sandbox/Buffers.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o buffers -pthread -std=c++11
+              g++ Sandbox/ReaderWriter.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o readerw -pthread -std=c++11
+              g++ Sandbox/Fields.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o fields -pthread -std=c++11
+              g++ Sandbox/Arrays.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o arrays -pthread -std=c++11
+              g++ Sandbox/Objects.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o objects -pthread -std=c++11
+              g++ Sandbox/Databases.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o databases -pthread -std=c++11
+              g++ Sandbox/Headers.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o headers -pthread -std=c++11
+
+        - save_cache:
+            key: test-{{ .Branch }}-{{ .Revision }}
+            paths:
+              - core
+              - buffers
+              - readerw
+              - fields
+              - arrays
+              - objects
+              - databases
+              - headers
+
+  core:
+    docker:
+      - image: gcc:latest
+    working_directory: ~/cereal-build
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+        - restore_cache:
+            key: test-{{ .Branch }}-{{ .Revision }}
+
+        - run:
+            name: Test core library
+            command: |
+              export GTEST_OUTPUT=xml:${TEST_RESULTS}/
+              mkdir -p $TEST_RESULTS
+              /root/cereal-build/core
+
+        - store_test_results:
+            path: /tmp/test-results
+
+  buffers:
+    docker:
+      - image: gcc:latest
+    working_directory: ~/cereal-build
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+        - restore_cache:
+            key: test-{{ .Branch }}-{{ .Revision }}
+
+        - run:
+            name: Test buffers
+            command: |
+              export GTEST_OUTPUT=xml:${TEST_RESULTS}/
+              mkdir -p $TEST_RESULTS
+              /root/cereal-build/buffers
+
+        - store_test_results:
+            path: /tmp/test-results
+
+  reader_writer:
+    docker:
+      - image: gcc:latest
+    working_directory: ~/cereal-build
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+        - restore_cache:
+            key: test-{{ .Branch }}-{{ .Revision }}
+
+        - run:
+            name: Test reader/writer
+            command: |
+              export GTEST_OUTPUT=xml:${TEST_RESULTS}/
+              mkdir -p $TEST_RESULTS
+              /root/cereal-build/readerw
+
+        - store_test_results:
+            path: /tmp/test-results
+
+  fields:
+    docker:
+      - image: gcc:latest
+    working_directory: ~/cereal-build
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+        - restore_cache:
+            key: test-{{ .Branch }}-{{ .Revision }}
+
+        - run:
+            name: Test fields
+            command: |
+              export GTEST_OUTPUT=xml:${TEST_RESULTS}/
+              mkdir -p $TEST_RESULTS
+              /root/cereal-build/fields
+
+        - store_test_results:
+            path: /tmp/test-results
+
+  arrays:
+    docker:
+      - image: gcc:latest
+    working_directory: ~/cereal-build
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+        - restore_cache:
+            key: test-{{ .Branch }}-{{ .Revision }}
+
+        - run:
+            name: Test arrays
+            command: |
+              export GTEST_OUTPUT=xml:${TEST_RESULTS}/
+              mkdir -p $TEST_RESULTS
+              /root/cereal-build/arrays
+
+        - store_test_results:
+            path: /tmp/test-results
+
+  objects:
+    docker:
+      - image: gcc:latest
+    working_directory: ~/cereal-build
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+        - restore_cache:
+            key: test-{{ .Branch }}-{{ .Revision }}
+
+        - run:
+            name: Test objects
+            command: |
+              export GTEST_OUTPUT=xml:${TEST_RESULTS}/
+              mkdir -p $TEST_RESULTS
+              /root/cereal-build/objects
+
+        - store_test_results:
+            path: /tmp/test-results
+
+  databases:
+    docker:
+      - image: gcc:latest
+    working_directory: ~/cereal-build
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+        - restore_cache:
+            key: test-{{ .Branch }}-{{ .Revision }}
+
+        - run:
+            name: Test databases
+            command: |
+              export GTEST_OUTPUT=xml:${TEST_RESULTS}/
+              mkdir -p $TEST_RESULTS
+              /root/cereal-build/databases
+
+        - store_test_results:
+            path: /tmp/test-results
+
+  headers:
+    docker:
+      - image: gcc:latest
+    working_directory: ~/cereal-build
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+        - restore_cache:
+            key: test-{{ .Branch }}-{{ .Revision }}
+
+        - run:
+            name: Test headers
+            command: |
+              export GTEST_OUTPUT=xml:${TEST_RESULTS}/
+              mkdir -p $TEST_RESULTS
+              /root/cereal-build/headers
+
+        - store_test_results:
+            path: /tmp/test-results
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build_tests
+      - core:
+          requires:
+            - build_tests
+
+      - buffers:
+          requires:
+            - build_tests
+
+      - reader_writer:
+          requires:
+            - build_tests
+
+      - fields:
+          requires:
+            - build_tests
+
+      - arrays:
+          requires:
+            - build_tests
+
+      - objects:
+          requires:
+            - build_tests
+
+      - databases:
+          requires:
+            - build_tests
+
+      - headers:
+          requires:
+            - build_tests
