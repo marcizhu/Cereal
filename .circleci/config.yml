@@ -61,7 +61,7 @@ jobs:
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
-              ./core
+              /root/cereal-build/core
 
         - store_test_results:
             path: /tmp/test-results
@@ -81,7 +81,7 @@ jobs:
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
-              ./buffers
+              /root/cereal-build/buffers
 
         - store_test_results:
             path: /tmp/test-results
@@ -101,7 +101,7 @@ jobs:
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
-              ./readerw
+              /root/cereal-build/readerw
 
         - store_test_results:
             path: /tmp/test-results
@@ -121,7 +121,7 @@ jobs:
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
-              ./fields
+              /root/cereal-build/fields
 
         - store_test_results:
             path: /tmp/test-results
@@ -141,7 +141,7 @@ jobs:
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
-              ./arrays
+              /root/cereal-build/arrays
 
         - store_test_results:
             path: /tmp/test-results
@@ -161,7 +161,7 @@ jobs:
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
-              ./objects
+              /root/cereal-build/objects
 
         - store_test_results:
             path: /tmp/test-results
@@ -181,7 +181,7 @@ jobs:
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
-              ./databases
+              /root/cereal-build/databases
 
         - store_test_results:
             path: /tmp/test-results
@@ -201,7 +201,7 @@ jobs:
             command: |
               export GTEST_OUTPUT=xml:${TEST_RESULTS}/
               mkdir -p $TEST_RESULTS
-              ./headers
+              /root/cereal-build/headers
 
         - store_test_results:
             path: /tmp/test-results
