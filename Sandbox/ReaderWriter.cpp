@@ -5,76 +5,173 @@
 
 typedef unsigned char byte;
 
-TEST(SerializationUnits, ReaderWriter)
+class WriterTest : public ::testing::Test
 {
-	byte buff[8];
+protected:
+	byte* buff;
+	unsigned int offset;
 
-	buff[0] = false;
-	buff[1] = true;
+	WriterTest() { buff = new byte[16384]; }
+	~WriterTest() { delete[] buff; }
 
-	//bool
-	EXPECT_FALSE(Cereal::Reader::readBytes<bool>(&buff[0], 0));
-	EXPECT_TRUE(Cereal::Reader::readBytes<bool>(&buff[1], 0));
+	void SetUp() override { offset = 0; }
+};
 
-	//string
-	Cereal::Writer::writeBytes<std::string>(&buff[0], 0, "asdf");
-	EXPECT_STREQ(Cereal::Reader::readBytes<std::string>(&buff[0], 0).c_str(), "asdf");
-
-	//float
+TEST_F(WriterTest, Bool)
+{
 	srand(time(NULL));
-	float val = rand() / (float)RAND_MAX;
+	bool data[1000];
 
-	Cereal::Writer::writeBytes<float>(&buff[0], 0, val);
-	EXPECT_FLOAT_EQ(Cereal::Reader::readBytes<float>(&buff[0], 0), val);
+	for(int i = 0; i < 1000; i++)
+	{
+		data[i] = (rand() % 2) == 0;
+		offset = Cereal::Writer::writeBytes<bool>(buff, offset, data[i]);
+	}
 
-	//double
-	double doub = rand() / (double)RAND_MAX;
+	offset = 0;
 
-	Cereal::Writer::writeBytes<double>(&buff[0], 0, doub);
-	EXPECT_DOUBLE_EQ(Cereal::Reader::readBytes<double>(&buff[0], 0), doub);
+	for(int i = 0; i < 1000; i++)
+	{
+		EXPECT_EQ(Cereal::Reader::readBytes<bool>(buff, offset), data[i]);
+		offset += sizeof(bool);
+	}
+}
 
-	//char
+TEST_F(WriterTest, String)
+{
+	// TODO: Add more string tests
+	Cereal::Writer::writeBytes<std::string>(buff, 0, "asdf");
+	EXPECT_STREQ(Cereal::Reader::readBytes<std::string>(buff, 0).c_str(), "asdf");
+}
+
+TEST_F(WriterTest, Float)
+{
+	float fdata[1000];
+
+	for(int i = 0; i < 1000; i++)
+	{
+		fdata[i] = (rand() / (float)RAND_MAX);
+		offset = Cereal::Writer::writeBytes<float>(buff, offset, fdata[i]);
+	}
+
+	offset = 0;
+
+	for(int i = 0; i < 1000; i++)
+	{
+		EXPECT_FLOAT_EQ(Cereal::Reader::readBytes<float>(buff, offset), fdata[i]);
+		offset += sizeof(float);
+	}
+}
+
+TEST_F(WriterTest, Double)
+{
+	double data[1000];
+
+	for(int i = 0; i < 1000; i++)
+	{
+		data[i] = (rand() / (double)RAND_MAX);
+		offset = Cereal::Writer::writeBytes<double>(buff, offset, data[i]);
+	}
+
+	offset = 0;
+
+	for(int i = 0; i < 1000; i++)
+	{
+		EXPECT_DOUBLE_EQ(Cereal::Reader::readBytes<double>(buff, offset), data[i]);
+		offset += sizeof(double);
+	}
+}
+
+TEST_F(WriterTest, Char)
+{
+	for(unsigned int i = 0; i < 127; i++)
+		offset = Cereal::Writer::writeBytes<char>(buff, offset, (char)i);
+
+	offset = 0;
+
 	for(unsigned int i = 0; i < 127; i++)
 	{
-		Cereal::Writer::writeBytes<char>(&buff[0], 0, (char)i);
-		EXPECT_EQ(Cereal::Reader::readBytes<char>(&buff[0], 0), i);
+		EXPECT_EQ(Cereal::Reader::readBytes<char>(buff, offset), i);
+		offset += sizeof(char);
 	}
+}
 
-	//byte
+TEST_F(WriterTest, Byte)
+{
+	for(unsigned int i = 0; i < 256; i++)
+		offset = Cereal::Writer::writeBytes<byte>(buff, offset, (byte)i);
+
+	offset = 0;
+
 	for(unsigned int i = 0; i < 256; i++)
 	{
-		Cereal::Writer::writeBytes<byte>(&buff[0], 0, (byte)i);
-		EXPECT_EQ(Cereal::Reader::readBytes<byte>(&buff[0], 0), i);
+		EXPECT_EQ(Cereal::Reader::readBytes<byte>(buff, offset), i);
+		offset += sizeof(byte);
 	}
+}
 
-	//short
+TEST_F(WriterTest, Short)
+{
 	for(unsigned int j = 0; j < 2; j++)
 	{
 		for(unsigned int i = 0; i < 256; i++)
 		{
-			Cereal::Writer::writeBytes<unsigned short>(&buff[0], 0, (short)i << (8 * j));
-			EXPECT_EQ(Cereal::Reader::readBytes<unsigned short>(&buff[0], 0), i << (8 * j));
+			offset = Cereal::Writer::writeBytes<unsigned short>(buff, offset, (unsigned short)i << (8 * j));
 		}
 	}
 
-	//int
+	offset = 0;
+
+	for(unsigned int j = 0; j < 2; j++)
+	{
+		for(unsigned int i = 0; i < 256; i++)
+		{
+			EXPECT_EQ(Cereal::Reader::readBytes<unsigned short>(buff, offset), i << (8 * j));
+			offset += sizeof(short);
+		}
+	}
+}
+
+TEST_F(WriterTest, Int32)
+{
 	for(unsigned int j = 0; j < 4; j++)
 	{
 		for(unsigned int i = 0; i < 256; i++)
 		{
-			Cereal::Writer::writeBytes<unsigned int>(&buff[0], 0, i << (8 * j));
-			EXPECT_EQ(Cereal::Reader::readBytes<unsigned int>(&buff[0], 0), i << (8 * j));
+			offset = Cereal::Writer::writeBytes<unsigned int>(buff, offset, i << (8 * j));
 		}
 	}
 
-	//long long
+	offset = 0;
+
+	for(unsigned int j = 0; j < 4; j++)
+	{
+		for(unsigned int i = 0; i < 256; i++)
+		{
+			EXPECT_EQ(Cereal::Reader::readBytes<unsigned int>(buff, offset), i << (8 * j));
+			offset += sizeof(int);
+		}
+	}
+}
+
+TEST_F(WriterTest, Int64)
+{
 	for(unsigned int j = 0; j < 8; j++)
 	{
 		for(unsigned int i = 0; i < 256; i++)
 		{
-			const unsigned long long n = i << (8 * j);
-			Cereal::Writer::writeBytes<unsigned long long>(&buff[0], 0, n);
-			EXPECT_EQ(Cereal::Reader::readBytes<unsigned long long>(&buff[0], 0), n);
+			offset = Cereal::Writer::writeBytes<unsigned long long>(buff, offset, (unsigned long long)i << (8 * j));
+		}
+	}
+
+	offset = 0;
+
+	for(unsigned int j = 0; j < 8; j++)
+	{
+		for(unsigned int i = 0; i < 256; i++)
+		{
+			EXPECT_EQ(Cereal::Reader::readBytes<unsigned long long>(buff, offset), (unsigned long long)i << (8 * j));
+			offset += sizeof(long long);
 		}
 	}
 }

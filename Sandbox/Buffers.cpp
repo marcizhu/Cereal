@@ -10,15 +10,8 @@ class BufferTest: public ::testing::Test
 protected:
 	Cereal::Buffer* buff;
 
-	BufferTest()
-	{
-	   buff = new Cereal::Buffer(16384); // doubles should work now
-	}
-
-	~BufferTest()
-	{
-		delete buff;
-	}
+	BufferTest() { buff = new Cereal::Buffer(16384); }
+	~BufferTest() { delete buff; }
 };
 
 TEST(Buffer, Domain)
@@ -40,6 +33,7 @@ TEST(Buffer, Domain)
 TEST_F(BufferTest, Bool)
 {
 	bool data[1000];
+	srand(time(NULL));
 
 	for(int i = 0; i < 1000; i++)
 	{
