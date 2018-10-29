@@ -208,6 +208,7 @@ jobs:
 
 workflows:
   version: 2
+
   build-and-test:
     jobs:
       - build_tests
@@ -242,3 +243,17 @@ workflows:
       - headers:
           requires:
             - build_tests
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - core
+      - fields:
+          requires:
+            - core
