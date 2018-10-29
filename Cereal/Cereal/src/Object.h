@@ -35,6 +35,7 @@ namespace Cereal {
 		std::vector<Field*> fields;
 
 	public:
+		Object(const Object& other) = delete;
 		Object(std::string name) : name(name) { }
 		Object() { }
 

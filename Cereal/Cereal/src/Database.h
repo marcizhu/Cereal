@@ -55,6 +55,7 @@ namespace Cereal {
 		}
 
 	public:
+		Database(const Database& other) = delete;
 		Database() : version(Version::VERSION_INVALID), name("") { }
 		Database(std::string name, Version ver) : version(ver), name(name) { }
 		Database(std::string name) : version(Version::VERSION_LATEST), name(name) { }

@@ -32,6 +32,7 @@ namespace Cereal {
 		unsigned int offset;
 
 	public:
+		Buffer(const Buffer& other) = delete;
 		Buffer(unsigned int size) : start(new byte[size]), size(size) { clean(); }
 		Buffer(byte* start, unsigned int size) : start(start), size(size) { clean(); }
 		Buffer(byte* start, unsigned int size, unsigned int offset, bool clean = false) : start(start), size(size), offset(offset) { if (clean) this->clean(); }

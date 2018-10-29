@@ -34,6 +34,7 @@ namespace Cereal {
 		std::vector<Database*> databases;
 
 	public:
+		Header(const Header& other) = delete;
 		Header() { }
 
 		~Header()
