@@ -148,14 +148,14 @@ namespace Cereal {
 		inline const std::string& getName() const { return name; }
 		inline DataType getDataType() const { return dataType; }
 
-		inline unsigned int getSize() const
+		inline unsigned long long getSize() const
 		{
 			if (dataType == DataType::DATA_STRING)
 			{
-				return sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(byte) + sizeof(short) + Reader::readBytes<unsigned short>(data, 0);
+				return sizeof(byte) + sizeof(short) + (unsigned long long)name.length() + sizeof(byte) + sizeof(short) + Reader::readBytes<unsigned short>(data, 0);
 			}
 
-			return sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(byte) + sizeOf(dataType);
+			return sizeof(byte) + sizeof(short) + (unsigned long long)name.length() + sizeof(byte) + sizeOf(dataType);
 		}
 	};
 

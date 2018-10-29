@@ -94,9 +94,9 @@ namespace Cereal {
 			return true;
 		}
 
-		inline unsigned int getSize() const
+		inline unsigned long long getSize() const
 		{
-			unsigned int ret = sizeof(short) + sizeof(byte) + (sizeof(unsigned int) * (unsigned int)databases.size());
+			unsigned long long ret = sizeof(short) + sizeof(byte) + (sizeof(unsigned int) * (unsigned long long)databases.size());
 
 			for (const Database* db : databases)
 				ret += (unsigned int)db->getSize();

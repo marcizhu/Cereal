@@ -120,9 +120,9 @@ namespace Cereal {
 
 		inline const std::string& getName() const { return name; }
 
-		inline unsigned int getSize() const
+		inline unsigned long long getSize() const
 		{
-			unsigned int ret = sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(short) + sizeof(short);
+			unsigned long long ret = sizeof(byte) + sizeof(short) + (unsigned long long)name.length() + sizeof(short) + sizeof(short);
 
 			for (const Field* field : fields)
 				ret += field->getSize();

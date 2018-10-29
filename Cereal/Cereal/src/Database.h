@@ -179,17 +179,17 @@ namespace Cereal {
 			return true;
 		}
 
-		inline unsigned int getSize() const
+		inline unsigned long long getSize() const
 		{
 			unsigned int ret = sizeof(short);
 
 			switch (version)
 			{
 			case Version::VERSION_1_0:
-				ret += sizeof(short) + (unsigned int)name.length() + sizeof(int) + sizeof(short); break;
+				ret += sizeof(short) + (unsigned long long)name.length() + sizeof(int) + sizeof(short); break;
 
 			case Version::VERSION_2_0:
-				ret += sizeof(short) + (unsigned int)name.length() + sizeof(int) + sizeof(int) + sizeof(short); break;
+				ret += sizeof(short) + (unsigned long long)name.length() + sizeof(int) + sizeof(int) + sizeof(short); break;
 
 			default:
 				throw std::invalid_argument("Invalid database version!"); break; // Invalid version

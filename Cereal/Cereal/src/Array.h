@@ -215,12 +215,12 @@ namespace Cereal {
 			return mem;
 		}
 
-		inline unsigned int getSize() const
+		inline unsigned long long getSize() const
 		{
 			if(dataType != DataType::DATA_STRING)
-				return sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType);
+				return sizeof(byte) + sizeof(short) + (unsigned long long)name.length() + sizeof(byte) + sizeof(int) + count * sizeOf(dataType);
 			else
-				return sizeof(byte) + sizeof(short) + (unsigned int)name.length() + sizeof(byte) + sizeof(int) + size;
+				return sizeof(byte) + sizeof(short) + (unsigned long long)name.length() + sizeof(byte) + sizeof(int) + size;
 		}
 	};
 
