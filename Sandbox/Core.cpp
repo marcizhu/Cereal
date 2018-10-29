@@ -38,6 +38,8 @@ TEST(Preconditions, DataTypes)
 
 TEST(Core, CoreFuncs)
 {
+	ASSERT_TRUE(false);
+
 	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_BOOL));
 	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_CHAR));
 	ASSERT_NO_THROW(sizeOf(Cereal::DataType::DATA_SHORT));
