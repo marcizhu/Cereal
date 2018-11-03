@@ -71,18 +71,18 @@ namespace Cereal {
 		//constructor for each field type
 		Field(const Field& other) = delete;
 		Field() : name(""), dataType(DataType::DATA_UNKNOWN), data(nullptr) { }
-		Field(std::string name, byte value) : name(name) { setData<byte>(DataType::DATA_CHAR /* | MOD_UNSIGNED*/, value); }
-		Field(std::string name, bool value) : name(name) { setData<bool>(DataType::DATA_BOOL, value); }
-		Field(std::string name, char value) : name(name) { setData<char>(DataType::DATA_CHAR, value); }
-		Field(std::string name, short value) : name(name) { setData<short>(DataType::DATA_SHORT, value); }
-		Field(std::string name, int value) : name(name) { setData<int>(DataType::DATA_INT, value); }
-		Field(std::string name, float value) : name(name) { setData<float>(DataType::DATA_FLOAT, value); }
-		Field(std::string name, long long value) : name(name) { setData<long long>(DataType::DATA_LONG_LONG, value); }
-		Field(std::string name, double value) : name(name) { setData<double>(DataType::DATA_DOUBLE, value); }
+		Field(const std::string& name, byte value) : name(name) { setData<byte>(DataType::DATA_CHAR /* | MOD_UNSIGNED*/, value); }
+		Field(const std::string& name, bool value) : name(name) { setData<bool>(DataType::DATA_BOOL, value); }
+		Field(const std::string& name, char value) : name(name) { setData<char>(DataType::DATA_CHAR, value); }
+		Field(const std::string& name, short value) : name(name) { setData<short>(DataType::DATA_SHORT, value); }
+		Field(const std::string& name, int value) : name(name) { setData<int>(DataType::DATA_INT, value); }
+		Field(const std::string& name, float value) : name(name) { setData<float>(DataType::DATA_FLOAT, value); }
+		Field(const std::string& name, long long value) : name(name) { setData<long long>(DataType::DATA_LONG_LONG, value); }
+		Field(const std::string& name, double value) : name(name) { setData<double>(DataType::DATA_DOUBLE, value); }
 #ifdef COMPILER_MSVC
-		Field(std::string name, std::string value) : name(name) { setData<std::string>(DataType::DATA_STRING, value); }
+		Field(const std::string& name, std::string value) : name(name) { setData<std::string>(DataType::DATA_STRING, value); }
 #elif defined COMPILER_GCC
-		Field(std::string name, std::string value) : name(name) { setDataString(DataType::DATA_STRING, value); }
+		Field(const std::string& name, std::string value) : name(name) { setDataString(DataType::DATA_STRING, value); }
 #endif
 
 		~Field() { if(data) delete[] data; }

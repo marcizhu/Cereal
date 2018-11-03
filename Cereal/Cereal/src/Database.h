@@ -57,8 +57,8 @@ namespace Cereal {
 	public:
 		Database(const Database& other) = delete;
 		Database() : version(Version::VERSION_INVALID), name("") { }
-		Database(std::string name, Version ver) : version(ver), name(name) { }
-		Database(std::string name) : version(Version::VERSION_LATEST), name(name) { }
+		Database(const std::string& name, Version ver) : version(ver), name(name) { }
+		Database(const std::string& name) : version(Version::VERSION_LATEST), name(name) { }
 
 		~Database()
 		{
@@ -202,7 +202,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		Object* getObject(std::string name) const
+		Object* getObject(const std::string& name) const
 		{
 			for (Object* obj : objects)
 				if (obj->getName() == name) return obj;

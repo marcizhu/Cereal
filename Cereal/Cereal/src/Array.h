@@ -87,18 +87,18 @@ namespace Cereal {
 	public:
 		Array(const Array& other) = delete;
 		Array() : name(""), dataType(DataType::DATA_UNKNOWN), count(0), data(nullptr) { }
-		Array(std::string name, byte* value, unsigned int count) : name(name), data(nullptr) { setData<byte>(DataType::DATA_CHAR, value, count); }
-		Array(std::string name, bool* value, unsigned int count) : name(name), data(nullptr) { setData<bool>(DataType::DATA_BOOL, value, count); }
-		Array(std::string name, char* value, unsigned int count) : name(name), data(nullptr) { setData<char>(DataType::DATA_CHAR, value, count); }
-		Array(std::string name, short* value, unsigned int count) : name(name), data(nullptr) { setData<short>(DataType::DATA_SHORT, value, count); }
-		Array(std::string name, int* value, unsigned int count) : name(name), data(nullptr) { setData<int>(DataType::DATA_INT, value, count); }
-		Array(std::string name, float* value, unsigned int count) : name(name), data(nullptr) { setData<float>(DataType::DATA_FLOAT, value, count); }
-		Array(std::string name, long long* value, unsigned int count) : name(name), data(nullptr) { setData<long long>(DataType::DATA_LONG_LONG, value, count); }
-		Array(std::string name, double* value, unsigned int count) : name(name), data(nullptr) { setData<double>(DataType::DATA_DOUBLE, value, count); }
+		Array(const std::string& name, byte* value, unsigned int count) : name(name), data(nullptr) { setData<byte>(DataType::DATA_CHAR, value, count); }
+		Array(const std::string& name, bool* value, unsigned int count) : name(name), data(nullptr) { setData<bool>(DataType::DATA_BOOL, value, count); }
+		Array(const std::string& name, char* value, unsigned int count) : name(name), data(nullptr) { setData<char>(DataType::DATA_CHAR, value, count); }
+		Array(const std::string& name, short* value, unsigned int count) : name(name), data(nullptr) { setData<short>(DataType::DATA_SHORT, value, count); }
+		Array(const std::string& name, int* value, unsigned int count) : name(name), data(nullptr) { setData<int>(DataType::DATA_INT, value, count); }
+		Array(const std::string& name, float* value, unsigned int count) : name(name), data(nullptr) { setData<float>(DataType::DATA_FLOAT, value, count); }
+		Array(const std::string& name, long long* value, unsigned int count) : name(name), data(nullptr) { setData<long long>(DataType::DATA_LONG_LONG, value, count); }
+		Array(const std::string& name, double* value, unsigned int count) : name(name), data(nullptr) { setData<double>(DataType::DATA_DOUBLE, value, count); }
 #ifdef COMPILER_MSVC
-		Array(std::string name, std::string* value, unsigned int count) : name(name), data(nullptr) { setData<std::string>(DataType::DATA_STRING, value, count); }
+		Array(const std::string& name, std::string* value, unsigned int count) : name(name), data(nullptr) { setData<std::string>(DataType::DATA_STRING, value, count); }
 #elif defined COMPILER_GCC
-		Array(std::string name, std::string* value, unsigned int count) : name(name), data(nullptr) { setDataString(DataType::DATA_STRING, value, count); }
+		Array(const std::string& name, std::string* value, unsigned int count) : name(name), data(nullptr) { setDataString(DataType::DATA_STRING, value, count); }
 #endif
 		~Array() { if (data) delete[] data; }
 

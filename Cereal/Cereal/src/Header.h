@@ -105,7 +105,7 @@ namespace Cereal {
 			return ret;
 		}
 
-		Database* getDatabase(std::string name) const
+		Database* getDatabase(const std::string& name) const
 		{
 			for (Database* db : databases)
 				if (db->getName() == name) return db;

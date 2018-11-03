@@ -36,7 +36,7 @@ namespace Cereal {
 
 	public:
 		Object(const Object& other) = delete;
-		Object(std::string name) : name(name) { }
+		Object(const std::string& name) : name(name) { }
 		Object() { }
 
 		~Object()
@@ -74,7 +74,7 @@ namespace Cereal {
 		inline void addField(Field* field) { fields.push_back(field); }
 		inline void addArray(Array* array) { arrays.push_back(array); }
 
-		inline Field* getField(std::string name) const
+		inline Field* getField(const std::string& name) const
 		{
 			for (Field* field : fields)
 				if (field->getName() == name) return field;
@@ -82,12 +82,38 @@ namespace Cereal {
 			return nullptr;
 		}
 
-		inline Array* getArray(std::string name) const
+		inline Array* getArray(const std::string& name) const
 		{
 			for (Array* array : arrays)
 				if (array->getName() == name) return array;
 
 			return nullptr;
+		}
+
+		void deleteField(const std::string& name)
+		{
+			for (it = fields.begin(); it != fields.end(); it++)
+			{
+			   if((*it)->getName() == name)
+			   {
+			      delete *it;
+			      fields.erase(it);
+			      break;
+			   }
+			}
+		}
+
+		void deleteArray(const std::string& name)
+		{
+			for (it = arrays.begin(); it != arrays.end(); it++)
+			{
+			   if((*it)->getName() == name)
+			   {
+			      delete *it;
+			      arrays.erase(it);
+			      break;
+			   }
+			}
 		}
 
 		void read(Buffer& buffer)
