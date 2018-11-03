@@ -92,7 +92,7 @@ namespace Cereal {
 
 		void deleteField(const std::string& name)
 		{
-			for (it = fields.begin(); it != fields.end(); it++)
+			for (auto it = fields.begin(); it != fields.end(); it++)
 			{
 			   if((*it)->getName() == name)
 			   {
@@ -105,7 +105,7 @@ namespace Cereal {
 
 		void deleteArray(const std::string& name)
 		{
-			for (it = arrays.begin(); it != arrays.end(); it++)
+			for (auto it = arrays.begin(); it != arrays.end(); it++)
 			{
 			   if((*it)->getName() == name)
 			   {
