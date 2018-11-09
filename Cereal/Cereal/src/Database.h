@@ -212,6 +212,19 @@ namespace Cereal {
 
 		void addObject(Object* object) { objects.push_back(object); }
 
+		void deleteObject(const std::string& name)
+		{
+			for (auto it = objects.begin(); it != objects.end(); it++)
+			{
+			   if((*it)->getName() == name)
+			   {
+			      delete *it;
+			      objects.erase(it);
+			      break;
+			   }
+			}
+		}
+
 		const std::string& getName() const { return name; }
 		const std::vector<Object*>& getObjects() const { return objects; }
 	};
