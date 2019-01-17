@@ -115,6 +115,19 @@ namespace Cereal {
 
 		void addDatabase(Database* db) { databases.push_back(db); }
 
+		void deleteDatabase(const std::string& name)
+		{
+			for (auto it = databases.begin(); it != databases.end(); it++)
+			{
+			   if((*it)->getName() == name)
+			   {
+			      delete *it;
+			      databases.erase(it);
+			      break;
+			   }
+			}
+		}
+
 		const std::vector<Database*>& getDatabases() const { return databases; }
 	};
 
