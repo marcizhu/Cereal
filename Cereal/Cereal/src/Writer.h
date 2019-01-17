@@ -42,7 +42,7 @@ namespace Cereal {
 		{
 			const unsigned short size = (unsigned short)string.length();
 
-			if(size > 65535) throw std::overflow_error("String is too long!");
+			if(string.length() > 65535) throw std::overflow_error("String is too long!");
 
 			pointer = writeBytes<unsigned short>(dest, pointer, size);
 
@@ -82,7 +82,7 @@ namespace Cereal {
 	{
 		const unsigned short size = (unsigned short)string.length();
 
-		if(size > 65535) throw std::overflow_error("String is too long!");
+		if(string.length() > 65535) throw std::overflow_error("String is too long!");
 
 		pointer = writeBytes<unsigned short>(dest, pointer, size);
 
