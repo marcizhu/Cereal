@@ -138,9 +138,7 @@ namespace Cereal {
 			if (dataType != DATA_STRING)
 			{
 				data = new byte[count * sizeOf(dataType)];
-
-				memcpy(data, ((byte*)buffer.getStart() + buffer.getOffset()), count * sizeOf(dataType));
-
+				buffer.copyTo(data, count * sizeOf(dataType));
 				buffer.addOffset(count * sizeOf(dataType));
 			}
 			else
@@ -148,14 +146,10 @@ namespace Cereal {
 				size = 0;
 
 				for (unsigned int i = 0; i < count; i++)
-				{
 					size += Reader::readBytes<unsigned short>((byte*)buffer.getStart(), buffer.getOffset() + size) + sizeof(unsigned short);
-				}
 
 				data = new byte[size];
-
-				memcpy(data, ((byte*)buffer.getStart() + buffer.getOffset()), size);
-
+				buffer.copyTo(data, size);
 				buffer.addOffset(size);
 			}
 		}
@@ -167,14 +161,13 @@ namespace Cereal {
 		template<class T>
 		inline std::vector<T> getArray() const
 		{
-			std::vector<T> ret;
+			std::vector<T> ret(count);
 
 			unsigned int pointer = 0;
 
 			for (unsigned int i = 0; i < count; i++)
 			{
-				ret.push_back(Reader::readBytes<T>(data, pointer));
-
+				ret[i] = Reader::readBytes<T>(data, pointer);
 				pointer += sizeof(T);
 			}
 
@@ -185,14 +178,13 @@ namespace Cereal {
 		template<>
 		inline std::vector<std::string> getArray() const
 		{
-			std::vector<std::string> ret;
+			std::vector<std::string> ret(count);
 
 			unsigned int pointer = 0;
 
 			for (unsigned int i = 0; i < count; i++)
 			{
-				ret.push_back(Reader::readBytes<std::string>(data, pointer));
-
+				ret[i] = Reader::readBytes<std::string>(data, pointer);
 				pointer += Reader::readBytes<unsigned short>(data, pointer) + sizeof(unsigned short);
 			}
 
@@ -209,7 +201,6 @@ namespace Cereal {
 			for (unsigned int i = 0; i < count; i++)
 			{
 				mem[i] = Reader::readBytes<T>(data, pointer);
-
 				pointer += sizeof(T);
 			}
 
@@ -229,14 +220,13 @@ namespace Cereal {
 	template<>
 	inline std::vector<std::string> Array::getArray() const
 	{
-		std::vector<std::string> ret;
+		std::vector<std::string> ret(count);
 
 		unsigned int pointer = 0;
 
 		for (unsigned int i = 0; i < count; i++)
 		{
-			ret.push_back(Reader::readBytes<std::string>(data, pointer));
-
+			ret[i] = Reader::readBytes<std::string>(data, pointer);
 			pointer += Reader::readBytes<unsigned short>(data, pointer) + sizeof(unsigned short);
 		}
 

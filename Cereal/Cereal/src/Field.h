@@ -62,9 +62,7 @@ namespace Cereal {
 			int ptr = Writer::writeBytes<unsigned short>(data, 0, (unsigned short)value.length());
 
 			for (unsigned int i = 0; i < value.length(); i++)
-			{
 				ptr = Writer::writeBytes<char>(data, ptr, value[i]);
-			}
 		}
 
 	public:
@@ -107,9 +105,7 @@ namespace Cereal {
 				short len = Reader::readBytes<short>(data, 0) + 2;
 
 				for (int i = 0; i < len; i++)
-				{
 					buffer.writeBytes<byte>(data[i]);
-				}
 			}
 
 			return true;

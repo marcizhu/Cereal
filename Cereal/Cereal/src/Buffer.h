@@ -72,10 +72,9 @@ namespace Cereal {
 			}
 
 			float result;
+			memcpy(&result, &value, sizeof(float));
 
 			offset += sizeof(float);
-
-			memcpy(&result, &value, sizeof(float));
 
 			return result;
 		}
@@ -142,9 +141,7 @@ namespace Cereal {
 			writeBytes<unsigned short>(size);
 
 			for (unsigned short i = 0; i < size; i++)
-			{
 				writeBytes<char>(string[i]);
-			}
 
 			return true;
 		}
@@ -152,20 +149,14 @@ namespace Cereal {
 		template<>
 		bool writeBytes<float>(float data)
 		{
-			unsigned int x;
-
-			*(unsigned int*)&x = *(unsigned int*)&data;
-
+			unsigned int x = *(unsigned int*)&data;
 			return writeBytes<unsigned int>(x);
 		}
 
 		template<>
 		bool writeBytes<double>(double data)
 		{
-			unsigned long long x;
-
-			*(unsigned long long*)&x = *(unsigned long long*)&data;
-
+			unsigned long long x = *(unsigned long long*)&data;
 			return writeBytes<unsigned long long>(x);
 		}
 #endif
@@ -175,6 +166,17 @@ namespace Cereal {
 			if (!hasSpace(size)) return false;
 
 			memcpy((byte*)start + offset, data, size);
+
+			offset += size;
+
+			return true;
+		}
+
+		bool copyTo(byte* dest, unsigned int size)
+		{
+			if (!hasSpace(size)) return false;
+
+			memcpy(dest, (byte*)start + offset, size);
 
 			offset += size;
 
@@ -264,10 +266,9 @@ namespace Cereal {
 		}
 
 		float result;
+		memcpy(&result, &value, sizeof(float));
 
 		offset += sizeof(float);
-
-		memcpy(&result, &value, sizeof(float));
 
 		return result;
 	}
@@ -301,9 +302,7 @@ namespace Cereal {
 		unsigned short size = readBytes<unsigned short>();
 
 		for (unsigned int i = 0; i < size; i++)
-		{
 			value += readBytes<char>();
-		}
 
 		return value;
 	}
@@ -319,9 +318,7 @@ namespace Cereal {
 		writeBytes<unsigned short>(size);
 
 		for (unsigned short i = 0; i < size; i++)
-		{
 			writeBytes<char>(string[i]);
-		}
 
 		return true;
 	}
@@ -329,20 +326,14 @@ namespace Cereal {
 	template<>
 	inline bool Buffer::writeBytes<float>(float data)
 	{
-		unsigned int x;
-
-		*(unsigned int*)&x = *(unsigned int*)&data;
-
+		unsigned int x = *(unsigned int*)&data;
 		return writeBytes<unsigned int>(x);
 	}
 
 	template<>
 	inline bool Buffer::writeBytes<double>(double data)
 	{
-		unsigned long long x;
-
-		*(unsigned long long*)&x = *(unsigned long long*)&data;
-
+		unsigned long long x = *(unsigned long long*)&data;
 		return writeBytes<unsigned long long>(x);
 	}
 #endif

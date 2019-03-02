@@ -32,8 +32,28 @@ namespace Cereal {
 		std::string name;
 		std::vector<Object*> objects;
 
-	public:
-		unsigned int crc32(const byte* message, unsigned int len) const
+		unsigned int crc32v20(const byte* message, unsigned int len) const
+		{
+			unsigned int mask;
+			signed int crc;
+
+			crc = 0xFFFFFFFF;
+
+			for (unsigned int i = 0; i < len; i++)
+			{
+				crc = crc ^  message[i];
+
+				for (int j = 7; j >= 0; j--)
+				{
+					mask = -(crc & 1);
+					crc = (crc >> 1) ^ (0xEDB88320 & mask);
+				}
+			}
+
+			return ~crc;
+		}
+
+		unsigned int crc32v21(const byte* message, unsigned int len) const
 		{
 			unsigned int mask;
 			unsigned int crc;
@@ -57,8 +77,8 @@ namespace Cereal {
 	public:
 		Database(const Database& other) = delete;
 		Database() : version(Version::VERSION_INVALID), name("") { }
-		Database(const std::string& name, Version ver) : version(ver), name(name) { }
 		Database(const std::string& name) : version(Version::VERSION_LATEST), name(name) { }
+		Database(const std::string& name, Version ver) : version(ver), name(name) { if(ver == Version::VERSION_2_0) version = Version::VERSION_2_1; }
 
 		~Database()
 		{
@@ -103,7 +123,35 @@ namespace Cereal {
 				unsigned int p = buffer.getOffset();
 				unsigned int size = buffer.readBytes<unsigned int>() - sizeof(short) - sizeof(short) - (unsigned int)name.length() - sizeof(unsigned int);
 
-				if(crc32((byte*)buffer.getStart() + p, size) != checksum) throw std::logic_error("Checksum mismatch!");
+				if(crc32v20((byte*)buffer.getStart() + p, size) != checksum) throw std::logic_error("Checksum mismatch!");
+
+				unsigned short objectCount = buffer.readBytes<unsigned short>();
+
+				for (unsigned short i = 0; i < objectCount; i++)
+				{
+					Object* obj = new Object;
+
+					obj->read(buffer);
+					this->addObject(obj);
+				}
+
+				// Note: v2.0 CRC32 algorithm was buggy, so using it is not recommended. Therefore, we'll automatically change version from 2.0 to 2.1
+				// To prevent using the same buggy function over and over. On rewrite of this database, v2.1 will be used instead
+				this->version = Version::VERSION_2_1;
+
+				break;
+			}
+
+			case Version::VERSION_2_1:
+			{
+				this->name = buffer.readBytes<std::string>();
+
+				unsigned int checksum = buffer.readBytes<unsigned int>();
+
+				unsigned int p = buffer.getOffset();
+				unsigned int size = buffer.readBytes<unsigned int>() - sizeof(short) - sizeof(short) - (unsigned int)name.length() - sizeof(unsigned int);
+
+				if(crc32v21((byte*)buffer.getStart() + p, size) != checksum) throw std::logic_error("Checksum mismatch!");
 
 				unsigned short objectCount = buffer.readBytes<unsigned short>();
 
@@ -147,6 +195,9 @@ namespace Cereal {
 				break;
 
 			case Version::VERSION_2_0:
+				throw std::invalid_argument("Databases version 2.0 use a buggy CRC32 algorithm and therefore deprecated. Use version v2.1 instead"); break;
+
+			case Version::VERSION_2_1:
 			{
 				if(objects.size() > 65536) throw std::overflow_error("Too many objects!");
 				if(this->getSize() > 4294967296) throw std::overflow_error("Database size is too big!"); // 2^32, maximum database size
@@ -163,7 +214,7 @@ namespace Cereal {
 				for (const Object* obj : objects)
 					obj->write(*tempBuffer);
 
-				unsigned int checksum = crc32((byte*)tempBuffer->getStart(), size);
+				unsigned int checksum = crc32v21((byte*)tempBuffer->getStart(), size);
 
 				buffer.writeBytes<unsigned int>(checksum);
 				buffer.copy(tempBuffer);
@@ -190,6 +241,9 @@ namespace Cereal {
 				ret += sizeof(short) + (unsigned long long)name.length() + sizeof(int) + sizeof(short); break;
 
 			case Version::VERSION_2_0:
+				ret += sizeof(short) + (unsigned long long)name.length() + sizeof(int) + sizeof(int) + sizeof(short); break;
+
+			case Version::VERSION_2_1:
 				ret += sizeof(short) + (unsigned long long)name.length() + sizeof(int) + sizeof(int) + sizeof(short); break;
 
 			default:
