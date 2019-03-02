@@ -57,16 +57,14 @@ namespace Cereal {
 		template<>
 		static unsigned int writeBytes<float>(byte* dest, unsigned int pointer, float data)
 		{
-			unsigned int x;
-			*(unsigned int*)&x = *(unsigned int*)&data;
+			unsigned int x = *(unsigned int*)&data;
 			return writeBytes<unsigned int>(dest, pointer, x);
 		}
 
 		template<>
 		static unsigned int writeBytes<double>(byte* dest, unsigned int pointer, double data)
 		{
-			unsigned long long x;
-			*(unsigned long long*)&x = *(unsigned long long*)&data;
+			unsigned long long x = *(unsigned long long*)&data;
 			return writeBytes<unsigned long long>(dest, pointer, x);
 		}
 #endif
@@ -93,16 +91,14 @@ namespace Cereal {
 	template<>
 	inline unsigned int Writer::writeBytes<float>(byte* dest, unsigned int pointer, float data)
 	{
-		unsigned int x;
-		*(unsigned int*)&x = *(unsigned int*)&data;
+		unsigned int x = *(unsigned int*)&data;
 		return writeBytes<unsigned int>(dest, pointer, x);
 	}
 
 	template<>
 	inline unsigned int Writer::writeBytes<double>(byte* dest, unsigned int pointer, double data)
 	{
-		unsigned long long x;
-		*(unsigned long long*)&x = *(unsigned long long*)&data;
+		unsigned long long x = *(unsigned long long*)&data;
 		return writeBytes<unsigned long long>(dest, pointer, x);
 	}
 #endif
