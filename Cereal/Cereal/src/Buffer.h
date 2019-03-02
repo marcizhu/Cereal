@@ -149,14 +149,16 @@ namespace Cereal {
 		template<>
 		bool writeBytes<float>(float data)
 		{
-			unsigned int x = *(unsigned int*)&data;
+			unsigned int x;
+			*(unsigned int*)&x = *(unsigned int*)&data;
 			return writeBytes<unsigned int>(x);
 		}
 
 		template<>
 		bool writeBytes<double>(double data)
 		{
-			unsigned long long x = *(unsigned long long*)&data;
+			unsigned long long x;
+			*(unsigned long long*)&x = *(unsigned long long*)&data;
 			return writeBytes<unsigned long long>(x);
 		}
 #endif
@@ -326,14 +328,16 @@ namespace Cereal {
 	template<>
 	inline bool Buffer::writeBytes<float>(float data)
 	{
-		unsigned int x = *(unsigned int*)&data;
+		unsigned int x;
+		*(unsigned int*)&x = *(unsigned int*)&data;
 		return writeBytes<unsigned int>(x);
 	}
 
 	template<>
 	inline bool Buffer::writeBytes<double>(double data)
 	{
-		unsigned long long x = *(unsigned long long*)&data;
+		unsigned long long x;
+		*(unsigned long long*)&x = *(unsigned long long*)&data;
 		return writeBytes<unsigned long long>(x);
 	}
 #endif

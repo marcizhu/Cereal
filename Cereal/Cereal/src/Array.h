@@ -139,7 +139,6 @@ namespace Cereal {
 			{
 				data = new byte[count * sizeOf(dataType)];
 				buffer.copyTo(data, count * sizeOf(dataType));
-				buffer.addOffset(count * sizeOf(dataType));
 			}
 			else
 			{
@@ -150,7 +149,6 @@ namespace Cereal {
 
 				data = new byte[size];
 				buffer.copyTo(data, size);
-				buffer.addOffset(size);
 			}
 		}
 
