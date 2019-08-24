@@ -25,14 +25,14 @@ jobs:
         - run:
             name: Build Tests
             command: |
-              g++ Sandbox/Core.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o core -pthread -std=c++11
-              g++ Sandbox/Buffers.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o buffers -pthread -std=c++11
-              g++ Sandbox/ReaderWriter.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o readerw -pthread -std=c++11
-              g++ Sandbox/Fields.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o fields -pthread -std=c++11
-              g++ Sandbox/Arrays.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o arrays -pthread -std=c++11
-              g++ Sandbox/Objects.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o objects -pthread -std=c++11
-              g++ Sandbox/Databases.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o databases -pthread -std=c++11
-              g++ Sandbox/Headers.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -o headers -pthread -std=c++11
+              g++ tests/Core.cpp         $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -pthread -std=c++11 -o core
+              g++ tests/Buffers.cpp      $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -pthread -std=c++11 -o buffers
+              g++ tests/ReaderWriter.cpp $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -pthread -std=c++11 -o readerw
+              g++ tests/Fields.cpp       $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -pthread -std=c++11 -o fields
+              g++ tests/Arrays.cpp       $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -pthread -std=c++11 -o arrays
+              g++ tests/Objects.cpp      $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -pthread -std=c++11 -o objects
+              g++ tests/Databases.cpp    $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -pthread -std=c++11 -o databases
+              g++ tests/Headers.cpp      $HOME/googletest/lib/*.a -ICereal/Cereal -I $HOME/googletest/include/ -O2 -Wall -pthread -std=c++11 -o headers
 
         - save_cache:
             key: test-{{ .Branch }}-{{ .Revision }}
