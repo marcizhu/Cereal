@@ -13,6 +13,7 @@
 *.log
 *.obj
 *.idb
+.DS_Store
 bin
 Debug
 Release
